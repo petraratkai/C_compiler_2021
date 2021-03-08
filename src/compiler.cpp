@@ -1,9 +1,26 @@
 #include<iostream>
+#include <fstream>
+#include "../include/ast.hpp"
 
+using namespace std;
 
-int main()
+int main(int argc, char *argv[])
 {
-	std::cout << "f:" << std::endl;
+	//parse the AST
+	Program *prog;
+	//Program *prog = parseAST(); //arguments?? which file?
+	std::ofstream Out(argv[3]);
+
+	//create hash table for variables
+	std::vector<Variable_hash> variables; //will need to push back an element every time a variable is declared
+
+//registers
+//ideas: vector of bools -> taken or notes
+//
+	Out.close();
+
+
+	/*std::cout << "f:" << std::endl;
 	std::cout << "PUSH0:" << std::endl;
 	std::cout << "addiu $sp, $sp, -44" << std::endl;
 	std::cout << "sw $ra, 40($sp)" << std::endl;
@@ -60,5 +77,5 @@ int main()
 	std::cout << "move $sp, $fp" << std::endl;
 	std::cout << "jr $ra" << std::endl;
 	std::cout << "nop" << std::endl;
-	std::cout << ".global f" << std::endl;
+	std::cout << ".global f" << std::endl;*/
 }
