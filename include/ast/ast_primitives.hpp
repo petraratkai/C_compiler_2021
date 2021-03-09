@@ -3,6 +3,7 @@
 
 #include <string>
 #include <iostream>
+#include "ast_statements.hpp"
 
 class Variable
     : public Expression
@@ -22,6 +23,7 @@ public:
         dst<<id;
     }
 
+    virtual bool IsVariableStmt() const override {return true;}
     /*virtual double evaluate(
         const std::map<std::string,double> &bindings
     ) const override
@@ -43,7 +45,7 @@ public:
     {}
       virtual int getValue() const override {return value;}
 
-
+      virtual bool IsNumberStmt() const override {return true;}
     virtual void print(std::ostream &dst) const override
     {
         dst<<value;

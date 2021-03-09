@@ -1,19 +1,40 @@
 #include<iostream>
 #include <fstream>
+#include <vector>
 #include "../include/ast.hpp"
+//#include "../include/ast/ast_primitives.hpp"
 
 using namespace std;
 
 int main(int argc, char *argv[])
 {
 	//parse the AST
-	Program *prog;
+
 	//Program *prog = parseAST(); //arguments?? which file?
-	std::ofstream Out(argv[3]);
+//	Number const1(1);
+	//std::cout<<const
+	Number* const2 = new Number(2);
+	ReturnStmt* ret2 = new ReturnStmt(const2);
+
+	//std::cout<<(ret2->getRetVal())->getValue();
+	std::vector<Statement*>* stmts = new std::vector<Statement*>;
+	stmts->push_back(ret2);
+	CompoundStmt* mainbody = new CompoundStmt(stmts);
+	std::vector<Variable_hash> param;
+	Function *mainfunct = new Function("main", mainbody, &param, IntType);
+	//std::vector<Function*> functions;
+	//functions.push_back(mainfunct);
+	//Program *prog = new Program(functions);
+	std::ofstream Out(argv[4]);
 
 	//create hash table for variables
-	std::vector<Variable_hash> variables; //will need to push back an element every time a variable is declared
+	//std::vector<Variable_hash> variables; //will need to push back an element every time a variable is declared
+	Out<<"j main"<<std::endl;
+	CompileFunct(mainfunct, Out);
 
+delete ret2;
+delete mainfunct;
+//delete prog;
 //registers
 //ideas: vector of bools -> taken or notes
 //

@@ -1,6 +1,7 @@
 #ifndef ast_hpp
 #define ast_hpp
 
+#include <string>
 #include "ast/ast_statements.hpp"
 //#include "ast/ast_expression.hpp"
 
@@ -18,6 +19,8 @@
 
 extern const Program *parseAST();
 
-void CodeGen(const Program *prog);
+void CodeGen(const Program *prog, std::ofstream& Out, std::vector<Variable_hash>* variables);
+
+void CompileFunct(const Function *funct, std::ofstream& Out);
 
 #endif

@@ -9,11 +9,11 @@
 class Program
 {
 private:
-  std::vector<Function> functions;
+  std::vector<Function*> functions;
   //later enum + struct
 
 public:
-  Program(std::vector<Function> functions) : functions(functions) {}
+  Program(std::vector<Function*> functions) : functions(functions) {}
 };
 
 

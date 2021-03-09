@@ -10,9 +10,9 @@ class FunctionCall
     : public Expression {
 private:
     ExpressionPtr arg;
-    std::string *funct_name;
+    std::string funct_name;
 protected:
-    FunctionCall(ExpressionPtr _arg, std::string *funct_name)
+    FunctionCall(ExpressionPtr _arg, std::string funct_name)
         : arg(_arg), funct_name(funct_name)
     {}
 public:
@@ -25,6 +25,8 @@ public:
 
     ExpressionPtr getArg() const
     { return arg; }
+
+    virtual std::string getName() const override{ return funct_name;}
 
     /*virtual void print(std::ostream &dst) const override
     {

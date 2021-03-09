@@ -5,7 +5,7 @@
 #include <vector>
 #include <string>
 
-typedef enum VarType {Int, Void, Char, Double} VarType;
+typedef enum VarType {IntType, VoidType, CharType, DoubleType} VarType;
 
 
 class Variable_hash
@@ -21,12 +21,18 @@ class Function
 {
 private:
   std::string name;
-  std::vector<Statement> body;
-  std::vector<Variable_hash> parameters;
+  CompoundStmt* body;
+  std::vector<Variable_hash>* parameters;
   VarType return_type;
+  std::vector<Variable_hash>* local_variables;
 public:
-  Function(std::string name, std::vector<Statement> body, std::vector<Variable_hash> parameters, VarType return_type) :
+  Function(const std::string& name, CompoundStmt* body, std::vector<Variable_hash>* parameters, VarType return_type) :
       name(name), body(body), parameters(parameters), return_type(return_type) {}
+  CompoundStmt* getBody() const {return body;}
+
+  std::string getName() const {return name;}
+
+  std::vector<Variable_hash>* getVariables() const {return local_variables;}
 
 
 };
