@@ -1,8 +1,8 @@
 %option noyywrap
 
 %{
+	#include "parser.tab.hpp"
 	extern "C" int fileno(File *stream);
-
 
 %}
 
@@ -27,10 +27,8 @@ WHITESPACE		[ ]
 TAB 			[\t]
 NEWLINE			[\n\r]
 EVERYTHING_ELSE	[.]
+
 %%
-
-
-/*Keywords*/
 
 auto			{yylval.string = new std::string(yytext); return T_AUTO;}
 break			{yylval.string = new std::string(yytext); return T_BREAK;}
@@ -66,9 +64,8 @@ volatile		{yylval.string = new std::string(yytext); return T_VOLATILE;}
 while			{yylval.string = new std::string(yytext); return T_WHILE;}
 
 
-/*Arithmetic Operators*/
 
-\+ 				{yylval.string = new std::string(yytext); return T_PLUS;}
+\+ 				{yylval.string = new std::string(yytext); return T_PLUS;} 
 \- 				{yylval.string = new std::string(yytext); return T_MINUS;}
 \* 				{yylval.string = new std::string(yytext); return T_MULT;}
 \/ 				{yylval.string = new std::string(yytext); return T_DIVIDE;}
@@ -76,20 +73,18 @@ while			{yylval.string = new std::string(yytext); return T_WHILE;}
 \++ 			{yylval.string = new std::string(yytext); return T_INCREMENT;}
 \-- 			{yylval.string = new std::string(yytext); return T_DECREMENT;}
 
-/*Relational Operators*/
-\=\=				{yylval.string = new std::string(yytext); return T_EQUAL;}
+\=\=				{yylval.string = new std::string(yytext); return T_EQUAL;} 
 \!\= 			{yylval.string = new std::string(yytext); return T_UNEQUAL;}
 \> 				{yylval.string = new std::string(yytext); return T_GREATER;}
 \< 				{yylval.string = new std::string(yytext); return T_LESSER;}
 \>\= 			{yylval.string = new std::string(yytext); return T_GREATEREQ;}
 \<\= 			{yylval.string = new std::string(yytext); return T_LESSEREQ;}
 
-/*Logical Operators*/
-\&\& 			{yylval.string = new std::string(yytext); return T_AND;}
+
+\&\& 			{yylval.string = new std::string(yytext); return T_AND;} 
 \|\| 			{yylval.string = new std::string(yytext); return T_OR;}
 \!				{yylval.string = new std::string(yytext); return T_NOT;}
 
-/*Bitwise Operators*/
 \& 				{yylval.string = new std::string(yytext); return T_BITAND;}
 \| 				{yylval.string = new std::string(yytext); return T_BITOR;}
 \^ 				{yylval.string = new std::string(yytext); return T_BITXOR;}
@@ -97,7 +92,6 @@ while			{yylval.string = new std::string(yytext); return T_WHILE;}
 \<\<				{yylval.string = new std::string(yytext); return T_BITLSHFT;}
 \>\>				{yylval.string = new std::string(yytext); return T_BITRSHFT;}
 
-/*Assignment Operators*/
 \= 				{yylval.string = new std::string(yytext); return T_ASSIGN;}
 \+\= 			{yylval.string = new std::string(yytext); return T_PLUSASSIGN;}
 \-\=				{yylval.string = new std::string(yytext); return T_MINUSASSIGN;}
@@ -110,19 +104,17 @@ while			{yylval.string = new std::string(yytext); return T_WHILE;}
 \^\= 			{yylval.string = new std::string(yytext); return T_XORASSIGN;}
 \|\= 			{yylval.string = new std::string(yytext); return T_ORASSIGN;}
 
-/*Brackets*/
-\{				{yylval.string = new std::string(yytext); return T_LCURLBRACKET;}
+\{				{yylval.string = new std::string(yytext); return T_LCURLBRACKET;} 
 \}				{yylval.string = new std::string(yytext); return T_RCURLBRACKET;}
 \[				{yylval.string = new std::string(yytext); return T_LSQUAREBRACKET;}
 \]				{yylval.string = new std::string(yytext); return T_RSQUAREBRACKET;}
 \(				{yylval.string = new std::string(yytext); return T_LBRACKET;}
 \)				{yylval.string = new std::string(yytext); return T_RBRACKET;}
 
-/*Access*/
-\.				{yylval.string = new std::string(yytext); return T_ACCESS;}
+\.				{yylval.string = new std::string(yytext); return T_ACCESS;} 
 \-\>			{yylval.string = new std::string(yytext); return T_POINTERACCESS;}
 
-\;				{yylval.string = new std::string(yytext); return T_SEMICOLON;}}
+\;				{yylval.string = new std::string(yytext); return T_SEMICOLON;}
 \:				{yylval.string = new std::string(yytext); return T_COLON;}
 \?				{yylval.string = new std::string(yytext); return T_QUESTIONMARK;}
 \,				{yylval.string = new std::string(yytext); return T_COMMA;}
@@ -139,12 +131,10 @@ while			{yylval.string = new std::string(yytext); return T_WHILE;}
 
 .				{fprintf(stderr, "Not in lexer \n"); exit(1);}
 
-
 %%
 
 void yyerror (char const *s)
 {
-  fprintf (stderr, "Flex Error: %s\n", s); /* s is the text that wasn't matched */
+  fprintf (stderr, "Flex Error: %s\n", s);
   exit(1);
 }
-
