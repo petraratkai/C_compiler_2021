@@ -5,21 +5,27 @@
 
 #include "../include/ast.hpp"
 
-/*void CodeGen(const Expression *expr, std::ofstream& Out, std::vector<Variable_hash>& variables)
+void CodeGenExpr(const Expression *expr, std::ofstream& Out, std::vector<Variable_hash>* variables)
 {
+  std::cout<<"Here"<<expr->getValue();
   if(expr->IsNumberStmt())
   {
-    Out<<stmt->getValue();
+    Out<<expr->getValue();
   }
-}*/
+  else if(expr->IsFunctionCallExpr())
+  {
+    //need to save the argument registers a0-a3
+    //save registers
+    //need to save the return address later
+    Out << "jal " + expr->getName() << std::endl;
+  }
+}
 
 void CodeGen(const Statement *stmt, std::ofstream& Out, std::vector<Variable_hash>* variables)
 {
-  if(stmt->IsNumberStmt())
-  {
-    Out<<stmt->getValue();
-  }
-  else if(stmt->IsVariableStmt())
+
+
+  if(stmt->IsVariableStmt())
   {
       //find variable in hash table
   }
@@ -28,24 +34,29 @@ void CodeGen(const Statement *stmt, std::ofstream& Out, std::vector<Variable_has
     //evaluate return value
     //move that value to v0
     Out << "addiu $v0, ";
-    CodeGen(stmt->getRetVal(), Out, variables);
+
+    CodeGenExpr(stmt->getRetVal(), Out, variables);
     Out << ", 0" << std::endl;
 
   }
-  else if(stmt->IsFunctionCallStmt())
-  {
-    //need to save the argument registers a0-a3
-    //save registers
-    //need to save the return address later
-    Out << "jal " + stmt->getName() << std::endl;
-  }
-  else if(stmt->IsCompundStmt())
+
+  else if(stmt->IsCompoundStmt())
   {
     std::vector<Statement*>* stmts= stmt->getStmts();
     for(int i = 0; i<stmts->size(); i++)
     {
       CodeGen((*stmts)[i], Out, variables);
     }
+  }
+  else if(stmt->IsDeclarationStmt())
+  {
+    //need to push back to variables, find a registers
+    /*Variable *var = stmt->getVar();
+    Variable_hash var_hash
+    insert_var(var_hash, var);*/
+    //variables->push_back(
+
+
   }
 }
 
@@ -54,10 +65,6 @@ void CompileFunct(const Function *funct, std::ofstream& Out)
   //label:
   Out << funct->getName() + ":" << std::endl;
   CompoundStmt *body = funct->getBody();
-  /*for(int i = 0; i<body->size(); i++)
-  {*/
-    CodeGen(body, Out, funct->getVariables());
-  //}
-  //jump to return address
+  CodeGen(body, Out, funct->getVariables());
   Out<<"jr $ra" <<std::endl;
 }

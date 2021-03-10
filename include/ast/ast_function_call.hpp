@@ -28,6 +28,8 @@ public:
 
     virtual std::string getName() const override{ return funct_name;}
 
+    virtual bool IsFunctionCallExpr() const override {return true;}
+
     /*virtual void print(std::ostream &dst) const override
     {
         dst<<getFunction()<<"( ";

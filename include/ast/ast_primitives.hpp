@@ -5,18 +5,21 @@
 #include <iostream>
 #include "ast_statements.hpp"
 
-class Variable
+/*class Variable
     : public Expression
 {
 private:
     std::string id;
+    VarType type;
 public:
-    Variable(const std::string &_id)
-        : id(_id)
+    Variable(const std::string &_id, VarType type)
+        : id(_id), type(type)
     {}
 
     const std::string getId() const
     { return id; }
+
+    VarType getType() const {return type;}
 
     virtual void print(std::ostream &dst) const override
     {
@@ -31,8 +34,8 @@ public:
         // TODO-B : Run bin/eval_expr with a variable binding to make sure you understand how this works.
         // If the binding does not exist, this will throw an error
         return bindings.at(id);
-    }*/
-};
+    }
+};*/
 
 class Number
     : public Expression

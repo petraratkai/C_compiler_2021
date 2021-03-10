@@ -1,14 +1,15 @@
 #ifndef ast_statements_hpp
 #define ast_statements_hpp
 
-class Variable;
+//class Variable;
 class Expression;
+
 
 //#include "ast_expression.hpp"
 //#include "ast_primitives.hpp"
 //#include "ast_function_call.hpp"
 
-
+typedef enum VarType {IntType, VoidType, CharType, DoubleType} VarType;
 typedef enum stmt_type {ReturnType, AssignType, DeclareType, DefineType, ExpressionType, FunctionCallType} stmt_type;
 
 
@@ -26,11 +27,11 @@ public:
   virtual bool IsDeclarationStmt() const {return false;}
   //virtual bool IsDefineExpr() const {return false;}
   virtual bool IsExpressionStmt() const {return false;}
-  virtual bool IsFunctionCallStmt() const {return false;}
+  virtual bool IsFunctionCallExpr() const {return false;}
   virtual bool IsVariableStmt() const {return false;}
   virtual bool IsNumberStmt() const {return false;}
   virtual bool IsOperatorStmt() const {return false;}
-  virtual bool IsCompundStmt() const {return false;}
+  virtual bool IsCompoundStmt() const {return false;}
 
   virtual std::vector<Statement*>* getStmts() const {}
 
@@ -38,24 +39,6 @@ public:
 
 
 };
-
-class Declaration
-  :public Statement
-{
-private:
-  Variable *var;
-  Expression *rhs; //can be null if it's something like int a;
-public:
-  Declaration(Variable* var, Expression *rhs) : var(var), rhs(rhs) {};
-  //destructor!!
-  Variable *getVariable() const {return var;}
-  Expression *getExpr() const {return rhs;}
-  virtual bool IsDeclarationStmt() const override {return true;}
-
-};
-
-
- //public Statement
 
 typedef const Expression *ExpressionPtr;
 
@@ -82,7 +65,62 @@ public:
 
     virtual Expression *getRetVal() const override{}
 
+    virtual bool IsFunctionCallExpr() const override {return false;}
+
 };
+
+class Variable
+    : public Expression
+{
+private:
+    std::string id;
+    VarType type;
+public:
+    Variable(const std::string &_id, VarType type)
+        : id(_id), type(type)
+    {}
+
+    const std::string getId() const
+    { return id; }
+
+    VarType getType() const {return type;}
+
+    virtual void print(std::ostream &dst) const override
+    {
+        dst<<id;
+    }
+
+    virtual bool IsVariableStmt() const override {return true;}
+    /*virtual double evaluate(
+        const std::map<std::string,double> &bindings
+    ) const override
+    {
+        // TODO-B : Run bin/eval_expr with a variable binding to make sure you understand how this works.
+        // If the binding does not exist, this will throw an error
+        return bindings.at(id);
+    }*/
+};
+
+class Declaration
+  :public Statement
+{
+private:
+  Variable *var;
+  Expression *rhs; //can be null if it's something like int a;
+public:
+  Declaration(Variable* var, Expression *rhs) : var(var), rhs(rhs) {};
+  Declaration(VarType type, const std::string& name, Expression* rhs) : var(new Variable(name, type)), rhs(rhs) {}
+  //destructor!!
+  Variable *getVariable() const {return var;}
+  Expression *getExpr() const {return rhs;}
+  virtual bool IsDeclarationStmt() const override {return true;}
+
+};
+
+
+ //public Statement
+
+
 
 class ReturnStmt
   : public Statement
@@ -122,7 +160,7 @@ private:
 public:
   CompoundStmt(std::vector<Statement*>* stmts) : stmts(stmts) {}
   virtual std::vector<Statement*>* getStmts() const override {return stmts;}
-  virtual bool IsCompundStmt() const override {return true;}
+  virtual bool IsCompoundStmt() const override {return true;}
 
 };
 

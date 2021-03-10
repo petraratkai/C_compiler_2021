@@ -5,7 +5,8 @@
 #include <vector>
 #include <string>
 
-typedef enum VarType {IntType, VoidType, CharType, DoubleType} VarType;
+
+
 
 
 class Variable_hash
@@ -15,6 +16,9 @@ class Variable_hash
   int reg; //register assigned
   int memory_address;
   bool in_memory;
+public:
+  Variable_hash(const std::string& name, const VarType type) : name(name), type(type) {}
+  void setlocation(int reg, int memory_address, bool in_memory);
 };
 
 class Function
@@ -22,11 +26,11 @@ class Function
 private:
   std::string name;
   CompoundStmt* body;
-  std::vector<Variable_hash>* parameters;
+  std::vector<Declaration*>* parameters;
   VarType return_type;
   std::vector<Variable_hash>* local_variables;
 public:
-  Function(const std::string& name, CompoundStmt* body, std::vector<Variable_hash>* parameters, VarType return_type) :
+  Function(const std::string& name, CompoundStmt* body, std::vector<Declaration*>* parameters, VarType return_type) :
       name(name), body(body), parameters(parameters), return_type(return_type) {}
   CompoundStmt* getBody() const {return body;}
 

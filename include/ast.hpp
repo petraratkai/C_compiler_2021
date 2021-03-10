@@ -23,4 +23,6 @@ void CodeGen(const Program *prog, std::ofstream& Out, std::vector<Variable_hash>
 
 void CompileFunct(const Function *funct, std::ofstream& Out);
 
+void insert_var(std::vector<Variable_hash>* variables, const Variable* var);
+
 #endif

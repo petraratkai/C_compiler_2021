@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
 	std::vector<Statement*>* stmts = new std::vector<Statement*>;
 	stmts->push_back(ret2);
 	CompoundStmt* mainbody = new CompoundStmt(stmts);
-	std::vector<Variable_hash> param;
+	std::vector<Declaration*> param;
 	Function *mainfunct = new Function("main", mainbody, &param, IntType);
 	//std::vector<Function*> functions;
 	//functions.push_back(mainfunct);
