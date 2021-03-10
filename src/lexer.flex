@@ -118,6 +118,7 @@ while			{yylval.string = new std::string(yytext); return T_WHILE;}
 \:				{yylval.string = new std::string(yytext); return T_COLON;}
 \?				{yylval.string = new std::string(yytext); return T_QUESTIONMARK;}
 \,				{yylval.string = new std::string(yytext); return T_COMMA;}
+\.\.\.			{yylval.string = new std::string(yytext); return T_ELLIPSIS;}
 
 {IDENTIFIER}	{yylval.string = new std::string(yytext); return IDENTIFIER;}
 
