@@ -2,6 +2,7 @@
 #include <fstream>
 #include <vector>
 #include "../include/ast.hpp"
+#include "../include/ast/Context.hpp"
 //#include "../include/ast/ast_primitives.hpp"
 
 using namespace std;
@@ -9,8 +10,8 @@ using namespace std;
 int main(int argc, char *argv[])
 {
 	//parse the AST
-
-	Program *prog = parseAST(argv[2]); //arguments?? which file?
+Context ctxt;
+	//Program *prog = parseAST(argv[2]); //arguments?? which file?
 //	Number const1(1);
 	//std::cout<<const
 	/*Number* const2 = new Number(2);
@@ -25,7 +26,7 @@ int main(int argc, char *argv[])
 	//std::vector<Function*> functions;
 	//functions.push_back(mainfunct);
 	//Program *prog = new Program(functions);*/
-	std::ofstream Out(argv[4]);
+	/*std::ofstream Out(argv[4]);
 
 	//create hash table for variables
 	//std::vector<Variable_hash> variables; //will need to push back an element every time a variable is declared
@@ -36,7 +37,7 @@ int main(int argc, char *argv[])
 	for(int i = 0; i<funct.size(); i++)
 	{
 	CompileFunct(funct[i], Out);
-	}
+}*/
 
 //delete ret2;
 //delete mainfunct;
@@ -44,7 +45,7 @@ int main(int argc, char *argv[])
 //registers
 //ideas: vector of bools -> taken or notes
 //
-	Out.close();
+	//Out.close();
 
 
 	/*std::cout << "f:" << std::endl;
