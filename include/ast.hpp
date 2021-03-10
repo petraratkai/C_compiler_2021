@@ -17,7 +17,7 @@
 
 
 
-extern const Program *parseAST();
+extern Program *parseAST(const std::string name);
 
 void CodeGen(const Program *prog, std::ofstream& Out, std::vector<Variable_hash>* variables);
 

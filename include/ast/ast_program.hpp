@@ -14,6 +14,7 @@ private:
 
 public:
   Program(std::vector<Function*> functions) : functions(functions) {}
+  std::vector<Function*> getFunctions() const {return functions;}
 };
 
 

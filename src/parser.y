@@ -16,7 +16,7 @@
 }
 
 %token T_AUTO T_BREAK T_CASE T_CHAR T_CONST T_CONTINUE T_DEFAULT T_DO T_DOUBLE T_ELSE T_ENUM T_EXTERN T_FLOAT T_FOR T_GOTO T_IF T_INT T_LONG T_REGISTER T_RETURN T_SHORT T_SIGNED T_SIZEOF T_STATIC T_STRUCT T_SWITCH T_TYPEDEF T_UNION T_UNSIGNED T_VOID T_VOLATILE T_WHILE
-%token T_PLUS T_MINUS T_MULT T_DIVIDE T_MODULO T_INCREMENENT T_DECREMENT 
+%token T_PLUS T_MINUS T_MULT T_DIVIDE T_MODULO T_INCREMENENT T_DECREMENT
 %token T_EQUAL T_UNEQUAL T_GREATER T_LESSER T_GREATEREQ T_LESSEREQ
 %token T_AND T_OR T_NOT
 %token T_BITAND T_BITOR T_BITXOR T_BITCOMP T_BITLSHIFT T_BITRSHIFT
@@ -28,7 +28,7 @@
 
 %type <string> T_AUTO T_BREAK T_CASE T_CHAR T_CONST T_CONTINUE T_DEFAULT T_DO T_DOUBLE T_ELSE T_ENUM T_EXTERN T_FLOAT T_FOR T_GOTO T_IF T_INT T_LONG T_REGISTER T_RETURN T_SHORT T_SIGNED T_SIZEOF T_STATIC T_STRUCT T_SWITCH T_TYPEDEF T_UNION T_UNSIGNED T_VOID T_VOLATILE T_WHILE T_PLUS T_MINUS T_MULT T_DIVIDE T_MODULO T_INCREMENENT T_DECREMENT T_EQUAL T_UNEQUAL T_GREATER T_LESSER T_GREATEREQ T_LESSEREQ T_AND T_OR T_NOT T_BITAND T_BITOR T_BITXOR T_BITCOMP T_BITLSHIFT T_BITRSHIFT T_ASSIGN T_PLUSASSIGN T_MINUSASSIGN T_MULTASSIGN T_DIVIDEASSIGN T_MODULOASSIGN T_LSHFTASSIGN T_RSHFTASSIGN T_ANDASSIGN T_XORASSIGN T_ORASSIGN T_LCURLBRACKET T_RCURLBRACKET T_LSQUAREBRACKET T_RSQUAREBRACKET T_LBRACKET T_RBRACKET T_ACCESS T_POINTERACCESS T_SEMICOLON T_QUESTIONMARK T_COLON T_COMMA IDENTIFIER INT_CONST FLOAT_CONST CHAR_CONST STRING_CONST
 
-%type <expr> 	program_top function_definition declaration declaration_specifiers type_specifier declarator compound_statement statement jump_statement expression assignment_expression unary_expression assignment_operator constant_expr conditional_expression primary_expression 
+%type <expr> 	program_top function_definition declaration declaration_specifiers type_specifier declarator compound_statement statement jump_statement expression assignment_expression unary_expression assignment_operator constant_expr conditional_expression primary_expression
 
 %start program_top
 
@@ -48,7 +48,7 @@ declaration:
 ;
 
 declaration_specifiers:
-	type_specifier												{$$ = $1;}	
+	type_specifier												{$$ = $1;}
 ;
 
 type_specifier:
@@ -61,7 +61,7 @@ type_specifier:
 declarator:
 		IDENTIFIER												{$$ = $1;}
 ;
-	
+
 compound_statement:
 		statement 												{vector<Statement*>* Statements = new vector<Statement*>*; Statements->push_back($1); $$ = Statements;}
 
@@ -94,7 +94,7 @@ assignment_operator:
 
 constant_expr:
 		conditional_expression									{$$ = $1;}
-;		
+;
 
 conditional_expression:
 		primary_expression										{$$ = $1;}
@@ -120,8 +120,3 @@ Program* parseAST(std::string file){
 	}
 	return g_root;
 }
-
-
-
-
-

@@ -10,10 +10,10 @@ int main(int argc, char *argv[])
 {
 	//parse the AST
 
-	//Program *prog = parseAST(); //arguments?? which file?
+	Program *prog = parseAST(argv[2]); //arguments?? which file?
 //	Number const1(1);
 	//std::cout<<const
-	Number* const2 = new Number(2);
+	/*Number* const2 = new Number(2);
 	ReturnStmt* ret2 = new ReturnStmt(const2);
 
 	//std::cout<<(ret2->getRetVal())->getValue();
@@ -24,16 +24,22 @@ int main(int argc, char *argv[])
 	Function *mainfunct = new Function("main", mainbody, &param, IntType);
 	//std::vector<Function*> functions;
 	//functions.push_back(mainfunct);
-	//Program *prog = new Program(functions);
+	//Program *prog = new Program(functions);*/
 	std::ofstream Out(argv[4]);
 
 	//create hash table for variables
 	//std::vector<Variable_hash> variables; //will need to push back an element every time a variable is declared
 	Out<<"j main"<<std::endl;
-	CompileFunct(mainfunct, Out);
+	std::vector<Function*> funct =  prog->getFunctions();
+	//CompoundStmt* body =
+	//vector<Statement*>* stmts = body->getStmts();
+	for(int i = 0; i<funct.size(); i++)
+	{
+	CompileFunct(funct[i], Out);
+	}
 
-delete ret2;
-delete mainfunct;
+//delete ret2;
+//delete mainfunct;
 //delete prog;
 //registers
 //ideas: vector of bools -> taken or notes
