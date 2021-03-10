@@ -109,6 +109,17 @@ primary_expression:
 	|	T_LBRACKET expression T_RBRACKET 						{$$ = $2;}
 ;
 
+%%
+
+Program* g_root;
+Program* parseAST(std::string file{
+	yyin = fopen(file.c_str(), "r");
+	if(yyin){
+	g_root = new Program();
+	yyparse();
+	}
+	return g_root;
+}
 
 
 
