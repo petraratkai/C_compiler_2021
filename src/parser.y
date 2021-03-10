@@ -112,7 +112,7 @@ primary_expression:
 %%
 
 Program* g_root;
-Program* parseAST(std::string file{
+Program* parseAST(std::string file){
 	yyin = fopen(file.c_str(), "r");
 	if(yyin){
 	g_root = new Program();
