@@ -39,11 +39,11 @@ program_top:
 ;
 
 function_definition:
-	declaration_specifiers declarator compound_statement		{$$ = new Function_definition($1, $2, $3;}
+	declaration_specifiers declarator compound_statement		{$$ = new Function($1, $2, $3;}
 ;
 
 declaration_specifiers:
-	type_specifier												{$$ = new Declaration_specifier($1);}	
+	type_specifier												{$$ = $1;}	
 ;
 
 type_specifier:
@@ -59,7 +59,7 @@ type_specifier:
 ;
 
 declarator:
-		IDENTIFIER												{$$ = new Primary($1);}
+		IDENTIFIER												{$$ = new Variable($1);}
 ;
 	
 compound_statement:
@@ -71,8 +71,8 @@ statement:
 ;
 
 jump_statement:
-		T_RETURN T_SEMICOLON 									{$$ = new Return($1);}
-	|	T_RETURN expression T_SEMICOLON 						{$$ = new Return($1, $2);}
+		T_RETURN T_SEMICOLON 									{$$ = new ReturnStmt(NULL);}
+	|	T_RETURN expression T_SEMICOLON 						{$$ = new ReturnStmt($2);}
 ;
 
 expression:
@@ -101,11 +101,11 @@ conditional_expression:
 ;
 
 primary_expression:
-		IDENTIFIER												{$$ = new Primary{$1};}
-	|	INT_CONST												{$$ = new Primary{$1};}
-	|	FLOAT_CONST    											{$$ = new Primary{$1};}
-	|	CHAR_CONST   											{$$ = new Primary{$1};}
-	|	STRING_CONST											{$$ = new Primary{$1};}
+		IDENTIFIER												{$$ = new Variable{$1};}
+	|	INT_CONST												{$$ = new Number{$1};}
+	|	FLOAT_CONST    											{$$ = new Variable{$1};}
+	|	CHAR_CONST   											{$$ = new Variable{$1};}
+	|	STRING_CONST											{$$ = new Variable{$1};}
 	|	T_LBRACKET expression T_RBRACKET 						{$$ = $2;}
 ;
 
