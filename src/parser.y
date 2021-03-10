@@ -3,7 +3,7 @@
 	#include <cassert>
 	#include <string>
 
-	extern Expression* g_root;
+	extern Program* g_root;
 	extern FILE *yyin
 
 	int yylex(void);
