@@ -45,7 +45,10 @@ typedef const Expression *ExpressionPtr;
 class Expression
   :public Statement
 {
+
 public:
+  std::string regname;
+
     virtual ~Expression()
     {}
 
@@ -66,6 +69,11 @@ public:
     virtual Expression *getRetVal() const override{}
 
     virtual bool IsFunctionCallExpr() const override {return false;}
+
+    std::string getRegname() const {return regname;}
+
+    virtual void setRegname(std::string regname) {this->regname = regname;}
+
 
 };
 

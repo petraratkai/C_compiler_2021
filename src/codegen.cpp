@@ -36,6 +36,8 @@ void CodeGen(const Statement *stmt, std::ofstream& Out, std::vector<Variable_has
     Out << "addiu $v0, ";
 
     CodeGenExpr(stmt->getRetVal(), Out, variables);
+
+    //stmt->getRetVal()->getLoca()
     Out << ", 0" << std::endl;
 
   }
