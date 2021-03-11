@@ -4,13 +4,14 @@
 #include <string>
 
 #include "../include/ast.hpp"
+#include "../include/ast/Context.hpp"
 
-std::string CodeGenExpr(const Expression *expr, std::ofstream& Out, Context& ctxt) //could return a string which is the regname
+std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //could return a string which is the regname
 {
   //std::cout<<"Here"<<expr->getValue();
   if(expr->IsNumberStmt())
   {
-    std::string regname = ctxt.InsertExpr(expr);
+    std::string regname = ctxt.insertExpr(expr);
     Out<<"addiu " + regname + ", " + regname + ", " << expr->getValue() <<std::endl;
 
     return regname;
@@ -24,7 +25,7 @@ std::string CodeGenExpr(const Expression *expr, std::ofstream& Out, Context& ctx
   }
 }
 
-void CodeGen(const Statement *stmt, std::ofstream& Out, std::vector<Variable_hash>* variables)
+void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables)
 {
 
 
@@ -65,6 +66,7 @@ void CompileFunct(const Function *funct, std::ofstream& Out)
   //label:
   Out << funct->getName() + ":" << std::endl;
   CompoundStmt *body = funct->getBody();
-  CodeGen(body, Out, funct->getVariables());
+  Context ctxt;
+  CodeGen(body, Out, ctxt);
   Out<<"jr $ra" <<std::endl;
 }

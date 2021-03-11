@@ -9,7 +9,7 @@ class Unary
 {
 private:
     ExpressionPtr expr;
-    std::string type_of_op2
+    std::string type_of_op2;
 protected:
     Unary(const ExpressionPtr _expr, std::string _type_of_op2)
         : expr(_expr)
@@ -21,7 +21,7 @@ public:
         delete expr;
     }
 
-    std::string *getOpcode() const 
+    std::string getOpcode() const
     {
         return type_of_op2;
     }

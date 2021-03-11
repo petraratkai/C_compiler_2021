@@ -3,6 +3,7 @@
 
 //class Variable;
 class Expression;
+class CompoundStmt;
 
 
 //#include "ast_expression.hpp"
@@ -33,7 +34,8 @@ public:
   virtual bool IsOperatorStmt() const {return false;}
   virtual bool IsCompoundStmt() const {return false;}
 
-  virtual std::vector<Statement*>* getStmts() const {}
+  virtual CompoundStmt* getCompoundStmt() const {}
+  virtual std::vector<Statement*>* getStmts() const{}
 
 
 
@@ -83,7 +85,7 @@ class FakeVariable
 private:
     std::string id;
 public:
-    Variable(const std::string &_id)
+    FakeVariable(const std::string& _id)
         : id(_id)
     {}
 
@@ -133,14 +135,14 @@ public:
     }*/
 };
 
-class Constant
+/*class Constant
     : public Expression
 {
 private:
     std::string value;
     VarType type;
 public:
-    Constant(const std::string &_value, VarType type)
+    Constant(const std::string& _value, VarType type)
         : value(_value), type(type)
     {}
 
@@ -155,7 +157,7 @@ public:
     }
 
     virtual bool IsVariableStmt() const override {return true;}
-};
+};*/
 
 class Declaration
   :public Statement
@@ -165,7 +167,7 @@ private:
   Expression *rhs; //can be null if it's something like int a;
 public:
   Declaration(Variable* var, Expression *rhs) : var(var), rhs(rhs) {};
-  Declaration(VarType type, const std::string& name, Expression* rhs) : var(new Variable(name, type)), rhs(rhs) {}
+  //Declaration(VarType type, const std::string& name, Expression* rhs) : var(new Variable(name, type)), rhs(rhs) {}
   //destructor!!
   Variable *getVariable() const {return var;}
   Expression *getExpr() const {return rhs;}
@@ -243,12 +245,12 @@ class IfElse
   :public Statement
 {
 private:
-  ExpressionPtr cond;
+  Expression* cond;
   CompoundStmt* ifstmts;
   CompoundStmt* elsestmts;
 public:
-  If(ExpressionPtr _cond, CompoundStmt* _ifstmts, CompoundStmt* _elsestmts) : cond(_cond), ifstmts(_ifstmts), elsestmts(_elsestmts) {}
-  
+  IfElse(Expression* _cond, CompoundStmt* _ifstmts, CompoundStmt* _elsestmts) : cond(_cond), ifstmts(_ifstmts), elsestmts(_elsestmts) {}
+
   Expression* getCond() const
   { return cond; }
 
@@ -264,20 +266,20 @@ class While
   :public Statement
 {
 private:
-  ExpressionPtr cond;
+  Expression* cond;
   CompoundStmt* stmts;
 public:
-  While(ExpressionPtr _cond, CompoundStmt* _stmts) : cond(_cond), stmts(_stmts) {}
-  
+  While(Expression* _cond, CompoundStmt* _stmts) : cond(_cond), stmts(_stmts) {}
+
   Expression* getCond() const
   { return cond; }
 
-  CompoundStmt* getStmts() const
+  CompoundStmt* getCompoundStmt() const
   { return stmts; }
 };
 
 
-; //condition, statements
+ //condition, statements
 
 
 //class Scope_stmt;

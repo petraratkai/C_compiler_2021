@@ -14,7 +14,7 @@ Context ctxt;
 	//Program *prog = parseAST(argv[2]); //arguments?? which file?
 //	Number const1(1);
 	//std::cout<<const
-	/*Number* const2 = new Number(2);
+	Number* const2 = new Number(2);
 	ReturnStmt* ret2 = new ReturnStmt(const2);
 
 	//std::cout<<(ret2->getRetVal())->getValue();
@@ -25,19 +25,20 @@ Context ctxt;
 	Function *mainfunct = new Function("main", mainbody, &param, IntType);
 	//std::vector<Function*> functions;
 	//functions.push_back(mainfunct);
-	//Program *prog = new Program(functions);*/
-	/*std::ofstream Out(argv[4]);
+	//Program *prog = new Program(functions);
+	std::ofstream Out(argv[4]);
 
 	//create hash table for variables
 	//std::vector<Variable_hash> variables; //will need to push back an element every time a variable is declared
 	Out<<"j main"<<std::endl;
-	std::vector<Function*> funct =  prog->getFunctions();
+	std::vector<Function*> funct; //=  prog->getFunctions();
+	funct.push_back(mainfunct);
 	//CompoundStmt* body =
 	//vector<Statement*>* stmts = body->getStmts();
 	for(int i = 0; i<funct.size(); i++)
 	{
 	CompileFunct(funct[i], Out);
-}*/
+}
 
 //delete ret2;
 //delete mainfunct;

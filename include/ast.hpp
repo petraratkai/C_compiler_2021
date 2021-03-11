@@ -15,11 +15,11 @@
 #include "ast/ast_function_call.hpp"
 #include "ast/ast_program.hpp"
 
-
+#include "ast/Context.hpp"
 
 extern Program *parseAST(const std::string name);
 
-void CodeGen(const Program *prog, std::ofstream& Out, std::vector<Variable_hash>* variables);
+void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables);
 
 void CompileFunct(const Function *funct, std::ofstream& Out);
 

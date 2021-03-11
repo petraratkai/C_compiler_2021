@@ -43,7 +43,7 @@ public:
   //find free reg
   Context()
   {
-    for(int i = 0; i<30; i++)
+    for(int i = 0; i<REGNAMES.size(); i++)
     {
       regs.push_back(Register(REGNAMES[i]));
     }

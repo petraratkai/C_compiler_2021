@@ -52,11 +52,11 @@ class CondOperator
     : public Expression
 {
 private:
-    ExpressionPtr left;
-    ExpressionPtr middle;
-    ExpressionPtr right;
+    Expression* left;
+    Expression* middle;
+    Expression* right;
 protected:
-    CondOperator(ExpressionPtr _left, ExpressionPtr _middle ExpressionPtr _right)
+    CondOperator(Expression* _left, Expression* _middle, Expression* _right)
         : left(_left)
         , middle(_middle)
         , right(_right)
@@ -69,16 +69,16 @@ public:
         delete right;
     }
 
-    ExpressionPtr getLeft() const
+    Expression* getLeft() const
     { return left; }
 
-    ExpressionPtr getMiddle() const
+    Expression* getMiddle() const
     { return middle; }
 
-    ExpressionPtr getRight() const
+    Expression* getRight() const
     { return right; }
 
-    virtual void print(std::ostream &dst) const override
+    /*virtual void print(std::ostream &dst) const override
     {
         dst<<"( ";
         left->print(dst);
@@ -87,7 +87,7 @@ public:
         dst<<" ";
         right->print(dst);
         dst<<" )";
-    }
+    }*/
 };
 /*class AddOperator
     : public Operator
