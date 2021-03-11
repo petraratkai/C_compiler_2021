@@ -45,16 +45,16 @@ external_declaration:
 ;
 
 function_definition:
-		declaration_specifiers declarator declaration_or_statement_list compound_statement		{$$ = new Function($1, $2, $3, $4);} //Check it again
-	|	declaration_specifiers declarator compound_statement 									{$$ = new Function($1, $2, $3);} //Check it again
-	|	declarator declaration_or_statement_list compound_statement 							{$$ = new Function($1, $2, $3);} //Check it again
-	|	declarator compound_statement 															{$$ = new Function($1, $2);} //Check it again
+		declaration_specifiers declarator declaration_or_statement_list compound_statement		{$$ = new Function($2, $4, $3, $1);} //Check it again
+	|	declaration_specifiers declarator compound_statement 									{$$ = new Function($2, $3, NULL, $1);} //Check it again
+	|	declarator declaration_or_statement_list compound_statement 							{$$ = new Function($1, $3, $2, NULL);} //Check it again
+	|	declarator compound_statement 															{$$ = new Function($1, $3, NULL, NULL);} //Check it again
 ;
 
 
 declaration:
 		declaration_specifiers T_SEMICOLON						{$$ = $1;} //FIX THIS
-	|	declaration_specifiers init_declarator_list T_SEMICOLON {$$ = $1;} //FIX THIS
+	|	declaration_specifiers init_declarator_list T_SEMICOLON {$$ = new Variable($2, $1);} 
 ;
 
 declaration_specifiers:
@@ -164,7 +164,7 @@ declarator:
 ;
 
 direct_declarator:
-		IDENTIFIER 																				{$$ = new Variable{$1, StringType};}
+		IDENTIFIER 																				{$$ = $1;}
 	|	T_LBRACKET declarator T_RBRACKET 														{$$ = $2;}
 	|	direct_declarator T_LSQUAREBRACKET constant_expression T_RSQUAREBRACKET  				{$$ = $1;} //FIX THIS
 	|	direct_declarator T_LSQUAREBRACKET T_RSQUAREBRACKET 									{$$ = $1;}
@@ -428,7 +428,7 @@ argument_expression_list:
 		argument_expression_list T_COMMA assignment_expression 				{$$ = $3;} //Fix this
 
 primary_expression:
-		IDENTIFIER												{$$ = new Variable{$1, StringType};}
+		IDENTIFIER												{$$ = new FakeVariable{$1};}
 	|	INT_CONST												{$$ = new Constant{$1, IntType};}
 	|	FLOAT_CONST    											{$$ = new Constant{$1, FloatType};}
 	|	CHAR_CONST   											{$$ = new Constant{$1, CharType };}
