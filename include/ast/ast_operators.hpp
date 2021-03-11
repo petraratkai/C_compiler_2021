@@ -25,7 +25,7 @@ public:
         delete right;
     }
 
-    std::string *getOpcode() const
+    std::string getOpcode() const
     {
         return type_of_op;
     }

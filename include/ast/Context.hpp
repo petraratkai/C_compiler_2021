@@ -97,7 +97,7 @@ public:
 
   }
 
-  void newVar(Variable* var)
+  void newVar(Variable* var) //only for declarations
   {
     std::string regname = findFreeReg();
     if(regname!="")
@@ -131,7 +131,7 @@ public:
       variables.erase(variables.begin()+findVarHashIndex(var));
     }
   }
-  void insertExpr(Expression* expr)
+  const std::string insertExpr(Expression* expr)
   {
     std::string regname = findFreeReg();
     if(regname!="")
@@ -139,7 +139,9 @@ public:
       int idx = findIndex(regname);
       regs[idx].setExpr(expr);
       regs[idx].setIsused(true);
+      return regname;
     }
+    return "";
     //if no free register?
     //store something else on the stack
   }

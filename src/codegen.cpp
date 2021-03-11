@@ -5,12 +5,15 @@
 
 #include "../include/ast.hpp"
 
-void CodeGenExpr(const Expression *expr, std::ofstream& Out, std::vector<Variable_hash>* variables)
+std::string CodeGenExpr(const Expression *expr, std::ofstream& Out, Context& ctxt) //could return a string which is the regname
 {
-  std::cout<<"Here"<<expr->getValue();
+  //std::cout<<"Here"<<expr->getValue();
   if(expr->IsNumberStmt())
   {
-    Out<<expr->getValue();
+    std::string regname = ctxt.InsertExpr(expr);
+    Out<<"addiu " + regname + ", " + regname + ", " << expr->getValue() <<std::endl;
+
+    return regname;
   }
   else if(expr->IsFunctionCallExpr())
   {
@@ -33,13 +36,8 @@ void CodeGen(const Statement *stmt, std::ofstream& Out, std::vector<Variable_has
   {
     //evaluate return value
     //move that value to v0
-    Out << "addiu $v0, ";
-
-    CodeGenExpr(stmt->getRetVal(), Out, variables);
-
-    //stmt->getRetVal()->getLoca()
-    Out << ", 0" << std::endl;
-
+    std::string regname = CodeGenExpr(stmt->getRetVal(), Out, variables);
+    Out<<"addiu v0, " << regname << ", 0" <<std::endl;
   }
 
   else if(stmt->IsCompoundStmt())
