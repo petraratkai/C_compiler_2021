@@ -333,60 +333,60 @@ conditional_expression:
 
 logical_or_expression:
 		logical_and_expression											{$$ = $1;}
-	|	logical_or_expression T_OR logical_and_expression 				{$$ = new OROperator($1, $3);}
+	|	logical_or_expression T_OR logical_and_expression 				{$$ = new Operator($1, $2, $3);}
 ;
 
 logical_and_expression:
 		inclusive_or_expression											{$$ = $1;}
-	|	logical_and_expression T_AND inclusive_or_expression 			{$$ = new ANDOperator($1, $3);}
+	|	logical_and_expression T_AND inclusive_or_expression 			{$$ = new Operator($1, $2, $3);}
 ;
 
 inclusive_or_expression:
 		exclusive_or_expression											{$$ = $1;}
-	|	inclusive_or_expression T_BITOR exclusive_or_expression 		{$$ = new BitOROperator($1, $3);}
+	|	inclusive_or_expression T_BITOR exclusive_or_expression 		{$$ = new Operator($1, $2,$3);}
 ;
 
 exclusive_or_expression:
 		and_expression											{$$ = $1;}
-	|	exclusive_or_expression T_BITXOR and_expression 		{$$ = new BitXOROperator($1, $3);}
+	|	exclusive_or_expression T_BITXOR and_expression 		{$$ = new Operator($1, $2, $3);}
 ;
 
 and_expression:
 		equality_expression											{$$ = $1;}
-	|	and_expression T_BITAND equality_expression 				{$$ = new BitANDOperator($1, $3);}
+	|	and_expression T_BITAND equality_expression 				{$$ = new Operator($1, $2, $3);}
 ;
 
 equality_expression:
 		relational_expression											{$$ = $1;}
-	|	equality_expression T_EQUAL relational_expression 			{$$ = new EqualOperator($1, $3);}
-	|	equality_expression T_UNEQUAL relational_expression 		{$$ = new UnequalOperator($1, $3);}
+	|	equality_expression T_EQUAL relational_expression 			{$$ = new Operator($1, $2, $3);}
+	|	equality_expression T_UNEQUAL relational_expression 		{$$ = new Operator($1, $2, $3);}
 ;
 
 relational_expression:
 		shift_expression											{$$ = $1;}
-	|	relational_expression T_GREATER shift_expression 			{$$ = new GreaterOperator($1, $3);}
-	|	relational_expression T_GREATEREQ shift_expression			{$$ = new GreaterEQOperator($1, $3);}
-	|	relational_expression T_LESSER shift_expression 			{$$ = new LesserOperator($1, $3);}
-	|	relational_expression T_LESSEREQ shift_expression 			{$$ = new LesserEQOperator($1, $3);}
+	|	relational_expression T_GREATER shift_expression 			{$$ = new Operator($1, $2, $3);}
+	|	relational_expression T_GREATEREQ shift_expression			{$$ = new Operator($1, $2, $3);}
+	|	relational_expression T_LESSER shift_expression 			{$$ = new Operator($1, $2, $3);}
+	|	relational_expression T_LESSEREQ shift_expression 			{$$ = new Operator($1, $2, $3);}
 ;
 
 shift_expression:
 		additive_expression											{$$ = $1;}
-	|	shift_expression T_BITLSHIFT additive_expression			{$$ = new LShftOperator($1, $3);}
-	|	shift_expression T_BITRSHIFT additive_expression 			{$$ = new RShftOperator($1, $3);}
+	|	shift_expression T_BITLSHIFT additive_expression			{$$ = new Operator($1, $2, $3);}
+	|	shift_expression T_BITRSHIFT additive_expression 			{$$ = new Operator($1, $2, $3);}
 ;
 
 additive_expression:
 		multiplicative_expression											{$$ = $1;}
-	|	additive_expression T_PLUS multiplicative_expression 	 		{$$ = new AddOperator($1, $3);}
-	|	additive_expression T_MINUS multiplicative_expression			{$$ = new MinusOperator($1, $3);}
+	|	additive_expression T_PLUS multiplicative_expression 	 		{$$ = new Operator($1, $2, $3);}
+	|	additive_expression T_MINUS multiplicative_expression			{$$ = new Operator($1, $2, $3);}
 ;
 
 multiplicative_expression:
 		cast_expression											{$$ = $1;}
-	|	multiplicative_expression T_MULT cast_expression 		{$$ = new MultOperator($1, $3);}
-	|	multiplicative_expression T_DIVIDE cast_expression 		{$$ = new DivideOperator($1, $3);}
-	|	multiplicative_expression T_MODULO cast_expression 		{$$ = new ModuloOperator($1, $3);}
+	|	multiplicative_expression T_MULT cast_expression 		{$$ = new Operator($1, $2, $3);}
+	|	multiplicative_expression T_DIVIDE cast_expression 		{$$ = new Operator($1, $2, $3);}
+	|	multiplicative_expression T_MODULO cast_expression 		{$$ = new Operator($1, $2, $3);}
 ;
 
 cast_expression:
