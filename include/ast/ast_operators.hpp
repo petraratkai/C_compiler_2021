@@ -13,7 +13,7 @@ private:
     ExpressionPtr right;
     std::string type_of_op;
 protected:
-    Operator(ExpressionPtr _left, ExpressionPtr _right, std::string _type_of_op)
+    Operator(ExpressionPtr _left, ExpressionPtr _right, const std::string &_type_of_op)
         : left(_left)
         , right(_right)
         , type_of_op(_type_of_op)
@@ -48,6 +48,47 @@ public:
     }
 };
 
+class CondOperator
+    : public Expression
+{
+private:
+    ExpressionPtr left;
+    ExpressionPtr middle;
+    ExpressionPtr right;
+protected:
+    CondOperator(ExpressionPtr _left, ExpressionPtr _middle ExpressionPtr _right)
+        : left(_left)
+        , middle(_middle)
+        , right(_right)
+    {}
+public:
+    virtual ~CondOperator()
+    {
+        delete left;
+        delete middle;
+        delete right;
+    }
+
+    ExpressionPtr getLeft() const
+    { return left; }
+
+    ExpressionPtr getMiddle() const
+    { return middle; }
+
+    ExpressionPtr getRight() const
+    { return right; }
+
+    virtual void print(std::ostream &dst) const override
+    {
+        dst<<"( ";
+        left->print(dst);
+        dst<<" ";
+        middle<<print(dst);
+        dst<<" ";
+        right->print(dst);
+        dst<<" )";
+    }
+};
 /*class AddOperator
     : public Operator
 {

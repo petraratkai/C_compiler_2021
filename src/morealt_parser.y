@@ -154,8 +154,8 @@ enumerator:
 ;
 
 type_qualifier:
-		T_CONST 																				{$$ = $1;} //Check back
-	|	T_VOLATILE  																			{$$ = $1;} //Check back
+		T_CONST 																				{$$ = $1;} //Don't need to support const
+	|	T_VOLATILE  																			{$$ = $1;} //Check back idk maybe
 ;
 
 declarator:
@@ -164,7 +164,7 @@ declarator:
 ;
 
 direct_declarator:
-		IDENTIFIER 																				{$$ = $1;}
+		IDENTIFIER 																				{$$ = new Variable{$1, StringType};}
 	|	T_LBRACKET declarator T_RBRACKET 														{$$ = $2;}
 	|	direct_declarator T_LSQUAREBRACKET constant_expression T_RSQUAREBRACKET  				{$$ = $1;} //FIX THIS
 	|	direct_declarator T_LSQUAREBRACKET T_RSQUAREBRACKET 									{$$ = $1;}
@@ -251,7 +251,7 @@ statement:
 labeled_statement:
 		IDENTIFIER T_COMMA statement 							{$$ = $3;}  // Don't need to support this, as related to GOTO
 	|	T_CASE constant_expression T_COMMA statement     		{$$ = $4;} // Don't need to support this, as related to GOTO
-	|	T_DEFAULT T_COMMA statement 							{$$ = $3;}
+	|	T_DEFAULT T_COMMA statement 							{$$ = $3;} // Don't need to support this, as realted to GOTO 
 ;
 
 
@@ -265,11 +265,11 @@ declaration_or_statement_list:
 		declaration_or_statement 								{vector<Statement*>* Statements = new vector<Statement*>*; Statements->push_back($1); $$ = Statements;}
 	|	declaration_or_statement_list declaration_or_statement 	{$1->push_back($2); $$ = $1;}
 ;
+
 declaration_or_statement:
 		statement 					{$$ = $1;}
 	|	declaration 				{$$ = $1;}
 ;
-
 
 expression_statement:
 		T_SEMICOLON					{$$ = NULL;}
@@ -277,13 +277,13 @@ expression_statement:
 ;
 
 selection_statement:
-		T_IF T_LBRACKET expression T_RBRACKET statement  													{$$ = $3;} //Currently don't support
-	|	T_IF T_LBRACKET expression T_RBRACKET statement T_ELSE statement 									{$$ = $3;} //Currently don't support
+		T_IF T_LBRACKET expression T_RBRACKET statement  													{$$ = new IfElse($3, $5, NULL;} 
+	|	T_IF T_LBRACKET expression T_RBRACKET statement T_ELSE statement 									{$$ = new IfElse($3, $5, $7;} 
 	|	T_SWITCH T_LBRACKET expression T_RBRACKET statement       											{$$ = $3;} //Currently don't support
 ;
 
 iteration_statement:
-		T_WHILE T_LBRACKET expression T_RBRACKET statement     												{$$ = $3;} //Currently don't support
+		T_WHILE T_LBRACKET expression T_RBRACKET statement     												{$$ = new While($3, $5);} 
 	|	T_DO statement T_WHILE T_LBRACKET expression T_RBRACKET 											{$$ = $5;} //Currently don't support
 	|	T_FOR T_LBRACKET expression_statement expression_statement T_RBRACKET statement 					{$$ = $3;} //Currently don't support
 	|	T_FOR T_LBRACKET expression_statement expression_statement expression T_RBRACKET statement 			{$$ = $4;} //Currently don't support
@@ -309,7 +309,7 @@ expression:
 
 assignment_expression:
 		conditional_expression									{$$ = $1;}
-	|	unary_expression assignment_operator assignment_expression	{$$ = new AssignExpr($1, $3,)}   // FIX THIS 
+	|	unary_expression assignment_operator assignment_expression	{$$ = new AssignmentExpr($1, $3, $2);}   
 ;
 
 assignment_operator:
@@ -328,65 +328,65 @@ assignment_operator:
 
 conditional_expression:
 		logical_or_expression																	{$$ = $1;}
-	|	logical_or_expression T_QUESTIONMARK expression T_COLON conditional_expression 			{$$ = $1;} //FIX THIS
+	|	logical_or_expression T_QUESTIONMARK expression T_COLON conditional_expression 			{$$ = new CondOperator($1, $3, $5);}
 ;
-
+ 
 logical_or_expression:
 		logical_and_expression											{$$ = $1;}
-	|	logical_or_expression T_OR logical_and_expression 				{$$ = new Operator($1, $2, $3);}
+	|	logical_or_expression T_OR logical_and_expression 				{$$ = new Operator($1, $3, $2);}
 ;
 
 logical_and_expression:
 		inclusive_or_expression											{$$ = $1;}
-	|	logical_and_expression T_AND inclusive_or_expression 			{$$ = new Operator($1, $2, $3);}
+	|	logical_and_expression T_AND inclusive_or_expression 			{$$ = new Operator($1, $3, $2);}
 ;
 
 inclusive_or_expression:
 		exclusive_or_expression											{$$ = $1;}
-	|	inclusive_or_expression T_BITOR exclusive_or_expression 		{$$ = new Operator($1, $2,$3);}
+	|	inclusive_or_expression T_BITOR exclusive_or_expression 		{$$ = new Operator($1, $3, $2);}
 ;
 
 exclusive_or_expression:
 		and_expression													{$$ = $1;}
-	|	exclusive_or_expression T_BITXOR and_expression 				{$$ = new Operator($1, $2, $3);}
+	|	exclusive_or_expression T_BITXOR and_expression 				{$$ = new Operator($1, $3, $2);}
 ;
 
 and_expression:
 		equality_expression												{$$ = $1;}
-	|	and_expression T_BITAND equality_expression 					{$$ = new Operator($1, $2, $3);}
+	|	and_expression T_BITAND equality_expression 					{$$ = new Operator($1, $3, $2);}
 ;
 
 equality_expression:
 		relational_expression											{$$ = $1;}
-	|	equality_expression T_EQUAL relational_expression 				{$$ = new Operator($1, $2, $3);}
-	|	equality_expression T_UNEQUAL relational_expression 			{$$ = new Operator($1, $2, $3);}
+	|	equality_expression T_EQUAL relational_expression 				{$$ = new Operator($1, $3, $2);}
+	|	equality_expression T_UNEQUAL relational_expression 			{$$ = new Operator($1, $3, $2);}
 ;
 
 relational_expression:
 		shift_expression												{$$ = $1;}
-	|	relational_expression T_GREATER shift_expression 				{$$ = new Operator($1, $2, $3);}
-	|	relational_expression T_GREATEREQ shift_expression				{$$ = new Operator($1, $2, $3);}
-	|	relational_expression T_LESSER shift_expression 				{$$ = new Operator($1, $2, $3);}
-	|	relational_expression T_LESSEREQ shift_expression 				{$$ = new Operator($1, $2, $3);}
+	|	relational_expression T_GREATER shift_expression 				{$$ = new Operator($1, $3, $2);}
+	|	relational_expression T_GREATEREQ shift_expression				{$$ = new Operator($1, $3, $2);}
+	|	relational_expression T_LESSER shift_expression 				{$$ = new Operator($1, $3, $2);}
+	|	relational_expression T_LESSEREQ shift_expression 				{$$ = new Operator($1, $3, $2);}
 ;
 
 shift_expression:
 		additive_expression												{$$ = $1;}
-	|	shift_expression T_BITLSHIFT additive_expression				{$$ = new Operator($1, $2, $3);}
-	|	shift_expression T_BITRSHIFT additive_expression 				{$$ = new Operator($1, $2, $3);}
+	|	shift_expression T_BITLSHIFT additive_expression				{$$ = new Operator($1, $3, $2);}
+	|	shift_expression T_BITRSHIFT additive_expression 				{$$ = new Operator($1, $3, $2);}
 ;
 
 additive_expression:
 		multiplicative_expression										{$$ = $1;}
-	|	additive_expression T_PLUS multiplicative_expression 	 		{$$ = new Operator($1, $2, $3);}
-	|	additive_expression T_MINUS multiplicative_expression			{$$ = new Operator($1, $2, $3);}
+	|	additive_expression T_PLUS multiplicative_expression 	 		{$$ = new Operator($1, $3, $2);}
+	|	additive_expression T_MINUS multiplicative_expression			{$$ = new Operator($1, $3, $2);}
 ;
 
 multiplicative_expression:
 		cast_expression											{$$ = $1;}
-	|	multiplicative_expression T_MULT cast_expression 		{$$ = new Operator($1, $2, $3);}
-	|	multiplicative_expression T_DIVIDE cast_expression 		{$$ = new Operator($1, $2, $3);}
-	|	multiplicative_expression T_MODULO cast_expression 		{$$ = new Operator($1, $2, $3);}
+	|	multiplicative_expression T_MULT cast_expression 		{$$ = new Operator($1, $3, $2);}
+	|	multiplicative_expression T_DIVIDE cast_expression 		{$$ = new Operator($1, $3, $2);}
+	|	multiplicative_expression T_MODULO cast_expression 		{$$ = new Operator($1, $3, $2);}
 ;
 
 cast_expression:

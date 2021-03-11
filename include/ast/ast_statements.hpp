@@ -171,11 +171,12 @@ class AssignmentExpr
   : public Expression
 {
 private:
-  Variable *lhs;
-  Expression *rhs;
+  ExpressionPtr lhs;
+  ExpressionPtr rhs;
+  std::string type_of_assign;
 
 public:
-  AssignmentExpr(Variable *lhs, Expression *rhs ) : lhs(lhs), rhs(rhs) {}
+  AssignmentExpr(ExpressionPtr _lhs, ExpressionPtr _rhs, const std::string &_type_of_assign ) : lhs(_lhs), rhs(_rhs), type_of_assign(_type_of_assign) {}
   //destructor?
   virtual bool IsAssignExpr() const override {return true;}
 
@@ -194,6 +195,7 @@ public:
 };
 
 
+
 /*class Declaration //int a;
   : public Statement
 {
@@ -210,7 +212,46 @@ public:
 //class Definition; //variable, expression
 class IfElse; // condition, if_branch, else_branch
 class If; //condition, if_branch
-class While; //condition, statements
+class IfElse
+  :public Statement
+{
+private:
+  ExpressionPtr cond;
+  CompoundStmt* ifstmts;
+  CompoundStmt* elsestmts;
+public:
+  If(ExpressionPtr _cond, CompoundStmt* _ifstmts, CompoundStmt* _elsestmts) : cond(_cond), ifstmts(_ifstmts), elsestmts(_elsestmts) {}
+  
+  Expression* getCond() const
+  { return cond; }
+
+  CompoundStmt* getIfStmts() const
+  { return ifstmts; }
+
+  CompoundStmt* getElseStmts() const
+  { return elsestmts; }
+};
+
+
+class While
+  :public Statement
+{
+private:
+  ExpressionPtr cond;
+  CompoundStmt* stmts;
+public:
+  While(ExpressionPtr _cond, CompoundStmt* _stmts) : cond(_cond), stmts(_stmts) {}
+  
+  Expression* getCond() const
+  { return cond; }
+
+  CompoundStmt* getStmts() const
+  { return stmts; }
+};
+
+
+; //condition, statements
+
 
 //class Scope_stmt;
 //class Expression -> defined in the other file
