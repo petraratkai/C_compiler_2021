@@ -89,11 +89,11 @@ type_specifier:
 	|	T_DOUBLE        										{$$ = DoubleType;}
 	|	T_VOID       											{$$ = VoidType;}
 	|	T_CHAR 													{$$ = CharType;}
-	|	T_SHORT 												{$$ = $1;} //check
-	|	T_FLOAT													{$$ = $1;} //check
-	|	T_LONG 													{$$ = $1;} //check
-	|	T_SIGNED 												{$$ = $1;} //check
-	|	T_UNSIGNED 												{$$ = $1;} //check
+	|	T_SHORT 												{$$ = ShortType;}
+	|	T_FLOAT													{$$ = FloatType;} 
+	|	T_LONG 													{$$ = LongType;} 
+	|	T_SIGNED 												{$$ = SignedType;} 
+	|	T_UNSIGNED 												{$$ = UnsignedType;} 
 	|	struct_or_union_specifier 								{$$ = $1;} //check
 	|	enum_specifier 											{$$ = $1;} //check
 	|	type_name 												{$$ = $1;} //check
@@ -347,37 +347,37 @@ inclusive_or_expression:
 ;
 
 exclusive_or_expression:
-		and_expression											{$$ = $1;}
-	|	exclusive_or_expression T_BITXOR and_expression 		{$$ = new Operator($1, $2, $3);}
+		and_expression													{$$ = $1;}
+	|	exclusive_or_expression T_BITXOR and_expression 				{$$ = new Operator($1, $2, $3);}
 ;
 
 and_expression:
-		equality_expression											{$$ = $1;}
-	|	and_expression T_BITAND equality_expression 				{$$ = new Operator($1, $2, $3);}
+		equality_expression												{$$ = $1;}
+	|	and_expression T_BITAND equality_expression 					{$$ = new Operator($1, $2, $3);}
 ;
 
 equality_expression:
 		relational_expression											{$$ = $1;}
-	|	equality_expression T_EQUAL relational_expression 			{$$ = new Operator($1, $2, $3);}
-	|	equality_expression T_UNEQUAL relational_expression 		{$$ = new Operator($1, $2, $3);}
+	|	equality_expression T_EQUAL relational_expression 				{$$ = new Operator($1, $2, $3);}
+	|	equality_expression T_UNEQUAL relational_expression 			{$$ = new Operator($1, $2, $3);}
 ;
 
 relational_expression:
-		shift_expression											{$$ = $1;}
-	|	relational_expression T_GREATER shift_expression 			{$$ = new Operator($1, $2, $3);}
-	|	relational_expression T_GREATEREQ shift_expression			{$$ = new Operator($1, $2, $3);}
-	|	relational_expression T_LESSER shift_expression 			{$$ = new Operator($1, $2, $3);}
-	|	relational_expression T_LESSEREQ shift_expression 			{$$ = new Operator($1, $2, $3);}
+		shift_expression												{$$ = $1;}
+	|	relational_expression T_GREATER shift_expression 				{$$ = new Operator($1, $2, $3);}
+	|	relational_expression T_GREATEREQ shift_expression				{$$ = new Operator($1, $2, $3);}
+	|	relational_expression T_LESSER shift_expression 				{$$ = new Operator($1, $2, $3);}
+	|	relational_expression T_LESSEREQ shift_expression 				{$$ = new Operator($1, $2, $3);}
 ;
 
 shift_expression:
-		additive_expression											{$$ = $1;}
-	|	shift_expression T_BITLSHIFT additive_expression			{$$ = new Operator($1, $2, $3);}
-	|	shift_expression T_BITRSHIFT additive_expression 			{$$ = new Operator($1, $2, $3);}
+		additive_expression												{$$ = $1;}
+	|	shift_expression T_BITLSHIFT additive_expression				{$$ = new Operator($1, $2, $3);}
+	|	shift_expression T_BITRSHIFT additive_expression 				{$$ = new Operator($1, $2, $3);}
 ;
 
 additive_expression:
-		multiplicative_expression											{$$ = $1;}
+		multiplicative_expression										{$$ = $1;}
 	|	additive_expression T_PLUS multiplicative_expression 	 		{$$ = new Operator($1, $2, $3);}
 	|	additive_expression T_MINUS multiplicative_expression			{$$ = new Operator($1, $2, $3);}
 ;
@@ -428,11 +428,11 @@ argument_expression_list:
 		argument_expression_list T_COMMA assignment_expression 				{$$ = $3;} //Fix this
 
 primary_expression:
-		IDENTIFIER												{$$ = new Variable{$1};}
-	|	INT_CONST												{$$ = new Number{$1};}
-	|	FLOAT_CONST    											{$$ = new Variable{$1};}
-	|	CHAR_CONST   											{$$ = new Variable{$1};}
-	|	STRING_CONST											{$$ = new Variable{$1};}
+		IDENTIFIER												{$$ = new Variable{$1, StringType};}
+	|	INT_CONST												{$$ = new Constant{$1, IntType};}
+	|	FLOAT_CONST    											{$$ = new Constant{$1, FloatType};}
+	|	CHAR_CONST   											{$$ = new Constant{$1, CharType };}
+	|	STRING_CONST											{$$ = new Constant{$1, StringType};}
 	|	T_LBRACKET expression T_RBRACKET 						{$$ = $2;}
 ;
 

@@ -9,7 +9,7 @@ class Expression;
 //#include "ast_primitives.hpp"
 //#include "ast_function_call.hpp"
 
-typedef enum VarType {IntType, VoidType, CharType, DoubleType} VarType;
+typedef enum VarType {IntType, VoidType, CharType, DoubleType ShortType, LongType, FloatType, SignedType UnsignedType, StringType} VarType;
 typedef enum stmt_type {ReturnType, AssignType, DeclareType, DefineType, ExpressionType, FunctionCallType} stmt_type;
 
 
@@ -107,6 +107,30 @@ public:
         // If the binding does not exist, this will throw an error
         return bindings.at(id);
     }*/
+};
+
+class Constant
+    : public Expression
+{
+private:
+    std::string value;
+    VarType type;
+public:
+    Variable(const std::string &_value, VarType type)
+        : value(_value), type(type)
+    {}
+
+    const std::string getValue() const
+    { return value; }
+
+    VarType getType() const {return type;}
+
+    virtual void print(std::ostream &dst) const override
+    {
+        dst<<id;
+    }
+
+    virtual bool IsVariableStmt() const override {return true;}
 };
 
 class Declaration
