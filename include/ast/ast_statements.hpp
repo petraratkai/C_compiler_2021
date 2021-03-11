@@ -93,10 +93,7 @@ public:
 
     VarType getType() const {return type;}
 
-    virtual void print(std::ostream &dst) const override
-    {
-        dst<<id;
-    }
+
 
     virtual bool IsVariableStmt() const override {return true;}
     /*virtual double evaluate(
@@ -116,7 +113,7 @@ private:
     std::string value;
     VarType type;
 public:
-    Variable(const std::string &_value, VarType type)
+    Constant(const std::string &_value, VarType type)
         : value(_value), type(type)
     {}
 
