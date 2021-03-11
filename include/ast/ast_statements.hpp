@@ -9,7 +9,7 @@ class Expression;
 //#include "ast_primitives.hpp"
 //#include "ast_function_call.hpp"
 
-typedef enum VarType {IntType, VoidType, CharType, DoubleType ShortType, LongType, FloatType, SignedType UnsignedType, StringType} VarType;
+typedef enum VarType {IntType, VoidType, CharType, DoubleType, ShortType, LongType, FloatType, SignedType, UnsignedType, StringType} VarType;
 typedef enum stmt_type {ReturnType, AssignType, DeclareType, DefineType, ExpressionType, FunctionCallType} stmt_type;
 
 
