@@ -9,9 +9,11 @@ class Unary
 {
 private:
     ExpressionPtr expr;
+    std::string type_of_op2
 protected:
-    Unary(const ExpressionPtr _expr)
+    Unary(const ExpressionPtr _expr, std::string _type_of_op2)
         : expr(_expr)
+        , type_of_op2(_type_of_op2)
     {}
 public:
     virtual ~Unary()
@@ -19,7 +21,10 @@ public:
         delete expr;
     }
 
-    virtual const char *getOpcode() const =0;
+    std::string *getOpcode() const 
+    {
+        return type_of_op2;
+    }
 
     ExpressionPtr getExpr() const
     { return expr; }
@@ -33,7 +38,7 @@ public:
         dst << " )";
     }
 };
-
+/*
 class NegOperator
     : public Unary
 {
@@ -53,6 +58,6 @@ public:
         //throw std::runtime_error("NegOperator::evaluate is not implemented.");
         return -getExpr()->evaluate(bindings);
     }*/
-};
+//};
 
 #endif

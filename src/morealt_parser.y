@@ -396,11 +396,11 @@ cast_expression:
 
 unary_expression:
 		postfix_expression										{$$ = $1;}
-	|	T_INCREMENENT unary_expression							{$$ = new IncrementOperator(NULL, $2);}
-	|	T_DECREMENT unary_expression 							{$$ = new DecrementOperator(NULL, $2);}
-	|	unary_operator cast_expression 							{$$ = new ?Operator($1, $2);} //check this
-	|	T_SIZEOF unary_expression 								{$$ = new SizeOFOperator(NULL, $2);}
-	|	T_SIZEOF T_LBRACKET type_name T_RBRACKET 				{$$ = new SizeOFOperator(NULL, $3);}
+	|	T_INCREMENENT unary_expression							{$$ = new Unary($2, $1);}
+	|	T_DECREMENT unary_expression 							{$$ = new Unary($2, $1);}
+	|	unary_operator cast_expression 							{$$ = new Unary($2, $1);} 
+	|	T_SIZEOF unary_expression 								{$$ = new Unary($2, $1);}
+	|	T_SIZEOF T_LBRACKET type_name T_RBRACKET 				{$$ = new Unary($2, $1);}
 ;
 
 unary_operator:
