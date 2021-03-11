@@ -15,11 +15,14 @@ Context ctxt;
 //	Number const1(1);
 	//std::cout<<const
 	Number* const2 = new Number(2);
+	Declaration* Decl = new Declaration(IntType, "a", nullptr);
 	ReturnStmt* ret2 = new ReturnStmt(const2);
 
 	//std::cout<<(ret2->getRetVal())->getValue();
 	std::vector<Statement*>* stmts = new std::vector<Statement*>;
+	stmts->push_back(Decl);
 	stmts->push_back(ret2);
+
 	CompoundStmt* mainbody = new CompoundStmt(stmts);
 	std::vector<Declaration*> param;
 	Function *mainfunct = new Function("main", mainbody, &param, IntType);

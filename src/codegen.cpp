@@ -16,6 +16,13 @@ std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //c
 
     return regname;
   }
+  else if(expr->IsFakeVariableExpr())
+  {
+    //need to load it into some register
+    //find a free register
+    std::string regname = ctxt.findFreeReg();
+    //find the variable in
+  }
   else if(expr->IsFunctionCallExpr())
   {
     //need to save the argument registers a0-a3
@@ -56,6 +63,7 @@ void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables)
     Variable_hash var_hash
     insert_var(var_hash, var);*/
     //variables->push_back(
+    variables.newVar(stmt->getVariable());
 
 
   }
