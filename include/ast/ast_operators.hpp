@@ -11,10 +11,12 @@ class Operator
 private:
     ExpressionPtr left;
     ExpressionPtr right;
+    std::string type_of_op;
 protected:
-    Operator(ExpressionPtr _left, ExpressionPtr _right)
+    Operator(ExpressionPtr _left, ExpressionPtr _right, std::string _type_of_op)
         : left(_left)
         , right(_right)
+        , type_of_op(_type_of_op)
     {}
 public:
     virtual ~Operator()
@@ -23,7 +25,10 @@ public:
         delete right;
     }
 
-    virtual const char *getOpcode() const =0;
+    std::string *getOpcode() const
+    {
+        return type_of_op;
+    }
 
     ExpressionPtr getLeft() const
     { return left; }
@@ -43,7 +48,7 @@ public:
     }
 };
 
-class AddOperator
+/*class AddOperator
     : public Operator
 {
 protected:
@@ -63,8 +68,8 @@ public:
         double vr=getRight()->evaluate(bindings);
         return vl+vr;
     }*/
-};
-
+//};
+/*
 class SubOperator
     : public Operator
 {
@@ -86,10 +91,10 @@ public:
         double v2 = getRight()->evaluate(bindings);
         return v1-v2;
     }*/
-};
+//};
 
 
-class MulOperator
+/* class MulOperator
     : public Operator
 {
 protected:
@@ -109,9 +114,9 @@ public:
         double v2 = getRight()->evaluate(bindings);
         return v1*v2;
     }*/
-};
+//};
 
-class DivOperator
+/*class DivOperator
     : public Operator
 {
 protected:
@@ -131,13 +136,14 @@ public:
         double v2 = getRight()->evaluate(bindings);
         return v1/v2;
     }*/
-};
 
-class LessThanOperator;
-class GreaterThanOperator;
-class GreaterThanEqualOperator;
-class LessThanEqualOperator;
-class EqualToOperator;
+//};
+
+//class LessThanOperator;
+//class GreaterThanOperator;
+//class GreaterThanEqualOperator;
+//class LessThanEqualOperator;
+//class EqualToOperator;
 // ?: operator?, shift operators,
 
 #endif
