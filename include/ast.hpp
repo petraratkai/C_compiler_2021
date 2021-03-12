@@ -2,20 +2,28 @@
 #define ast_hpp
 
 #include <string>
-#include "ast/ast_statements.hpp"
-//#include "ast/ast_expression.hpp"
 
-
-#include "ast/ast_primitives.hpp"
-#include "ast/ast_operators.hpp"
-#include "ast/ast_unary.hpp"
-
-
+#include "ast/ast_statement.hpp"
+#include "ast/ast_expression.hpp"
+#include "ast/ast_declaration.hpp"
+#include "ast/ast_compoundstmt.hpp"
+#include "ast/ast_declaration.hpp"
 #include "ast/ast_function.hpp"
 #include "ast/ast_function_call.hpp"
+#include "ast/ast_expression.hpp"
+#include "ast/ast_ifelse.hpp"
+#include "ast/ast_number.hpp"
+#include "ast/ast_operator.hpp"
 #include "ast/ast_program.hpp"
-
+#include "ast/ast_return_stmt.hpp"
+#include "ast/ast_unary.hpp"
+#include "ast/ast_variable.hpp"
+#include "ast/ast_while.hpp"
 #include "ast/Context.hpp"
+#include "ast/fakevariable.hpp"
+#include "ast/register.hpp"
+#include "ast/Variable_hash.hpp"
+
 
 
 extern Program *parseAST(const std::string name);

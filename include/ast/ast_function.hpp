@@ -1,7 +1,6 @@
 #ifndef ast_function_hpp
 #define ast_function_hpp
 
-#include "ast_statements.hpp"
 #include <vector>
 #include <string>
 

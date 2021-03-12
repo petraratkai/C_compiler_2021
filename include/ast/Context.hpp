@@ -5,31 +5,15 @@
 #include <string>
 #include <vector>
 #include <iostream>
-#include "../ast.hpp"
-#include "ast_statement.hpp"
+//#include "../ast.hpp"
+//#include "ast_statement.hpp"
 #include "Variable_hash.hpp"
-
+#include "register.hpp"
 
 
 const std::vector<std::string> REGNAMES = {"zero", "v0", "v1", "a0", "a1", "a2", "a3", "t0", "t1", "t2", "t3", "t4", "t5", "t6", "t7", "s0", "s1", "s2", "s3",
  "s4", "s5", "s6", "s7", "t8", "t9", "gp", "sp", "fp", "ra"};
 
-
-class Register
-{
-private:
-  const std::string RegName;
-  Expression *Expr;
-  bool isused;
-public:
-  Register(const std::string& RegName, Expression *Expr = nullptr, bool isused = false) : RegName(RegName), Expr(Expr), isused(isused) {}
-  const std::string getName() const {return RegName;}
-  Expression *getExpr() const {return Expr;}
-  void setExpr(Expression *Exp_param) {Expr = Exp_param;}
-  bool isUsed() const {return isused;}
-  void setIsused(bool isused) {this->isused = isused;}
-
-};
 
 class Context
 {
@@ -37,6 +21,8 @@ private:
   //names + expressions
   std::vector<Register> regs;
   std::vector<Variable_hash> variables;
+  int stackptrOffset;
+  std::vector<std::string> stack;
 public:
 
   Context()
@@ -47,44 +33,50 @@ public:
     }
   }
 
-  int findIndex(const std::string& name) const
+  int findRegIndex(const std::string& regname) const
   {
     for(int i = 0; i<regs.size(); i++)
     {
-      if(REGNAMES[i] == name)
+      if(REGNAMES[i] == regname)
         return i;
     }
+    throw("all registers taken!");
     return -1;
   }
 
-  bool isEmpty(const std::string& name)
+  bool isEmpty(const std::string& regname)
   {
-    int indx = findIndex(name);
+    int indx = findRegIndex(regname);
     return !regs[indx].isUsed();
   }
 
-  std::string findFreeReg()
+  std::string findFreeReg() //finds and reserves a register
   {
-    int fromindx = findIndex("t0");
-    int toindx = findIndex("s7");
+    int fromindx = findRegIndex("t0");
+    int toindx = findRegIndex("s7");
     for(int i = fromindx; i<=toindx; i++)
     {
       if (isEmpty(regs[i].getName()))
+      {
+        regs[i].setVarName("");
+        regs[i].setIsused(true);
         return regs[i].getName();
+
+      }
     }
     return "";
   }
   //set/get
   //insert variable
   //free register
-  void emptyReg(const std::string& name) //empties register with name reg
+  void emptyReg(const std::string& name) //empties register with name reg DOESN'T SAVE IT
   {
-    int idx = findIndex(name);
-    regs[idx].setExpr(nullptr);
+    int idx = findRegIndex(name);
+    regs[idx].setVarName("");
     regs[idx].setIsused(false);
   }
 
-  std::string findVar(const Variable* var)
+  /*std::string findVar(const Variable* var) //return
   {
     for(int i = 0; i<variables.size(); i++)
     {
@@ -93,32 +85,25 @@ public:
     }
     return "";
 
-  }
+  }*/
 
-  void newVar(Variable* var) //only for declarations
+  std::string newVar(std::string varname) //only for declarations, adds new variable to variable hashes and reserves a register
+  //then returns the reserved register name
   {
     std::string regname = findFreeReg();
     if(regname!="")
     {
-      int idx = findIndex(regname);
-      regs[idx].setExpr(var);
+      int idx = findRegIndex(regname);
+      regs[idx].setVarName(varname);
       regs[idx].setIsused(true);
-      variables.push_back(Variable_hash(var, regname, 0, false));
-      var->setRegname(regname);
+      variables.push_back(Variable_hash(varname, IntType));
+      variables[variables.size()-1].setlocation(regname, 0, false);
+
     }
+    return regname;
     //if no free register?
     //store something else on the stack
   }
-  int findVarHashIndex(Variable* var)
-  {
-    for (int i = 0; i<variables.size(); i++)
-    {
-      if(variables[i].getName() == var->getName())
-        return i;
-    }
-    return -1;
-  }
-
   int findVarHashIndex(std::string varname)
   {
     for (int i = 0; i<variables.size(); i++)
@@ -128,18 +113,39 @@ public:
     }
     return -1;
   }
-  void removeVar(Variable* var)
+
+  std::string loadVar(std::string varId, std::ostream& Out) //finds the variable in variables, loads from the stack, returns the resserved register
   {
-    std::string regname = findVar(var);
+    int varidx = findVarHashIndex(varId);
+    if(!variables[varidx].isInMemory())
+      return variables[varidx].getReg();
+
+    std::string regname = findFreeReg();
     if(regname!="")
     {
-      int idx = findIndex(regname);
-      regs[idx].setExpr(nullptr);
-      regs[idx].setIsused(false);
-      variables.erase(variables.begin()+findVarHashIndex(var));
+      int idx = findRegIndex(regname);
+      regs[idx].setVarName(varId);
+      regs[idx].setIsused(true);
+      Out<<"lw "<< regname <<", $sp(" << variables[varidx].getMemAddr()<<")"<<std::endl;
+      variables[varidx].setlocation(regname, 0, false);
+
+    }
+    //if no more free registers!!
+    return regname;
+  }
+
+  void removeVar(const std::string& varname) //when we leave a scope, variable is not live anymore
+  {
+
+    int varidx = findVarHashIndex(varname);
+    if(varidx!=-1) //should always be the case
+    {
+      std::string regname = variables[varidx].getReg();
+      emptyReg(regname);
+      variables.erase(variables.begin()+varidx);
     }
   }
-  const std::string insertExpr(Expression* expr)
+  /*const std::string insertExpr(Expression* expr)
   {
     std::string regname = findFreeReg();
     if(regname!="")
@@ -152,17 +158,17 @@ public:
     return "";
     //if no free register?
     //store something else on the stack
-  }
+  }*/
   void saveReg(const std::string& regname,  std::ostream& Out) //probably take the stack as argument
   {
     int memAddr = 0; //has to be fixed!!
-    int regidx = findIndex(regname);
-    int varidx = findVarHashIndex(regs[regidx].getExpr()->getName());
+    int regidx = findRegIndex(regname);
+    int varidx = findVarHashIndex(regs[regidx].getVarName());
     variables[varidx].setlocation("", memAddr, true);
     Out<<"sw " + regname + ", " << memAddr <<std::endl;
     emptyReg(regname);
   }
-  void moveToOriginal( const std::string& originalid, const std::string& newerid, std::ostream& Out);
+  //void moveToOriginal( const std::string& originalid, const std::string& newerid, std::ostream& Out);
 
 
 };

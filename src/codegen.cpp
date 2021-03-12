@@ -11,7 +11,7 @@ std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //c
   //std::cout<<"Here"<<expr->getValue();
   if(expr->IsNumberStmt())
   {
-    std::string regname = ctxt.insertExpr(expr);
+    std::string regname = ctxt.findFreeReg();
     Out<<"addiu " + regname + ", " + regname + ", " << expr->getValue() <<std::endl;
 
     return regname;
@@ -44,7 +44,7 @@ void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables)
   {
     //evaluate return value
     //move that value to v0
-    std::string regname = CodeGenExpr(stmt->getRetVal(), Out, variables);
+    std::string regname = CodeGenExpr((Expression*)stmt->getRetVal(), Out, variables);
     Out<<"addiu v0, " << regname << ", 0" <<std::endl;
   }
 
@@ -63,7 +63,7 @@ void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables)
     Variable_hash var_hash
     insert_var(var_hash, var);*/
     //variables->push_back(
-    variables.newVar(stmt->getVariable());
+    variables.newVar(stmt->getVariable()->getName());
 
 
   }
