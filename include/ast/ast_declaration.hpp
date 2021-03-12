@@ -16,7 +16,7 @@ public:
   Declaration(Variable* var, Expression *rhs) : var(var), rhs(rhs) {}
   Declaration(VarType type, const std::string& name, Expression* rhs) : var(new Variable(name, type)), rhs(rhs) {}
   //destructor!!
-  virtual Variable *getVariable() const override {return var;}
+  virtual std::string getVariable() const override {return var->getId();}
   Expression *getExpr() const {return rhs;}
   virtual bool IsDeclarationStmt() const override {return true;}
 

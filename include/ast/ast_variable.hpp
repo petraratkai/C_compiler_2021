@@ -15,7 +15,7 @@ public:
         : id(_id), type(type)
     {}
 
-    const std::string getId() const
+    virtual const std::string getId() const override
     { return id; }
 
     VarType getType() const {return type;}

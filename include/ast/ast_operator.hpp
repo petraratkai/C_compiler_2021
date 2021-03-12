@@ -9,11 +9,11 @@ class Operator
     : public Expression
 {
 private:
-    ExpressionPtr left;
-    ExpressionPtr right;
+    Expression* left;
+    Expression* right;
     std::string type_of_op;
 protected:
-    Operator(ExpressionPtr _left, ExpressionPtr _right, const std::string &_type_of_op)
+    Operator(Expression* _left, Expression* _right, const std::string &_type_of_op)
         : left(_left)
         , right(_right)
         , type_of_op(_type_of_op)
@@ -25,16 +25,18 @@ public:
         delete right;
     }
 
-    std::string getOpcode() const
+    virtual std::string getOpcode() const override
     {
         return type_of_op;
     }
 
-    ExpressionPtr getLeft() const
+    virtual Expression* getLeft() const override
     { return left; }
 
-    ExpressionPtr getRight() const
+    virtual Expression* getRight() const override
     { return right; }
+
+    virtual bool IsOperatorExpr() const override {return true;}
 
     virtual void print(std::ostream &dst) const override
     {

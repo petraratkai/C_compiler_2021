@@ -25,7 +25,7 @@ public:
   virtual Statement* getCompoundStmt() const {}
   virtual std::vector<Statement*>* getStmts() const{}
 
-  virtual Statement *getVariable() const {}
+  virtual std::string getVariable() const {return "";}
 
   //virtual std::vector<Variable_hash> getVars() const  {}
 

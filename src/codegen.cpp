@@ -20,7 +20,9 @@ std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //c
   {
     //need to load it into some register
     //find a free register
-    std::string regname = ctxt.findFreeReg();
+    //std::string regname = ctxt.findFreeReg();
+    std::string regname = ctxt.loadVar(expr->getId(), Out);
+    return regname;
     //find the variable in
   }
   else if(expr->IsFunctionCallExpr())
@@ -30,6 +32,16 @@ std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //c
     //need to save the return address later
     Out << "jal " + expr->getName() << std::endl;
   }
+  else if(expr->IsOperatorExpr())
+  {
+    //call some other function
+    std::string left = CodeGenExpr(expr->getLeft(), Out, ctxt);
+    std::string right = CodeGenExpr(expr->getRight(), Out, ctxt);
+    std::string dest = ctxt.findFreeReg();
+    opcode_to_code(dest, left, right, expr->getOpcode(), Out);
+
+  }
+  //else if(expr->I)
 }
 
 void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables)
@@ -58,12 +70,14 @@ void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables)
   }
   else if(stmt->IsDeclarationStmt())
   {
+
     //need to push back to variables, find a registers
     /*Variable *var = stmt->getVar();
     Variable_hash var_hash
     insert_var(var_hash, var);*/
     //variables->push_back(
-    variables.newVar(stmt->getVariable()->getName());
+    //std::string varname = stmt->getVariable();
+    variables.newVar(stmt->getVariable());
 
 
   }

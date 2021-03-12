@@ -87,7 +87,7 @@ public:
 
   }*/
 
-  std::string newVar(std::string varname) //only for declarations, adds new variable to variable hashes and reserves a register
+  std::string newVar(const std::string& varname) //only for declarations, adds new variable to variable hashes and reserves a register
   //then returns the reserved register name
   {
     std::string regname = findFreeReg();

@@ -42,6 +42,20 @@ public:
 
     virtual bool IsFakeVariableExpr() const {return false;}
 
+    virtual bool IsOperatorExpr() const {return false;}
+
+    virtual Expression* getLeft() const
+    { return nullptr; }
+
+    virtual Expression* getRight() const
+    { return nullptr; }
+
+    virtual const std::string getId() const
+    {  }
+
+    virtual std::string getOpcode() const
+    { }
+
 
 };
 #endif
