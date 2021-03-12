@@ -1,24 +1,19 @@
 #ifndef registers_hpp
 #define registers_hpp
 
-#include <map>
+
 #include <string>
 #include <vector>
+#include <iostream>
 #include "../ast.hpp"
-#include "ast_statements.hpp"
+#include "ast_statement.hpp"
+#include "Variable_hash.hpp"
 
 
 
 const std::vector<std::string> REGNAMES = {"zero", "v0", "v1", "a0", "a1", "a2", "a3", "t0", "t1", "t2", "t3", "t4", "t5", "t6", "t7", "s0", "s1", "s2", "s3",
  "s4", "s5", "s6", "s7", "t8", "t9", "gp", "sp", "fp", "ra"};
 
-/*typedef enum RegName {zero, v0, v1, a0, a1, a2, a3, t0, t1, t2, t3, t4, t5, t6, t7, s0, s1, s2, s3, s4, s5, s6, s7, t8, t9, gp, sp, fp, ra}
-RegName;*/
-
-/*std::string RegNameToString(RegName idx)
-{
-   return REGNAMES[(int)idx];
-}*/
 
 class Register
 {
@@ -123,6 +118,16 @@ public:
     }
     return -1;
   }
+
+  int findVarHashIndex(std::string varname)
+  {
+    for (int i = 0; i<variables.size(); i++)
+    {
+      if(variables[i].getName() == varname)
+        return i;
+    }
+    return -1;
+  }
   void removeVar(Variable* var)
   {
     std::string regname = findVar(var);
@@ -148,10 +153,18 @@ public:
     //if no free register?
     //store something else on the stack
   }
-  void moveToOriginal(Variable_hash& newer, Variable_hash& original)
+  void saveReg(const std::string& regname,  std::ostream& Out) //probably take the stack as argument
   {
-    newer
+    int memAddr = 0; //has to be fixed!!
+    int regidx = findIndex(regname);
+    int varidx = findVarHashIndex(regs[regidx].getExpr()->getName());
+    variables[varidx].setlocation("", memAddr, true);
+    Out<<"sw " + regname + ", " << memAddr <<std::endl;
+    emptyReg(regname);
   }
+  void moveToOriginal( const std::string& originalid, const std::string& newerid, std::ostream& Out);
+
+
 };
 
 

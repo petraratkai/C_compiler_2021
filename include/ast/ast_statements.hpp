@@ -5,7 +5,7 @@
 class Expression;
 class CompoundStmt;
 class Variable;
-class Variable_hash;
+//class Variable_hash;
 class Context;
 
 
@@ -18,16 +18,18 @@ class Context;
 #include <string>
 #include <vector>
 #include "ast_statements.hpp"
-typedef enum VarType {IntType, VoidType, CharType, DoubleType, ShortType, LongType, FloatType, SignedType, UnsignedType, StringType} VarType;
+#include "Context.hpp"
+#include "Variable_hash.hpp"
+//typedef enum VarType {IntType, VoidType, CharType, DoubleType, ShortType, LongType, FloatType, SignedType, UnsignedType, StringType} VarType;
 
 
 
 
 //typedef enum VarType {IntType, VoidType, CharType, DoubleType, ShortType, LongType, FloatType, SignedType, UnsignedType, StringType} VarType;
-typedef enum stmt_type {ReturnType, AssignType, DeclareType, DefineType, ExpressionType, FunctionCallType} stmt_type;
+//typedef enum stmt_type {ReturnType, AssignType, DeclareType, DefineType, ExpressionType, FunctionCallType} stmt_type;
 
 
-class Statement
+/*class Statement
 {
 private:
 public:
@@ -57,9 +59,9 @@ public:
 
 
 
-};
+};*/
 
-typedef const Expression *ExpressionPtr;
+/*typedef const Expression *ExpressionPtr;
 
 class Expression
   :public Statement
@@ -81,7 +83,7 @@ public:
     ) const
     { throw std::runtime_error("Not implemented."); }*/
 
-    virtual int getValue() const override {}
+    /*virtual int getValue() const override {}
 
     virtual bool IsExpressionStmt() const override {return true;}
 
@@ -96,9 +98,9 @@ public:
     virtual bool IsFakeVariableExpr() const {return false;}
 
 
-};
+};*/
 
-class FakeVariable
+/*class FakeVariable
     : public Expression
 {
 private:
@@ -123,9 +125,9 @@ public:
         // If the binding does not exist, this will throw an error
         return bindings.at(id);
     }*/
-};
+//};
 
-class Variable
+/*class Variable
     : public Expression
 {
 private:
@@ -152,9 +154,9 @@ public:
         // If the binding does not exist, this will throw an error
         return bindings.at(id);
     }*/
-};
+//};
 
-class Variable_hash
+/*class Variable_hash
 {
   std::string name;
   VarType type;
@@ -163,12 +165,15 @@ class Variable_hash
   bool in_memory;
 public:
   Variable_hash(const std::string& name, const VarType type) : name(name), type(type) {}
-  Variable_hash(const Variable* var, std::string reg, int memory_address, bool in_memory) : name(var->getName()), type(var->getType()), reg(reg), memory_address(memory_address), in_memory(in_memory) {}
-  void setlocation(int reg, int memory_address, bool in_memory) {this->reg = reg; this->memory_address= memory_address; this->in_memory = in_memory;}
+  //Variable_hash(const Variable* var, std::string reg, int memory_address, bool in_memory) : name(var->getName()), type(var->getType()), reg(reg), memory_address(memory_address), in_memory(in_memory) {}
+  void setlocation(const std::string& reg, int memory_address, bool in_memory) {this->reg = reg; this->memory_address= memory_address; this->in_memory = in_memory;}
   std::string getReg() const {return reg;}
   std::string getName() const {return name;}
   VarType getType() const {return type;}
-};
+  bool isInMemory() const {return in_memory;}
+  int getMemAddr() const {return memory_address;}
+
+};*/
 
 /*class Constant
     : public Expression
@@ -194,28 +199,28 @@ public:
     virtual bool IsVariableStmt() const override {return true;}
 };*/
 
-class Declaration
+/*class Declaration
   :public Statement
 {
 private:
   Variable *var;
   Expression *rhs; //can be null if it's something like int a;
 public:
-  Declaration(Variable* var, Expression *rhs) : var(var), rhs(rhs) {};
+  Declaration(Variable* var, Expression *rhs) : var(var), rhs(rhs) {}
   Declaration(VarType type, const std::string& name, Expression* rhs) : var(new Variable(name, type)), rhs(rhs) {}
   //destructor!!
   virtual Variable *getVariable() const override {return var;}
   Expression *getExpr() const {return rhs;}
   virtual bool IsDeclarationStmt() const override {return true;}
 
-};
+};*/
 
 
  //public Statement
 
 
 
-class ReturnStmt
+/*class ReturnStmt
   : public Statement
 {
 private:
@@ -228,10 +233,10 @@ public:
 
   virtual bool IsReturnStmt() const override {return true;}
 
-};
+};*/
 
 
-class AssignmentExpr
+/*class AssignmentExpr
   : public Expression
 {
 private:
@@ -244,8 +249,9 @@ public:
   //destructor?
   virtual bool IsAssignExpr() const override {return true;}
 
-};
+};*/
 
+void Context::moveToOriginal(Variable_hash& var1, Variable_hash& var2);
 class CompoundStmt
   :public Statement
 {
@@ -273,7 +279,7 @@ public:
       //set back the original location
       for(int i = 0; i<vars.size(); i++)
       {
-        ctxt->moveToOriginal(stmt->vars()[i], vars[i]);
+        //ctxt.moveToOriginal(stmt->vars()[i], vars[i]);
       }
   }
   void enterScope(const std::vector<Variable> vars)
@@ -301,7 +307,7 @@ public:
 //class Definition; //variable, expression
 class IfElse; // condition, if_branch, else_branch
 class If; //condition, if_branch
-class IfElse
+/*class IfElse
   :public Statement
 {
 private:
@@ -319,10 +325,10 @@ public:
 
   CompoundStmt* getElseStmts() const
   { return elsestmts; }
-};
+};*/
 
 
-class While
+/*class While
   :public Statement
 {
 private:
@@ -336,7 +342,7 @@ public:
 
   CompoundStmt* getCompoundStmt() const
   { return stmts; }
-};
+}; */
 
 
  //condition, statements
