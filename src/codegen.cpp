@@ -39,7 +39,7 @@ std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //c
     std::string right = CodeGenExpr(expr->getRight(), Out, ctxt);
     std::string dest = ctxt.findFreeReg();
     opcode_to_code(dest, left, right, expr->getOpcode(), Out);
-
+    return dest;
   }
   //else if(expr->I)
 }

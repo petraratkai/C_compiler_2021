@@ -1,6 +1,7 @@
 #ifndef ast_statement_hpp
 #define ast_statement_hpp
 
+#include <vector>
 typedef enum stmt_type {ReturnType, AssignType, DeclareType, DefineType, ExpressionType, FunctionCallType} stmt_type;
 class Statement
 {
