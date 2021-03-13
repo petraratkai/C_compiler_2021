@@ -169,5 +169,5 @@ void opcode_to_code(const std::string& dest, const std::string& left , const std
     {
       Out << "xor " + dest + ", " + dest + ", " + src << std::endl;
     }
-    else throw("Invalid operator!")
+    else throw("Invalid operator!");
   }

@@ -58,7 +58,7 @@ public:
     virtual bool IsAssignExpr() const override {return true;}
     virtual Expression* getLhs() const {return nullptr;}
     virtual Expression* getRhs() const {return nullptr;}
-
+    //virtual Expression* getExpr() const override {return this;}
 
 };
 #endif

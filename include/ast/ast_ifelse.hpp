@@ -9,19 +9,21 @@ class IfElse
 {
 private:
   Expression* cond;
-  CompoundStmt* ifstmts;
-  CompoundStmt* elsestmts;
+  Statement* ifstmts;
+  Statement* elsestmts;
 public:
   IfElse(Expression* _cond, CompoundStmt* _ifstmts, CompoundStmt* _elsestmts) : cond(_cond), ifstmts(_ifstmts), elsestmts(_elsestmts) {}
 
-  Expression* getCond() const
+  virtual Statement* getCond() const override
   { return cond; }
 
-  CompoundStmt* getIfStmts() const
+  virtual Statement* getIfStmts() const override
   { return ifstmts; }
 
-  CompoundStmt* getElseStmts() const
+  virtual Statement* getElseStmts() const override
   { return elsestmts; }
+
+  virtual bool IsIfElseStmt() const override {return true;}
 };
 
 #endif

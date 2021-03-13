@@ -11,8 +11,8 @@
 #include "register.hpp"
 
 
-const std::vector<std::string> REGNAMES = {"zero", "v0", "v1", "a0", "a1", "a2", "a3", "t0", "t1", "t2", "t3", "t4", "t5", "t6", "t7", "s0", "s1", "s2", "s3",
- "s4", "s5", "s6", "s7", "t8", "t9", "gp", "sp", "fp", "ra"};
+const std::vector<std::string> REGNAMES = {"$zero", "$v0", "$v1", "$a0", "$a1", "$a2", "$a3", "$t0", "$t1", "$t2", "$t3", "$t4", "$t5", "$t6", "$t7", "$s0", "$s1", "$s2", "$s3",
+ "$s4", "$s5", "$s6", "$s7", "$t8", "$t9", "$gp", "$sp", "$fp", "$ra"};
 
 
 class Context
@@ -52,8 +52,8 @@ public:
 
   std::string findFreeReg() //finds and reserves a register
   {
-    int fromindx = findRegIndex("t0");
-    int toindx = findRegIndex("s7");
+    int fromindx = findRegIndex("$t0");
+    int toindx = findRegIndex("$s7");
     for(int i = fromindx; i<=toindx; i++)
     {
       if (isEmpty(regs[i].getName()))

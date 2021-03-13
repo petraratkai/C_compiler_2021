@@ -6,6 +6,13 @@
 #include "../include/ast.hpp"
 #include "../include/ast/Context.hpp"
 
+static int makeNameUnq=0;
+
+static std::string makeName(std::string base)
+{
+    return "." + base+"_"+std::to_string(makeNameUnq++);
+}
+
 std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //could return a string which is the regname
 {
   //std::cout<<"Here"<<expr->getValue();
@@ -13,14 +20,12 @@ std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //c
   {
     std::string regname = ctxt.findFreeReg();
     Out<<"addiu " + regname + ", " + regname + ", " << expr->getValue() <<std::endl;
-
     return regname;
   }
   else if(expr->IsFakeVariableExpr())
   {
     //need to load it into some register
     //find a free register
-    //std::string regname = ctxt.findFreeReg();
     std::string regname = ctxt.loadVar(expr->getId(), Out);
     return regname;
     //find the variable in
@@ -53,9 +58,10 @@ void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables)
 {
 
 
-  if(stmt->IsVariableStmt())
+  if(stmt->IsExpressionStmt())
   {
       //find variable in hash table
+      CodeGenExpr((Expression*)stmt, Out, variables);
   }
   else if(stmt->IsReturnStmt())
   {
@@ -75,14 +81,30 @@ void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables)
   }
   else if(stmt->IsDeclarationStmt())
   {
-
-    //need to push back to variables, find a registers
-    /*Variable *var = stmt->getVar();
-    Variable_hash var_hash
-    insert_var(var_hash, var);*/
-    //variables->push_back(
-    //std::string varname = stmt->getVariable();
     variables.newVar(stmt->getVariable());
+  }
+  else if(stmt->IsIfElseStmt())
+  {
+    std::string regCond = CodeGenExpr((Expression*)stmt->getCond(), Out, variables);
+    //std::string iflabel = makeName("if");
+    std::string elselabel = makeName("else");
+    std::string afteriflabel = makeName("afterif");
+    //if cond true jump to iflabel
+    //nop
+    Out << "beq " + regCond + ", $zero, " +  elselabel << std::endl;
+    //if there is an else jump to elselabel
+    Out << "addiu $v0, $v0, 0" << std::endl; //nop
+    CodeGen(stmt->getIfStmts(), Out, variables);
+    Out << "j " + afteriflabel << std::endl;
+    Out << "addiu $v0, $v0, 0" << std::endl;
+    //jump to afterifelse
+    Out << elselabel +":" << std::endl;
+    if(stmt->getElseStmts()!=nullptr)
+      CodeGen(stmt->getElseStmts(), Out, variables);
+    Out << "j " + afteriflabel << std::endl;
+    Out << "addiu $v0, $v0, 0" << std::endl;
+    //jump to afterifelse
+    Out << afteriflabel + ":" <<std::endl;
 
 
   }
@@ -95,5 +117,6 @@ void CompileFunct(const Function *funct, std::ofstream& Out)
   CompoundStmt *body = funct->getBody();
   Context ctxt;
   CodeGen(body, Out, ctxt);
-  Out<<"jr $ra" <<std::endl;
+  if(funct->getName()!="main")
+    Out<<"jr $ra" <<std::endl; //is this correct?
 }
