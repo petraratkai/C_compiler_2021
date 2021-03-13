@@ -37,4 +37,7 @@ void insert_var(std::vector<Variable_hash>* variables, const Variable* var);
 void opcode_to_code(const std::string& dest, const std::string& left , const std::string& right,
    const std::string& opcode, std::ostream& Out);
 
+void assignment_to_code(const std::string& dest, const std::string& src,
+    const std::string& opcode, std::ostream&  Out);
+
 #endif

@@ -55,6 +55,9 @@ public:
 
     virtual std::string getOpcode() const
     { }
+    virtual bool IsAssignExpr() const override {return true;}
+    virtual Expression* getLhs() const {return nullptr;}
+    virtual Expression* getRhs() const {return nullptr;}
 
 
 };

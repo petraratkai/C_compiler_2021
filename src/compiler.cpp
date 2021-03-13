@@ -15,8 +15,10 @@ Context ctxt;
 //	Number const1(1);
 	//std::cout<<const
 	Number* const2 = new Number(2);
+	Number* const4 = new Number(4);
 	Declaration* Decl = new Declaration(IntType, "a", nullptr);
-	ReturnStmt* ret2 = new ReturnStmt(const2);
+	Operator* add2_4 = new Operator(const2, const4, "+");
+	ReturnStmt* ret2 = new ReturnStmt(add2_4);
 
 	//std::cout<<(ret2->getRetVal())->getValue();
 	std::vector<Statement*>* stmts = new std::vector<Statement*>;

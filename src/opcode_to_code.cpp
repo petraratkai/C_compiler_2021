@@ -118,3 +118,55 @@ void opcode_to_code(const std::string& dest, const std::string& left , const std
   }
   else throw ("Invalid operand!");
   }
+
+  void assignment_to_code(const std::string& dest, const std::string& src,
+     const std::string& opcode, std::ostream&  Out)
+  {
+    if(opcode == "=")
+    {
+      Out << "addiu " + dest + ", " + src + ", 0" << std::endl;
+    }
+    else if(opcode == "+=")
+    {
+      Out << "add " + dest + ", " + dest + ", " + src <<std::endl;
+    }
+    else if(opcode == "-=")
+    {
+      Out << "sub " + dest + ", " + dest + ", " + src << std::endl;
+    }
+    else if(opcode == "*=")
+    {
+      Out << "mult " + dest + ", " + src << std::endl; //moves to lo? UNSIGNED???!!!!
+      Out << "mflo " + dest << std::endl;
+    }
+    else if(opcode =="/=")
+    {
+      Out << "div " + dest + ", " + src << std::endl; //moves to lo? UNSIGNED???!!!!
+      Out << "mflo " + dest << std::endl;
+    }
+    else if(opcode =="%=")
+    {
+      Out << "div " + src + ", " + dest << std::endl;
+      Out << "mfhi " + dest << std::endl;
+    }
+    else if(opcode =="<<=")
+    {
+      Out << "sllv " + dest + ", " + dest + ", " + src << std::endl;
+    }
+    else if(opcode == ">>=")
+    {
+      Out << "srlv " + dest + ", " + dest + ", " + src << std::endl; //arithmetic or logical???
+    }
+    else if(opcode == "&=")
+    {
+      Out << "and " + dest + ", " + dest + ", " + src << std::endl;
+    }
+    else if(opcode == "|=")
+    {
+      Out << "or " + dest + ", " + dest + ", " + src << std::endl;
+    }
+    else if(opcode == "^=")
+    {
+      Out << "xor " + dest + ", " + dest + ", " + src << std::endl;
+    }
+  }

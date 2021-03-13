@@ -41,7 +41,12 @@ std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //c
     opcode_to_code(dest, left, right, expr->getOpcode(), Out);
     return dest;
   }
-  //else if(expr->I)
+  else if(expr->IsAssignExpr())
+  {
+    std::string src = CodeGenExpr(expr->getRhs(), Out, ctxt);
+    std::string dest = CodeGenExpr(expr->getLhs(), Out, ctxt);
+    assignment_to_code(src, dest, expr->getOpcode(), Out);
+  }
 }
 
 void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables)

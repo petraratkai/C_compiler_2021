@@ -12,13 +12,13 @@ private:
     Expression* left;
     Expression* right;
     std::string type_of_op;
-protected:
+public:
     Operator(Expression* _left, Expression* _right, const std::string &_type_of_op)
         : left(_left)
         , right(_right)
         , type_of_op(_type_of_op)
     {}
-public:
+
     virtual ~Operator()
     {
         delete left;
