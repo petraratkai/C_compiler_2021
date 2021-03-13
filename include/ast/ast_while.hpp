@@ -17,8 +17,10 @@ public:
   Expression* getCond() const
   { return cond; }
 
-  CompoundStmt* getCompoundStmt() const
+  virtual Statement* getCompoundStmt() const override
   { return stmts; }
+
+  virtual bool IsWhile() const {return true;}
 };
 
 #endif

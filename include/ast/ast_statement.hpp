@@ -22,8 +22,8 @@ public:
   virtual bool IsNumberStmt() const {return false;}
   virtual bool IsOperatorStmt() const {return false;}
   virtual bool IsCompoundStmt() const {return false;}
-
-  virtual Statement* getCompoundStmt() const {}
+  virtual bool IsWhile() const {return false;}
+  virtual Statement* getCompoundStmt() const {return nullptr;}
   virtual std::vector<Statement*>* getStmts() const{}
 
   virtual std::string getVariable() const {return "";}

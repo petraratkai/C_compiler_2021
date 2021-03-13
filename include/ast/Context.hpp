@@ -163,9 +163,13 @@ public:
   {
     int memAddr = 0; //has to be fixed!!
     int regidx = findRegIndex(regname);
-    int varidx = findVarHashIndex(regs[regidx].getVarName());
-    variables[varidx].setlocation("", memAddr, true);
-    Out<<"sw " + regname + ", " << memAddr <<std::endl;
+
+    if(regs[regidx].getVarName()!="")
+    {
+      int varidx = findVarHashIndex(regs[regidx].getVarName());
+      variables[varidx].setlocation("", memAddr, true);
+      Out<<"sw " + regname + ", " << memAddr <<std::endl;
+    }
     emptyReg(regname);
   }
   //void moveToOriginal( const std::string& originalid, const std::string& newerid, std::ostream& Out);
