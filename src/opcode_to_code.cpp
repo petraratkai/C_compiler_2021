@@ -116,7 +116,7 @@ void opcode_to_code(const std::string& dest, const std::string& left , const std
       Out << "addiu " + dest + ", $zero, 0" << std::endl;
       Out << "addiu " + dest + ", $zero, 1" << std::endl;
   }
-  else throw ("Invalid operand!");
+  else throw ("Invalid operator!");
   }
 
   void assignment_to_code(const std::string& dest, const std::string& src,
@@ -169,4 +169,5 @@ void opcode_to_code(const std::string& dest, const std::string& left , const std
     {
       Out << "xor " + dest + ", " + dest + ", " + src << std::endl;
     }
+    else throw("Invalid operator!")
   }
