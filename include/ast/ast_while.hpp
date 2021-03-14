@@ -10,9 +10,9 @@ class While
 {
 private:
   Expression* cond;
-  CompoundStmt* stmts;
+  Statement* stmts;
 public:
-  While(Expression* _cond, CompoundStmt* _stmts) : cond(_cond), stmts(_stmts) {}
+  While(Expression* _cond, Statement* _stmts) : cond(_cond), stmts(_stmts) {}
 
   Expression* getCond() const
   { return cond; }
