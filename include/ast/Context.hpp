@@ -172,6 +172,15 @@ public:
     }
     emptyReg(regname);
   }
+
+  void emptyRegifExpr(const std::string& regname,  std::ostream& Out)
+  {
+    int regidx = findRegIndex(regname);
+    if(regs[regidx].getVarName()=="" && regs[regidx].isUsed())
+    {
+      emptyReg(regname);
+    }
+  }
   //void moveToOriginal( const std::string& originalid, const std::string& newerid, std::ostream& Out);
 
 

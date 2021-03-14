@@ -48,7 +48,7 @@ std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //c
     std::string right = CodeGenExpr(expr->getRight(), Out, ctxt);
     std::string dest = ctxt.findFreeReg();
     opcode_to_code(dest, left, right, expr->getOpcode(), Out);
-    ctxt.saveReg(left, Out);
+    ctxt.emptyRegifExpr(left, Out);
     ctxt.saveReg(right, Out);
     return dest;
   }
@@ -57,7 +57,7 @@ std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //c
     std::string src = CodeGenExpr(expr->getExpr(), Out, ctxt);
     std::string dest = ctxt.findFreeReg();
     opcode_to_code(dest, "$zero", src, expr->getOpcode(), Out); //need to fix the function! or would it work?
-    ctxt.saveReg(src, Out);
+    ctxt.emptyRegifExpr(src, Out);
     return dest;
   }
   else if(expr->IsAssignExpr())
@@ -66,7 +66,7 @@ std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //c
     std::string src = CodeGenExpr(expr->getRhs(), Out, ctxt);
     std::string dest = CodeGenExpr(expr->getLhs(), Out, ctxt);
     assignment_to_code(src, dest, expr->getOpcode(), Out);
-    ctxt.saveReg(src, Out);
+    ctxt.emptyRegifExpr(src, Out);
     return dest;
   }
   else throw("Invalid expression!");
@@ -81,7 +81,7 @@ void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables)
       //find variable in hash table
         //fprintf(stderr, "here");
       std::string regname = CodeGenExpr((Expression*)stmt, Out, variables);
-      variables.saveReg(regname, Out);
+      variables.emptyRegifExpr(regname, Out);
   }
   else if(stmt->IsReturnStmt())
   {
@@ -90,7 +90,7 @@ void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables)
       //fprintf(stderr, "here");
     std::string regname = CodeGenExpr((Expression*)stmt->getRetVal(), Out, variables);
     Out<<"addiu $v0, " << regname << ", 0" <<std::endl;
-    variables.saveReg(regname, Out);
+    variables.emptyRegifExpr(regname, Out);
   }
 
   else if(stmt->IsCompoundStmt())
@@ -115,7 +115,7 @@ void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables)
     //if cond true jump to iflabel
     //nop
     Out << "beq " + regCond + ", $zero, " +  elselabel << std::endl;
-    variables.saveReg(regCond, Out);
+    variables.emptyRegifExpr(regCond, Out);
     //if there is an else jump to elselabel
     Out << "addiu $v0, $v0, 0" << std::endl; //nop
     CodeGen(stmt->getIfStmts(), Out, variables);
@@ -141,7 +141,7 @@ void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables)
     std::string regCond = CodeGenExpr((Expression*)stmt->getCond(), Out, variables);
     Out << "beq " + regCond + ", $zero, " +  afterwhilelabel << std::endl;
     Out << "addiu $v0, $v0, 0" << std::endl;
-    variables.saveReg(regCond, Out);
+    variables.emptyRegifExpr(regCond, Out);
     CodeGen(stmt->getCompoundStmt(), Out, variables);
     Out << afterwhilelabel + ":" <<std::endl;
   }
