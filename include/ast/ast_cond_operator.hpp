@@ -9,13 +9,12 @@ private:
     Expression* left;
     Expression* middle;
     Expression* right;
-protected:
+public:
     CondOperator(Expression* _left, Expression* _middle, Expression* _right)
         : left(_left)
         , middle(_middle)
         , right(_right)
     {}
-public:
     virtual ~CondOperator()
     {
         delete left;
