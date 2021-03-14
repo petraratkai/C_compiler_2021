@@ -122,9 +122,10 @@ while			{yylval.string = new std::string(yytext); return T_WHILE;}
 
 {IDENTIFIER}	{yylval.string = new std::string(yytext); return IDENTIFIER;}
 
-{DECCONSTANT}{INTEGER_SUFFIX}		{yylval.string = new std::string(yytext); return INT_CONST;}
-{HEXCONSTANT}{INTEGER_SUFFIX}		{yylval.string = new std::string(yytext); return INT_CONST;}
-{OCTCONSTANT}{INTEGER_SUFFIX}		{yylval.string = new std::string(yytext); return INT_CONST;}
+
+{DECCONSTANT}{INTEGER_SUFFIX}?		{yylval.string = new std::string(yytext); return INT_CONST;}
+{HEXCONSTANT}{INTEGER_SUFFIX}?		{yylval.string = new std::string(yytext); return INT_CONST;}
+{OCTCONSTANT}{INTEGER_SUFFIX}?		{yylval.string = new std::string(yytext); return INT_CONST;}
 {DIGIT}+[eE][+-]?{DIGIT}*[FLfl]?	{yylval.string = new std::string(yytext); return FLOAT_CONST;}
 {DIGIT}+[.]{DIGIT}*[eE][+-]?{DIGIT}*]?[FLfl]?					{yylval.string = new std::string(yytext); return FLOAT_CONST;}
 [L]?[\']{CHAR_SEQ}?[\']				{yylval.string = new std::string(yytext); return CHAR_CONST;}
