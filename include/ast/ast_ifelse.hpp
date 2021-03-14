@@ -12,7 +12,7 @@ private:
   Statement* ifstmts;
   Statement* elsestmts;
 public:
-  IfElse(Expression* _cond, CompoundStmt* _ifstmts, CompoundStmt* _elsestmts) : cond(_cond), ifstmts(_ifstmts), elsestmts(_elsestmts) {}
+  IfElse(Expression* _cond, Statement* _ifstmts, Statement* _elsestmts) : cond(_cond), ifstmts(_ifstmts), elsestmts(_elsestmts) {}
 
   virtual Statement* getCond() const override
   { return cond; }
