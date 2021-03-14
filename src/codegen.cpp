@@ -48,8 +48,16 @@ std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //c
     std::string right = CodeGenExpr(expr->getRight(), Out, ctxt);
     std::string dest = ctxt.findFreeReg();
     opcode_to_code(dest, left, right, expr->getOpcode(), Out);
-    //ctxt.saveReg(left, Out);
-    //ctxt.saveReg(right, Out);
+    ctxt.saveReg(left, Out);
+    ctxt.saveReg(right, Out);
+    return dest;
+  }
+  else if(expr->IsUnary())
+  {
+    std::string src = CodeGenExpr(expr->getExpr(), Out, ctxt);
+    std::string dest = ctxt.findFreeReg();
+    opcode_to_code(dest, "$zero", src, expr->getOpcode(), Out); //need to fix the function! or would it work?
+    ctxt.saveReg(src, Out);
     return dest;
   }
   else if(expr->IsAssignExpr())

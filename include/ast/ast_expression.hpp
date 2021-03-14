@@ -55,10 +55,14 @@ public:
 
     virtual std::string getOpcode() const
     { }
-    virtual bool IsAssignExpr() const override {return true;}
+    virtual bool IsAssignExpr() const {return false;}
     virtual Expression* getLhs() const {return nullptr;}
     virtual Expression* getRhs() const {return nullptr;}
     //virtual Expression* getExpr() const override {return this;}
+
+    virtual Expression* getExpr() const {return nullptr;}
+
+    virtual bool IsUnary() const {return false;}
 
 };
 #endif

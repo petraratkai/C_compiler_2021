@@ -8,10 +8,10 @@ class Unary
     : public Expression
 {
 private:
-    ExpressionPtr expr;
+    Expression* expr;
     std::string type_of_op2;
 protected:
-    Unary(const ExpressionPtr _expr, std::string _type_of_op2)
+    Unary(Expression* _expr, std::string _type_of_op2)
         : expr(_expr)
         , type_of_op2(_type_of_op2)
     {}
@@ -21,13 +21,15 @@ public:
         //delete expr;
     }
 
-    std::string getOpcode() const
+    virtual std::string getOpcode() const override
     {
         return type_of_op2;
     }
 
-    ExpressionPtr getExpr() const
+    virtual Expression* getExpr() const override
     { return expr; }
+
+    virtual bool IsUnary() const override {return true;}
 
     /*virtual void print(std::ostream &dst) const override
     {
