@@ -2,7 +2,7 @@
 
 %{
 	#include "parser.tab.hpp"
-	extern "C" int fileno(File *stream);
+	extern "C" int fileno(FILE *stream);
 
 %}
 
