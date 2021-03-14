@@ -15,13 +15,10 @@ static std::string makeName(std::string base)
 
 std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //could return a string which is the regname
 {
-    fprintf(stderr, "here");
   //std::cout<<"Here"<<expr->getValue();
   if(expr->IsNumberStmt())
   {
-      fprintf(stderr, "here");
     std::string regname = ctxt.findFreeReg();
-      fprintf(stderr, "here");
     Out<<"addiu " + regname + ", " + regname + ", " << expr->getValue() <<std::endl;
     return regname;
   }
@@ -65,6 +62,7 @@ std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //c
   }
   else if(expr->IsAssignExpr())
   {
+
     std::string src = CodeGenExpr(expr->getRhs(), Out, ctxt);
     std::string dest = CodeGenExpr(expr->getLhs(), Out, ctxt);
     assignment_to_code(src, dest, expr->getOpcode(), Out);
@@ -89,7 +87,7 @@ void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables)
   {
     //evaluate return value
     //move that value to v0
-      fprintf(stderr, "here");
+      //fprintf(stderr, "here");
     std::string regname = CodeGenExpr((Expression*)stmt->getRetVal(), Out, variables);
     Out<<"addiu $v0, " << regname << ", 0" <<std::endl;
     variables.saveReg(regname, Out);

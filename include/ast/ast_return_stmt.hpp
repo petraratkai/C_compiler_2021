@@ -14,7 +14,7 @@ private:
 public:
   ReturnStmt (Expression *return_value) : return_value(return_value) {}
   virtual stmt_type get_type() const override {return ReturnType;}
-  virtual Expression* getRetVal() const override {return return_value;}
+  virtual Statement* getRetVal() const override {return return_value;}
 
   virtual bool IsReturnStmt() const override {return true;}
 

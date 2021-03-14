@@ -18,7 +18,7 @@ public:
   virtual bool IsAssignExpr() const override {return true;}
   virtual Expression* getLhs() const override {return lhs;}
   virtual Expression* getRhs() const override {return rhs;}
-
+  virtual std::string getOpcode() const override {return type_of_assign;}
 };
 
 #endif
