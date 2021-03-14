@@ -57,7 +57,7 @@ void opcode_to_code(const std::string& dest, const std::string& left , const std
   else if(opcode == "<=")
   {
     Out << "sub " + dest + ", " + left + ", " + right << std::endl; //want to return 1 if dest 0 or less
-    Out << "bgz " + left + ", " + right + ", 2" << std::endl;
+    Out << "bgtz " + dest + ", 2" << std::endl;
     Out << "addiu " + dest + ", " + "$zero, 0" << std::endl; //PC+4 and we set dest to 0, always executed right?
     //Out << "nop" <<std::endl; //is this valid??
     Out <<  "addiu " + dest + ", " + "$zero, 1" << std::endl;
@@ -65,7 +65,7 @@ void opcode_to_code(const std::string& dest, const std::string& left , const std
   else if(opcode == ">=")
   {
     Out << "sub " + dest + ", " + right + ", " + left << std::endl;
-    Out << "bgz " + right + ", " + left + ", 2" << std::endl;
+    Out << "bgtz " + dest + ", 2" << std::endl;
     Out << "addiu " + dest + ", " + "$zero, 0" << std::endl; //PC+4 and we set dest to 0, always executed right?
     //Out << "nop" <<std::endl; //is this valid??
     Out <<  "addiu " + dest + ", " + "$zero, 1" << std::endl;
