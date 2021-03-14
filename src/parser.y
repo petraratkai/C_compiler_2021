@@ -442,7 +442,7 @@ argument_expression_list:
 
 primary_expression:
 		IDENTIFIER												{$$ = new FakeVariable(*$1);}
-	|	INT_CONST												//{$$ = new Constant{$1, IntType};}
+	|	INT_CONST												{$$ = new Number(stoi(*$1));}
 	|	FLOAT_CONST    											//{$$ = new Constant{$1, FloatType};}
 	|	CHAR_CONST   											//{$$ = new Constant{$1, CharType };}
 	|	STRING_CONST											//{$$ = new Constant{$1, StringType};}
