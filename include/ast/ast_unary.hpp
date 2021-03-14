@@ -10,12 +10,12 @@ class Unary
 private:
     Expression* expr;
     std::string type_of_op2;
-protected:
+  public:
     Unary(Expression* _expr, std::string _type_of_op2)
         : expr(_expr)
         , type_of_op2(_type_of_op2)
     {}
-public:
+
     virtual ~Unary()
     {
         //delete expr;
