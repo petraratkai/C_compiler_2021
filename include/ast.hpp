@@ -23,6 +23,8 @@
 #include "ast/fakevariable.hpp"
 #include "ast/register.hpp"
 #include "ast/Variable_hash.hpp"
+#include "ast/ast_cond_operator.hpp"
+#include "ast/ast_assignmentexpr.hpp"
 
 
 
