@@ -130,7 +130,6 @@ while			{yylval.string = new std::string(yytext); return T_WHILE;}
 [L]?[\']{CHAR_SEQ}?[\']				{yylval.string = new std::string(yytext); return CHAR_CONST;}
 [L]?[\"]{SCHAR_SEQ}?[\"]			{yylval.string = new std::string(yytext); return STRING_CONST;}
 
-.				{fprintf(stderr, "Not in lexer \n"); exit(1);}
 
 %%
 
