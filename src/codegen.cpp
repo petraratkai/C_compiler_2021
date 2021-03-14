@@ -15,10 +15,13 @@ static std::string makeName(std::string base)
 
 std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //could return a string which is the regname
 {
+    fprintf(stderr, "here");
   //std::cout<<"Here"<<expr->getValue();
   if(expr->IsNumberStmt())
   {
+      fprintf(stderr, "here");
     std::string regname = ctxt.findFreeReg();
+      fprintf(stderr, "here");
     Out<<"addiu " + regname + ", " + regname + ", " << expr->getValue() <<std::endl;
     return regname;
   }
@@ -78,6 +81,7 @@ void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables)
   if(stmt->IsExpressionStmt())
   {
       //find variable in hash table
+        //fprintf(stderr, "here");
       std::string regname = CodeGenExpr((Expression*)stmt, Out, variables);
       variables.saveReg(regname, Out);
   }
@@ -85,8 +89,9 @@ void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables)
   {
     //evaluate return value
     //move that value to v0
+      fprintf(stderr, "here");
     std::string regname = CodeGenExpr((Expression*)stmt->getRetVal(), Out, variables);
-    Out<<"addiu v0, " << regname << ", 0" <<std::endl;
+    Out<<"addiu $v0, " << regname << ", 0" <<std::endl;
     variables.saveReg(regname, Out);
   }
 
@@ -96,6 +101,7 @@ void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables)
     for(int i = 0; i<stmts->size(); i++)
     {
       CodeGen((*stmts)[i], Out, variables);
+
     }
   }
   else if(stmt->IsDeclarationStmt())
@@ -151,6 +157,7 @@ void CompileFunct(const Function *funct, std::ofstream& Out)
   CompoundStmt *body = funct->getBody();
   Context ctxt;
   CodeGen(body, Out, ctxt);
+
   if(funct->getName()!="main")
     Out<<"jr $ra" <<std::endl; //is this correct?
 }

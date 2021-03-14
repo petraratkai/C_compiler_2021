@@ -11,7 +11,9 @@ int main(int argc, char *argv[])
 {
 	//parse the AST
 Context ctxt;
+
 	Program *prog = parseAST(argv[2]); //arguments?? which file?
+
 //	Number const1(1);
 	//std::cout<<const
 	/*Number* const2 = new Number(2);
