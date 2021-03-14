@@ -1,6 +1,6 @@
 #include "../include/ast/Context.hpp"
 //#include
-void Context::moveToOriginal( const std::string& originalid, const std::string& newerid, std::ostream& Out)
+/*void moveToOriginal( const std::string& originalid, const std::string& newerid, std::ostream& Out)
 {
   //we get the location from original
   Variable_hash& original = vars[findVarHashIndex(originalid)];
@@ -59,4 +59,4 @@ void Context::moveToOriginal( const std::string& originalid, const std::string& 
   //locate the newer as well
   //load newer into a register
   //move the data from that register to target location
-}
+}*/

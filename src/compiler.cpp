@@ -11,10 +11,10 @@ int main(int argc, char *argv[])
 {
 	//parse the AST
 Context ctxt;
-	//Program *prog = parseAST(argv[2]); //arguments?? which file?
+	Program *prog = parseAST(argv[2]); //arguments?? which file?
 //	Number const1(1);
 	//std::cout<<const
-	Number* const2 = new Number(2);
+	/*Number* const2 = new Number(2);
 	Number* const4 = new Number(4);
 	Declaration* Decl = new Declaration(IntType, "a", nullptr);
 	Operator* add2_4 = new Operator(const2, const4, "+");
@@ -26,23 +26,24 @@ Context ctxt;
 	stmts->push_back(ret2);
 
 	CompoundStmt* mainbody = new CompoundStmt(stmts);
-	std::vector<Declaration*> param;
+	std::vector<Statement*> param;
 	Function *mainfunct = new Function("main", mainbody, &param, IntType);
 	//std::vector<Function*> functions;
 	//functions.push_back(mainfunct);
-	//Program *prog = new Program(functions);
+	//Program *prog = new Program(functions);*/
 	std::ofstream Out(argv[4]);
 
 	//create hash table for variables
 	//std::vector<Variable_hash> variables; //will need to push back an element every time a variable is declared
-	Out<<"j main"<<std::endl;
+	/*Out<<"j main"<<std::endl;
 	std::vector<Function*> funct; //=  prog->getFunctions();
 	funct.push_back(mainfunct);
 	//CompoundStmt* body =
-	//vector<Statement*>* stmts = body->getStmts();
-	for(int i = 0; i<funct.size(); i++)
+	//vector<Statement*>* stmts = body->getStmts();*/
+	std::vector<Function*> fns = prog->getFunctions();
+	for(int i = 0; i<fns.size(); i++)
 	{
-	CompileFunct(funct[i], Out);
+	CompileFunct(fns[i], Out);
 }
 
 //delete ret2;

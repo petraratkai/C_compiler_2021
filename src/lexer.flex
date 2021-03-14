@@ -65,7 +65,7 @@ while			{yylval.string = new std::string(yytext); return T_WHILE;}
 
 
 
-\+ 				{yylval.string = new std::string(yytext); return T_PLUS;} 
+\+ 				{yylval.string = new std::string(yytext); return T_PLUS;}
 \- 				{yylval.string = new std::string(yytext); return T_MINUS;}
 \* 				{yylval.string = new std::string(yytext); return T_MULT;}
 \/ 				{yylval.string = new std::string(yytext); return T_DIVIDE;}
@@ -73,7 +73,7 @@ while			{yylval.string = new std::string(yytext); return T_WHILE;}
 \++ 			{yylval.string = new std::string(yytext); return T_INCREMENT;}
 \-- 			{yylval.string = new std::string(yytext); return T_DECREMENT;}
 
-\=\=				{yylval.string = new std::string(yytext); return T_EQUAL;} 
+\=\=				{yylval.string = new std::string(yytext); return T_EQUAL;}
 \!\= 			{yylval.string = new std::string(yytext); return T_UNEQUAL;}
 \> 				{yylval.string = new std::string(yytext); return T_GREATER;}
 \< 				{yylval.string = new std::string(yytext); return T_LESSER;}
@@ -81,7 +81,7 @@ while			{yylval.string = new std::string(yytext); return T_WHILE;}
 \<\= 			{yylval.string = new std::string(yytext); return T_LESSEREQ;}
 
 
-\&\& 			{yylval.string = new std::string(yytext); return T_AND;} 
+\&\& 			{yylval.string = new std::string(yytext); return T_AND;}
 \|\| 			{yylval.string = new std::string(yytext); return T_OR;}
 \!				{yylval.string = new std::string(yytext); return T_NOT;}
 
@@ -104,14 +104,14 @@ while			{yylval.string = new std::string(yytext); return T_WHILE;}
 \^\= 			{yylval.string = new std::string(yytext); return T_XORASSIGN;}
 \|\= 			{yylval.string = new std::string(yytext); return T_ORASSIGN;}
 
-\{				{yylval.string = new std::string(yytext); return T_LCURLBRACKET;} 
+\{				{yylval.string = new std::string(yytext); return T_LCURLBRACKET;}
 \}				{yylval.string = new std::string(yytext); return T_RCURLBRACKET;}
 \[				{yylval.string = new std::string(yytext); return T_LSQUAREBRACKET;}
 \]				{yylval.string = new std::string(yytext); return T_RSQUAREBRACKET;}
 \(				{yylval.string = new std::string(yytext); return T_LBRACKET;}
 \)				{yylval.string = new std::string(yytext); return T_RBRACKET;}
 
-\.				{yylval.string = new std::string(yytext); return T_ACCESS;} 
+\.				{yylval.string = new std::string(yytext); return T_ACCESS;}
 \-\>			{yylval.string = new std::string(yytext); return T_POINTERACCESS;}
 
 \;				{yylval.string = new std::string(yytext); return T_SEMICOLON;}
@@ -130,7 +130,7 @@ while			{yylval.string = new std::string(yytext); return T_WHILE;}
 [L]?[\']{CHAR_SEQ}?[\']				{yylval.string = new std::string(yytext); return CHAR_CONST;}
 [L]?[\"]{SCHAR_SEQ}?[\"]			{yylval.string = new std::string(yytext); return STRING_CONST;}
 
-.				{std::cout<<yytext; fprintf(stderr, "Not in lexer \n"); exit(1);}
+.				{fprintf(stderr, yytext); fprintf(stderr, "Not in lexer \n"); exit(1);}
 
 %%
 
