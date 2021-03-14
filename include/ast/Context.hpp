@@ -23,6 +23,7 @@ private:
   std::vector<Variable_hash> variables;
   int stackptrOffset;
   std::vector<std::string> stack;
+  unsigned int NrOfVarsDeclared;
 public:
 
   Context()
@@ -31,8 +32,16 @@ public:
     {
       regs.push_back(Register(REGNAMES[i]));
     }
+    this->NrOfVarsDeclared = 0;
   }
-
+  Context(const Context& Ctxt)
+  {
+    regs = Ctxt.regs;
+    variables = Ctxt.variables;
+    stackptrOffset = Ctxt.stackptrOffset;
+    stack = Ctxt.stack;
+    NrOfVarsDeclared = Ctxt.NrOfVarsDeclared;
+  }
   int findRegIndex(const std::string& regname) const
   {
     for(int i = 0; i<regs.size(); i++)
@@ -181,7 +190,30 @@ public:
       emptyReg(regname);
     }
   }
-  //void moveToOriginal( const std::string& originalid, const std::string& newerid, std::ostream& Out);
+void moveToOriginal( const std::string& id, Context& ctxtTo, std::ostream& Out);
+
+  void enterScope(Context& ctxtFrom) //must be called form an empty context
+  {
+    //need to copy all  into from
+    *this = ctxtFrom;
+    this->NrOfVarsDeclared = 0;
+  }
+  void leaveScope(Context& ctxtTo, std::ostream& Out) //ctxtFrom won't be used anymore
+  {
+    //have to delete everything from this : last few variables
+    //then put everything back to where they were in ctxt to
+    for(int i = NrOfVarsDeclared; i>0; i++)
+    {
+      if(!variables[ctxtTo.variables.size()+NrOfVarsDeclared-1].isInMemory()) emptyReg(variables[ctxtTo.variables.size()+NrOfVarsDeclared-1].getReg());
+      variables.erase(variables.begin()+ctxtTo.variables.size()+NrOfVarsDeclared-1);
+    }
+    ctxtTo = *this;
+    /*for(int i = 0; i<variables.size(); i++)
+    {
+      moveToOriginal(variables[i].getName(), ctxtTo, Out);
+    }*/
+
+  }
 
 
 };

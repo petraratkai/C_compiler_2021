@@ -19,7 +19,7 @@ std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //c
   if(expr->IsNumberStmt())
   {
     std::string regname = ctxt.findFreeReg();
-    Out<<"addiu " + regname + ", " + regname + ", " << expr->getValue() <<std::endl;
+    Out<<"addiu " + regname + ", " + "$zero" + ", " << expr->getValue() <<std::endl;
     return regname;
   }
   else if(expr->IsFakeVariableExpr())
@@ -65,7 +65,7 @@ std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //c
 
     std::string src = CodeGenExpr(expr->getRhs(), Out, ctxt);
     std::string dest = CodeGenExpr(expr->getLhs(), Out, ctxt);
-    assignment_to_code(src, dest, expr->getOpcode(), Out);
+    assignment_to_code(dest, src, expr->getOpcode(), Out);
     ctxt.emptyRegifExpr(src, Out);
     return dest;
   }
@@ -96,15 +96,24 @@ void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables)
   else if(stmt->IsCompoundStmt())
   {
     std::vector<Statement*>* stmts= stmt->getStmts();
+    Context newCtxt;
+    newCtxt.enterScope(variables);
     for(int i = 0; i<stmts->size(); i++)
     {
-      CodeGen((*stmts)[i], Out, variables);
+      CodeGen((*stmts)[i], Out, newCtxt);
 
     }
+    newCtxt.leaveScope(variables, Out);
   }
   else if(stmt->IsDeclarationStmt())
   {
-    variables.newVar(stmt->getVariable());
+    std::string dest = variables.newVar(stmt->getVariable());
+    if(stmt->getExpr()!=nullptr)
+    {
+    std::string regname = CodeGenExpr((Expression*)(stmt->getExpr()), Out, variables);
+    Out << "addiu " + dest + ", " + regname + ", $zero" << std::endl;
+    variables.emptyReg(regname);
+    }
   }
   else if(stmt->IsIfElseStmt())
   {

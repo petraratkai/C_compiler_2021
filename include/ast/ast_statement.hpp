@@ -27,7 +27,7 @@ public:
   virtual std::vector<Statement*>* getStmts() const{}
 
   virtual std::string getVariable() const {return "";}
-  //virtual Expression* getExpr() const {return nullptr;}
+  virtual Statement* getExpr() const {return nullptr;}
   //virtual std::vector<Variable_hash> getVars() const  {}
   virtual bool IsIfElseStmt() const {return false;}
   virtual Statement* getCond() const
