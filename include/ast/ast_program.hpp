@@ -15,7 +15,7 @@ private:
 public:
   Program(std::vector<Function*> functions) : functions(functions) {}
   Program() {}
-  push(Function* fn) {functions.push_back(fn);}
+  void push(Function* fn) {functions.push_back(fn);}
   std::vector<Function*> getFunctions() const {return functions;}
 };
 
