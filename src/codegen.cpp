@@ -18,7 +18,7 @@ std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //c
   //std::cout<<"Here"<<expr->getValue();
   if(expr->IsNumberStmt())
   {
-    std::string regname = ctxt.findFreeReg();
+    std::string regname = ctxt.findFreeReg(Out);
     Out<<"addiu " + regname + ", " + "$zero" + ", " << expr->getValue() <<std::endl;
     return regname;
   }
@@ -27,7 +27,9 @@ std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //c
     //need to load it into some register
     //find a free register
     std::string regname = ctxt.loadVar(expr->getId(), Out);
-    return regname;
+    std::string dest = ctxt.findFreeReg(Out);
+    Out << "add " + dest + ", " + regname + ", $zero" << std::endl;
+    return dest; //change this!!!
     //find the variable in
   }
   else if(expr->IsFunctionCallExpr())
@@ -35,10 +37,13 @@ std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //c
     //need to save the argument registers a0-a3
     //save registers
     //need to save the return address later
-    std::string dest = ctxt.findFreeReg();
+    std::string dest = ctxt.findFreeReg(Out);
+    std::cerr<<dest;
+    ctxt.storeregs(false, (8+4+1+(4+1)%2)*4, Out); //params!!
     Out << "jal " + expr->getName() << std::endl;
     Out << "addiu $v0, $v0, 0" << std::endl; //nop after jump
     Out << "addiu " + dest + ", $v0, 0" << std::endl;
+    ctxt.reloadregs(false, (8+4+1+(4+1)%2)*4, Out); //+params!!!
     return dest;
   }
   else if(expr->IsOperatorExpr())
@@ -46,7 +51,7 @@ std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //c
     //call some other function
     std::string left = CodeGenExpr(expr->getLeft(), Out, ctxt);
     std::string right = CodeGenExpr(expr->getRight(), Out, ctxt);
-    std::string dest = ctxt.findFreeReg();
+    std::string dest = ctxt.findFreeReg(Out);
     opcode_to_code(dest, left, right, expr->getOpcode(), Out);
     ctxt.emptyRegifExpr(left, Out);
     ctxt.emptyRegifExpr(right, Out);
@@ -55,7 +60,7 @@ std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //c
   else if(expr->IsUnary())
   {
     std::string src = CodeGenExpr(expr->getExpr(), Out, ctxt);
-    std::string dest = ctxt.findFreeReg();
+    std::string dest = ctxt.findFreeReg(Out);
     opcode_to_code(dest, "$zero", src, expr->getOpcode(), Out); //need to fix the function! or would it work?
     ctxt.emptyRegifExpr(src, Out);
     return dest;
@@ -96,7 +101,7 @@ void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables)
   else if(stmt->IsCompoundStmt())
   {
     std::vector<Statement*>* stmts= stmt->getStmts();
-    Context newCtxt;
+    Context newCtxt(0);
     newCtxt.enterScope(variables);
     for(int i = 0; i<stmts->size(); i++)
     {
@@ -107,7 +112,7 @@ void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables)
   }
   else if(stmt->IsDeclarationStmt())
   {
-    std::string dest = variables.newVar(stmt->getVariable());
+    std::string dest = variables.newVar(stmt->getVariable(), Out);
     if(stmt->getExpr()!=nullptr)
     {
     std::string regname = CodeGenExpr((Expression*)(stmt->getExpr()), Out, variables);
@@ -162,9 +167,35 @@ void CompileFunct(const Function *funct, std::ofstream& Out)
   //label:
   Out << funct->getName() + ":" << std::endl;
   CompoundStmt *body = funct->getBody();
-  Context ctxt;
+  Context ctxt((funct->getSize()+21+(4/*+paramssize*/)%2)*4);
+  //need to save return address
+  //need to save registers
+  //fprintf(stderr, c_str(std::to_string(funct->getSize())));
+  std::cerr<<std::to_string(funct->getSize());
+  ctxt.allocateMem((funct->getSize()+21+(4+1/*+paramssize*/)%2) + (funct->getSize()%2), Out); //FIX THIS
+  if(funct->getName()=="main")
+  {
+    //ctxt.allocateMem((funct->getSize()+21+(4+1/*+paramssize*/)%2)*4 + (funct->getSize()%2)*4, Out); //FIX THIS
+  }
+  else
+  {
+    ctxt.saveRetAddr(Out, 12*4); //+params size
+    //need to save s0-s7
+    ctxt.storeregs(true, 4*4, Out); //+params size
+  }
+  //for loop for the parameters maybe?
   CodeGen(body, Out, ctxt);
 
   if(funct->getName()!="main")
+  {
+    ctxt.loadRetAddr(Out, 12*4);
     Out<<"jr $ra" <<std::endl; //is this correct?
+    ctxt.reloadregs(true, 4*4, Out);
+  }
+  else
+  {
+    //need to load s0-s7 back
+    //ctxt.freeMem((funct->getSize()+21+(4/*+paramssize*/)%2)*4 + (funct->getSize()%2)*4, Out); //shouldn't matter i think ?? //FIX THIS
+  }
+  ctxt.freeMem((funct->getSize()+21+(4+1/*+paramssize*/)%2) + (funct->getSize()%2), Out); //shouldn't matter i think ?? //FIX THIS
 }

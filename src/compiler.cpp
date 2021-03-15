@@ -10,7 +10,7 @@ using namespace std;
 int main(int argc, char *argv[])
 {
 	//parse the AST
-Context ctxt;
+Context ctxt(0);
 
 	Program *prog = parseAST(argv[2]); //arguments?? which file?
 

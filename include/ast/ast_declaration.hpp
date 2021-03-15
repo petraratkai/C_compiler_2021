@@ -14,7 +14,12 @@ private:
   Expression *rhs; //can be null if it's something like int a;
   int size;
 public:
-  Declaration(Variable* var, Expression *rhs) : var(var), rhs(rhs) {size = rhs->getSize()+1;}
+  Declaration(Variable* var, Expression *rhs) : var(var), rhs(rhs)
+  {
+    if(rhs!=nullptr)
+      size = rhs->getSize()+1;
+    else size = 1;
+  }
   Declaration(VarType type, const std::string& name, Expression* rhs) : var(new Variable(name, type)), rhs(rhs) {size = 0;}
   //Declaration(Variable* var, Expression *rhs, int _size) : var(var), rhs(rhs), size(_size) {}
   //Declaration(VarType type, const std::string& name, Expression* rhs, int _size) : var(new Variable(name, type)), rhs(rhs), size(_size) {}

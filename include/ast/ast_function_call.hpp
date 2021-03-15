@@ -9,13 +9,13 @@
 class FunctionCall
     : public Expression {
 private:
-    ExpressionPtr arg;
+    Expression* arg;
     std::string funct_name;
     int size;
 protected:
-    FunctionCall(ExpressionPtr _arg, std::string funct_name)
+    FunctionCall(Expression* _arg, std::string funct_name)
         : arg(_arg), funct_name(funct_name)
-    {size = arg->getSize()+1;}
+    {size = /*arg->getSize()*/+1;}
     //FunctionCall(ExpressionPtr _arg, std::string funct_name, int _size)
     //    : arg(_arg), funct_name(funct_name), size(_size)
     //{}
@@ -25,7 +25,6 @@ public:
         delete arg;
     }
 
-    virtual const char * getFunction() const =0;
 
     ExpressionPtr getArg() const
     { return arg; }

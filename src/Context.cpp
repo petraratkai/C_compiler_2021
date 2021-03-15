@@ -13,7 +13,7 @@ void Context::moveToOriginal( const std::string& id, Context& ctxtTo, std::ostre
       if(newer.getMemAddr()!=original.getMemAddr())
       {
         //load from memory lw regname from some addres
-        regname = ctxtTo.findFreeReg();
+        regname = ctxtTo.findFreeReg(Out);
         //saveReg(regname, Out);
         Out<<"lw "+ regname +", $sp(" << newer.getMemAddr() + ")" << std::endl; ///mem address should be sp +memAddr!!!!!!
         Out<<"sw " + regname + ", $sp(" << original.getMemAddr() +")" << std::endl;
@@ -42,7 +42,7 @@ void Context::moveToOriginal( const std::string& id, Context& ctxtTo, std::ostre
         regname = newer.getReg();
         int regidx = findRegIndex(regname);
         //save register
-        Out <<"sw " + regname + ", $sp(" << original.getMemAddr() + ")" <<std::endl;
+        Out <<"sw " + regname + ", " << original.getMemAddr() + "($sp)" <<std::endl;
         emptyReg(regname);
       }
       else //both new and original in registers
