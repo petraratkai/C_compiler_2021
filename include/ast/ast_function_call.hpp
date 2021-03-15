@@ -13,14 +13,13 @@ private:
     Expression* arg;
     Expression* funct_name;
     int size;
-protected:
+public:
     FunctionCall(Expression* _arg, Expression* funct_name)
         : arg(_arg), funct_name(funct_name)
     {size = /*arg->getSize()*/+1;}
     //FunctionCall(ExpressionPtr _arg, std::string funct_name, int _size)
     //    : arg(_arg), funct_name(funct_name), size(_size)
     //{}
-public:
     virtual ~FunctionCall()
     {
         delete arg;
