@@ -34,7 +34,7 @@ void opcode_to_code(const std::string& dest, const std::string& left , const std
       //left-right
       //Out << "sub " + dest + ", " + left + ", " + right << std::endl;
       //branch if equal to 0
-    Out << "bne " + left + ", " + right + ", 2" << std::endl;
+    Out << "bne " + left + ", " + right + ", 8" << std::endl;
     Out << "addiu " + dest + ", " + "$zero, 0" << std::endl; //PC+4 and we set dest to 0, always executed right?
     //Out << "nop" <<std::endl; //is this valid??
     Out <<  "addiu " + dest + ", " + "$zero, 1" << std::endl; //if they were equal now set dest to 1
