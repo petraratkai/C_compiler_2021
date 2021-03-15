@@ -41,7 +41,7 @@ void opcode_to_code(const std::string& dest, const std::string& left , const std
   }
   else if(opcode == "!=")
   {
-    Out << "beq " + left + ", " + right + ", 2" << std::endl;
+    Out << "beq " + left + ", " + right + ", 8" << std::endl;
     Out << "addiu " + dest + ", " + "$zero, 0" << std::endl; //PC+4 and we set dest to 0, always executed right?
       //Out << "nop" <<std::endl; //is this valid??
     Out <<  "addiu " + dest + ", " + "$zero, 1" << std::endl; //if they were equal now set dest to 1
@@ -57,7 +57,7 @@ void opcode_to_code(const std::string& dest, const std::string& left , const std
   else if(opcode == "<=")
   {
     Out << "sub " + dest + ", " + left + ", " + right << std::endl; //want to return 1 if dest 0 or less
-    Out << "bgtz " + dest + ", 2" << std::endl;
+    Out << "bgtz " + dest + ", 8" << std::endl;
     Out << "addiu " + dest + ", " + "$zero, 0" << std::endl; //PC+4 and we set dest to 0, always executed right?
     //Out << "nop" <<std::endl; //is this valid??
     Out <<  "addiu " + dest + ", " + "$zero, 1" << std::endl;
@@ -65,7 +65,7 @@ void opcode_to_code(const std::string& dest, const std::string& left , const std
   else if(opcode == ">=")
   {
     Out << "sub " + dest + ", " + right + ", " + left << std::endl;
-    Out << "bgtz " + dest + ", 2" << std::endl;
+    Out << "bgtz " + dest + ", 8" << std::endl;
     Out << "addiu " + dest + ", " + "$zero, 0" << std::endl; //PC+4 and we set dest to 0, always executed right?
     //Out << "nop" <<std::endl; //is this valid??
     Out <<  "addiu " + dest + ", " + "$zero, 1" << std::endl;
@@ -96,23 +96,23 @@ void opcode_to_code(const std::string& dest, const std::string& left , const std
   }
   else if(opcode == "&&") // logical or? if a >= 1 and b >= 1
   {
-    Out << "beq " + left + ", $zero, 4" << std::endl;
+    Out << "beq " + left + ", $zero, 16" << std::endl;
     Out << "addiu " + dest + ", $zero, 0" <<std ::endl;
-    Out << "beq " + right + ", $zero, 2" << std::endl;
+    Out << "beq " + right + ", $zero, 8" << std::endl;
     Out << "addiu " + dest + ", $zero, 0" <<std ::endl;
     Out << "addiu " + dest + ", $zero, 1" << std::endl;
   }
   else if(opcode =="||")
   {
-    Out << "bne " + left + ", $zero, 4" << std::endl;
+    Out << "bne " + left + ", $zero, 16" << std::endl;
     Out << "addiu " + dest + ", $zero, 1" <<std ::endl;
-    Out << "bne " + right + ", $zero, 2" << std::endl;
+    Out << "bne " + right + ", $zero, 8" << std::endl;
     Out << "addiu " + dest + ", $zero, 1" <<std ::endl;
     Out << "addiu " + dest + ", $zero, 0" << std::endl;
   }
   else if(opcode =="!")
   {
-      Out << "bne " + left + ", $zero, 2" <<std::endl; //if 0 -> need to set it to 1
+      Out << "bne " + left + ", $zero, 8" <<std::endl; //if 0 -> need to set it to 1
       Out << "addiu " + dest + ", $zero, 0" << std::endl;
       Out << "addiu " + dest + ", $zero, 1" << std::endl;
   }
