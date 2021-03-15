@@ -46,7 +46,7 @@ private:
 public:
     Number(int _value)
         : value(_value)
-    {size =0;}
+    {size =1;}
     Number(int _value, int _size)
         : value(_value), size(_size)
     {}

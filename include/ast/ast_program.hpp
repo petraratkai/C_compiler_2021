@@ -14,8 +14,8 @@ private:
   //later enum + struct
 
 public:
-  Program(std::vector<Function*> functions) : functions(functions) {size =0;}
-    Program(std::vector<Function*> functions, int _size) : functions(functions), size(_size) {}
+  Program(std::vector<Function*> functions) : functions(functions) {size = 0;}
+ //   Program(std::vector<Function*> functions, int _size) : functions(functions), size(_size) {}
 
   Program() {}
   void push(Function* fn) {functions.push_back(fn);}

@@ -13,8 +13,8 @@ private:
   Statement* elsestmts;
   int size;
 public:
-  IfElse(Expression* _cond, Statement* _ifstmts, Statement* _elsestmts) : cond(_cond), ifstmts(_ifstmts), elsestmts(_elsestmts) {size =0;}
-  IfElse(Expression* _cond, Statement* _ifstmts, Statement* _elsestmts, int _size) : cond(_cond), ifstmts(_ifstmts), elsestmts(_elsestmts), size(_size) {}
+  IfElse(Expression* _cond, Statement* _ifstmts, Statement* _elsestmts) : cond(_cond), ifstmts(_ifstmts), elsestmts(_elsestmts) {size = (std::max(ifstmts->getSize(), elsestmts->getSize())+1+_cond->getSize());}
+//  IfElse(Expression* _cond, Statement* _ifstmts, Statement* _elsestmts, int _size) : cond(_cond), ifstmts(_ifstmts), elsestmts(_elsestmts), size(_size) {}
 
   virtual Statement* getCond() const override
   { return cond; }

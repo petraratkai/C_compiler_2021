@@ -15,10 +15,10 @@ private:
 protected:
     FunctionCall(ExpressionPtr _arg, std::string funct_name)
         : arg(_arg), funct_name(funct_name)
-    {size =0;}
-    FunctionCall(ExpressionPtr _arg, std::string funct_name, int _size)
-        : arg(_arg), funct_name(funct_name), size(_size)
-    {}
+    {size = arg->getSize()+1;}
+    //FunctionCall(ExpressionPtr _arg, std::string funct_name, int _size)
+    //    : arg(_arg), funct_name(funct_name), size(_size)
+    //{}
 public:
     virtual ~FunctionCall()
     {

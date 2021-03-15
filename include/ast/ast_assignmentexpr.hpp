@@ -14,8 +14,8 @@ private:
   int size;
 
 public:
-  AssignmentExpr(Expression* _lhs, Expression* _rhs, const std::string &_type_of_assign ) : lhs(_lhs), rhs(_rhs), type_of_assign(_type_of_assign) {size = 0;}
-  AssignmentExpr(Expression* _lhs, Expression* _rhs, const std::string &_type_of_assign, int _size ) : lhs(_lhs), rhs(_rhs), type_of_assign(_type_of_assign), size(_size) {}
+  AssignmentExpr(Expression* _lhs, Expression* _rhs, const std::string &_type_of_assign ) : lhs(_lhs), rhs(_rhs), type_of_assign(_type_of_assign) {size = (std::max(_lhs->getSize(),_rhs->getSize()+1));}
+  //AssignmentExpr(Expression* _lhs, Expression* _rhs, const std::string &_type_of_assign, int _size ) : lhs(_lhs), rhs(_rhs), type_of_assign(_type_of_assign), size(_size) {}
 
   //destructor?
   virtual bool IsAssignExpr() const override {return true;}

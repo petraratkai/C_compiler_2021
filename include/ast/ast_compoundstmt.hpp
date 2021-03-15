@@ -15,8 +15,28 @@ private:
   int LocalVarNr;
   int size;
 public:
-  CompoundStmt(std::vector<Statement*>* stmts) : stmts(stmts) {LocalVarNr = 0, size = 0;}
-  CompoundStmt(std::vector<Statement*>* stmts, int _size) : stmts(stmts), size(_size) {LocalVarNr = 0;}
+  CompoundStmt(std::vector<Statement*>* stmts) : stmts(stmts) {LocalVarNr = 0;
+    int i = stmts->size();
+    size = 0;
+    for( int j = 0; j < i; j++ ){
+      if((*stmts)[j]->getSize()>size)
+        size = (*stmts)[j]->getSize();
+      };
+    }
+  
+
+  //virtual int getSize() const override {
+  //  int i = stmts->size();
+  //  int k = 0;
+  //  for( int j = 0; j < i; j++ ){
+  //    if((*stmts)[j]->getSize()>k)
+  //      k = (*stmts)[j]->getSize();
+  //    }
+  //  }
+
+
+    
+  //CompoundStmt(std::vector<Statement*>* stmts, int _size) : stmts(stmts), size(_size) {LocalVarNr = 0;}
   virtual std::vector<Statement*>* getStmts() const override {return stmts;}
   virtual bool IsCompoundStmt() const override {return true;}
   virtual int getSize() const override {return size;}

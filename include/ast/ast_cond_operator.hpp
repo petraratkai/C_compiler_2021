@@ -15,13 +15,13 @@ public:
         : left(_left)
         , middle(_middle)
         , right(_right)
-    {size = 0;}
-    CondOperator(Expression* _left, Expression* _middle, Expression* _right, int _size)
-        : left(_left)
-        , middle(_middle)
-        , right(_right)
-        , size(_size)
-    {}
+    {size = (std::max(_middle->getSize(),_right->getSize())+left->getSize()+1);}
+    //CondOperator(Expression* _left, Expression* _middle, Expression* _right, int _size)
+    //    : left(_left)
+    //    , middle(_middle)
+    //    , right(_right)
+    //    , size(_size)
+    //{}
     virtual ~CondOperator()
     {
         delete left;

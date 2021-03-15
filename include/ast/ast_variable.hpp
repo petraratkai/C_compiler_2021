@@ -14,11 +14,11 @@ private:
 public:
     Variable(const std::string &_id, VarType type)
         : id(_id), type(type)
-    {size = 0;}
+    {size = 2;}
 
-Variable(const std::string &_id, VarType type, int _size)
-        : id(_id), type(type), size(_size)
-    {}
+//Variable(const std::string &_id, VarType type, int _size)
+//        : id(_id), type(type), size(_size)
+//    {}
 
     virtual const std::string getId() const override
     { return id; }

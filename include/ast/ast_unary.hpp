@@ -15,12 +15,12 @@ private:
     Unary(Expression* _expr, std::string _type_of_op2)
         : expr(_expr)
         , type_of_op2(_type_of_op2)
-    {size =0;}
-    Unary(Expression* _expr, std::string _type_of_op2, int _size)
-        : expr(_expr)
-        , type_of_op2(_type_of_op2)
-        , size(_size)
-    {}
+    {size = (_expr->getSize() +1) ;}
+    //Unary(Expression* _expr, std::string _type_of_op2, int _size)
+    //    : expr(_expr)
+    //    , type_of_op2(_type_of_op2)
+    //    , size(_size)
+    //{}
 
     virtual ~Unary()
     {

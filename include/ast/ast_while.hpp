@@ -13,8 +13,8 @@ private:
   Statement* stmts;
   int size;
 public:
-  While(Expression* _cond, Statement* _stmts) : cond(_cond), stmts(_stmts) {size =0;}
-  While(Expression* _cond, Statement* _stmts, int _size) : cond(_cond), stmts(_stmts), size(_size) {}
+  While(Expression* _cond, Statement* _stmts) : cond(_cond), stmts(_stmts) {size = _stmts->getSize() + _cond->getSize() +1;}
+  //While(Expression* _cond, Statement* _stmts, int _size) : cond(_cond), stmts(_stmts), size(_size) {}
 
   Expression* getCond() const
   { return cond; }
