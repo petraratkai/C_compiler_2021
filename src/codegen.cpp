@@ -49,7 +49,7 @@ std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //c
     std::string dest = ctxt.findFreeReg();
     opcode_to_code(dest, left, right, expr->getOpcode(), Out);
     ctxt.emptyRegifExpr(left, Out);
-    ctxt.saveReg(right, Out);
+    ctxt.emptyRegifExpr(right, Out);
     return dest;
   }
   else if(expr->IsUnary())
