@@ -20,6 +20,7 @@ public:
     //FunctionCall(ExpressionPtr _arg, std::string funct_name, int _size)
     //    : arg(_arg), funct_name(funct_name), size(_size)
     //{}
+
     virtual ~FunctionCall()
     {
         delete arg;

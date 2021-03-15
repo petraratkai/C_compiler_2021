@@ -20,6 +20,8 @@ public:
     virtual int getSize() const override
     { return size; }
 
+    std::string getName() const override {return id;}
+
 
     virtual bool IsFakeVariableExpr() const override {return true;}
     /*virtual double evaluate(

@@ -46,7 +46,7 @@ Context ctxt(0);
 	for(int i = 0; i<fns.size(); i++)
 	{
 	CompileFunct(fns[i], Out);
-}
+	}
 
 //delete ret2;
 //delete mainfunct;

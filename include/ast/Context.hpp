@@ -77,19 +77,22 @@ public:
   void storeregs(bool savedReg, int offset, std::ostream& Out) //offset = first index in stack to save the registers
   {
     std::string fromreg, toreg;
+
     if(savedReg)
     {
-      fromreg = "s0";
-      toreg = "s7";
+      fromreg = "$s0";
+      toreg = "$s7";
     }
     else
     {
-      fromreg = "t0";
-      toreg = "t9";
+      fromreg = "$t0";
+      toreg = "$t9";
     }
+          //std::cerr<<"here";
     int fromidx = findRegIndex(fromreg);
     int toidx = findRegIndex(toreg);
     int j = 0;
+
     for(int i = fromidx; i<toidx; i++)
     {
       Out<<"sw " + REGNAMES[i] + ", " << offset + j << "($sp)" << std::endl;
@@ -108,13 +111,13 @@ public:
     std::string fromreg, toreg;
     if(savedReg)
     {
-      fromreg = "s0";
-      toreg = "s7";
+      fromreg = "$s0";
+      toreg = "$s7";
     }
     else
     {
-      fromreg = "t0";
-      toreg = "t9";
+      fromreg = "$t0";
+      toreg = "$t9";
     }
     int fromidx = findRegIndex(fromreg);
     int toidx = findRegIndex(toreg);
