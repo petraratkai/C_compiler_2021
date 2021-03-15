@@ -37,8 +37,8 @@
 
 %type <prog> translation_unit
 %type <expr> storage_class_specifier  struct_or_union_specifier struct_or_union struct_declaration_list struct_declaration struct_declarator_list struct_declarator enum_specifier enumerator_list enumerator type_qualifier pointer type_qualifier_list parameter_type_list parameter_list parameter_declaration  abstract_declarator direct_abstract_declarator initializer initializer_list labeled_statement expression_statement  constant_expression expression assignment_expression conditional_expression logical_or_expression logical_and_expression inclusive_or_expression exclusive_or_expression and_expression equality_expression relational_expression shift_expression additive_expression multiplicative_expression cast_expression unary_expression postfix_expression primary_expression argument_expression_list
-%type <string> unary_operator assignment_operator identifier_list declarator direct_declarator init_declarator init_declarator_list
-%type <st> jump_statement iteration_statement statement selection_statement declaration_or_statement declaration
+%type <string> unary_operator assignment_operator identifier_list declarator direct_declarator 
+%type <st> jump_statement iteration_statement statement selection_statement declaration_or_statement declaration init_declarator init_declarator_list
 %type <vst> declaration_or_statement_list
 %type <vtype> type_specifier specifier_qualifier_list type_name declaration_specifiers
 %type <fn> function_definition external_declaration
@@ -67,7 +67,7 @@ function_definition:
 
 declaration:
 		declaration_specifiers T_SEMICOLON						//{$$ = $1;} //FIX THIS
-	|	declaration_specifiers init_declarator_list T_SEMICOLON {$$ = new Declaration(new Variable(*$2, $1), NULL);} 
+	|	declaration_specifiers init_declarator_list T_SEMICOLON {$$ = $2;}  
 ;
 
 declaration_specifiers:
@@ -85,8 +85,8 @@ init_declarator_list:
 ;
 
 init_declarator:
-		declarator 												{$$ = $1;} //FIX THIS
-	|	declarator T_ASSIGN initializer 						{$$ = $1;} //FIX THIS
+		declarator 												{$$ = new Declaration(new Variable(*$1, IntType), NULL);} //FIX THIS // Vartype isn't available yet so can't actually give it intype technically yet
+	|	declarator T_ASSIGN initializer 						{$$ = new Declaration(new Variable(*$1, IntType), $3);} //FIX THIS
 ;
 
 storage_class_specifier:
