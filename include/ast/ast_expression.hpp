@@ -67,5 +67,7 @@ public:
 
     virtual bool IsUnary() const {return false;}
 
+    virtual std::string getName() const { return "";}
+
 };
 #endif

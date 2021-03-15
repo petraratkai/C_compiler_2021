@@ -11,10 +11,10 @@ class FunctionCall
     : public Expression {
 private:
     Expression* arg;
-    FakeVariable* funct_name;
+    Expression* funct_name;
     int size;
 protected:
-    FunctionCall(Expression* _arg, FakeVariable* funct_name)
+    FunctionCall(Expression* _arg, Expression* funct_name)
         : arg(_arg), funct_name(funct_name)
     {size = /*arg->getSize()*/+1;}
     //FunctionCall(ExpressionPtr _arg, std::string funct_name, int _size)
