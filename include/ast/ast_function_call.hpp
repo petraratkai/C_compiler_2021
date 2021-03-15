@@ -5,15 +5,16 @@
 
 #include <cmath>
 #include <string>
+#include "fakevariable.hpp"
 
 class FunctionCall
     : public Expression {
 private:
     Expression* arg;
-    std::string funct_name;
+    FakeVariable* funct_name;
     int size;
 protected:
-    FunctionCall(Expression* _arg, std::string funct_name)
+    FunctionCall(Expression* _arg, FakeVariable* funct_name)
         : arg(_arg), funct_name(funct_name)
     {size = /*arg->getSize()*/+1;}
     //FunctionCall(ExpressionPtr _arg, std::string funct_name, int _size)
@@ -29,7 +30,7 @@ public:
     ExpressionPtr getArg() const
     { return arg; }
 
-    virtual std::string getName() const override{ return funct_name;}
+    virtual std::string getName() const override{ return funct_name->getName();}
 
     virtual bool IsFunctionCallExpr() const override {return true;}
 
