@@ -38,7 +38,7 @@ std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //c
     //save registers
     //need to save the return address later
     std::string dest = ctxt.findFreeReg(Out);
-    std::cerr<<dest;
+    //std::cerr<<dest;
     ctxt.storeregs(false, (8+4+1+(4+1)%2)*4, Out); //params!!
     Out << "jal " + expr->getName() << std::endl;
     Out << "addiu $v0, $v0, 0" << std::endl; //nop after jump
@@ -171,7 +171,7 @@ void CompileFunct(const Function *funct, std::ofstream& Out)
   //need to save return address
   //need to save registers
   //fprintf(stderr, c_str(std::to_string(funct->getSize())));
-  std::cerr<<std::to_string(funct->getSize());
+  //std::cerr<<std::to_string(funct->getSize());
   ctxt.allocateMem((funct->getSize()+21+(4+1/*+paramssize*/)%2) + (funct->getSize()%2), Out); //FIX THIS
   if(funct->getName()=="main")
   {
