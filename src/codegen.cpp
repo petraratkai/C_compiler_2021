@@ -111,7 +111,7 @@ void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables)
     if(stmt->getExpr()!=nullptr)
     {
     std::string regname = CodeGenExpr((Expression*)(stmt->getExpr()), Out, variables);
-    Out << "addiu " + dest + ", " + regname + ", $zero" << std::endl;
+    Out << "add " + dest + ", " + regname + ", $zero" << std::endl;
     variables.emptyReg(regname);
     }
   }
