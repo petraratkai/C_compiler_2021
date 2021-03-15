@@ -11,9 +11,13 @@ class FunctionCall
 private:
     ExpressionPtr arg;
     std::string funct_name;
+    int size;
 protected:
     FunctionCall(ExpressionPtr _arg, std::string funct_name)
         : arg(_arg), funct_name(funct_name)
+    {size =0;}
+    FunctionCall(ExpressionPtr _arg, std::string funct_name, int _size)
+        : arg(_arg), funct_name(funct_name), size(_size)
     {}
 public:
     virtual ~FunctionCall()
@@ -29,6 +33,8 @@ public:
     virtual std::string getName() const override{ return funct_name;}
 
     virtual bool IsFunctionCallExpr() const override {return true;}
+
+    virtual int getSize() const override {return size;}
 
     /*virtual void print(std::ostream &dst) const override
     {

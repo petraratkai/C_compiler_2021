@@ -14,6 +14,7 @@ class Expression
 
 public:
   std::string regname;
+  int size;
 
     virtual ~Expression()
     {}
@@ -37,6 +38,8 @@ public:
     virtual bool IsFunctionCallExpr() const override {return false;}
 
     std::string getRegname() const {return regname;}
+
+    int getSize() const {return size;}
 
     virtual void setRegname(std::string regname) {}
 

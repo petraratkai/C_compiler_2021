@@ -25,7 +25,7 @@ public:
   virtual bool IsWhile() const {return false;}
   virtual Statement* getCompoundStmt() const {return nullptr;}
   virtual std::vector<Statement*>* getStmts() const{}
-
+  virtual int getSize() const {}
   virtual std::string getVariable() const {return "";}
   virtual Statement* getExpr() const {return nullptr;}
   //virtual std::vector<Variable_hash> getVars() const  {}

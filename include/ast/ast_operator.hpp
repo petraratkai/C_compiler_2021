@@ -12,11 +12,18 @@ private:
     Expression* left;
     Expression* right;
     std::string type_of_op;
+    int size;
 public:
     Operator(Expression* _left, Expression* _right, const std::string &_type_of_op)
         : left(_left)
         , right(_right)
         , type_of_op(_type_of_op)
+    {size = 0;}
+    Operator(Expression* _left, Expression* _right, const std::string &_type_of_op, int _size)
+        : left(_left)
+        , right(_right)
+        , type_of_op(_type_of_op)
+        , size(_size)
     {}
 
     virtual ~Operator()
@@ -36,6 +43,8 @@ public:
     virtual Expression* getRight() const override
     { return right; }
 
+    virtual int getSize() const override {return size;}
+    
     virtual bool IsOperatorExpr() const override {return true;}
 
     virtual void print(std::ostream &dst) const override

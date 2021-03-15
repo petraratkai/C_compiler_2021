@@ -10,9 +10,14 @@ class Variable
 private:
     std::string id;
     VarType type;
+    int size;
 public:
     Variable(const std::string &_id, VarType type)
         : id(_id), type(type)
+    {size = 0;}
+
+Variable(const std::string &_id, VarType type, int _size)
+        : id(_id), type(type), size(_size)
     {}
 
     virtual const std::string getId() const override
@@ -20,7 +25,7 @@ public:
 
     VarType getType() const {return type;}
 
-
+    virtual int getSize() const override {return size;}
 
     virtual bool IsVariableStmt() const override {return true;}
     /*virtual double evaluate(

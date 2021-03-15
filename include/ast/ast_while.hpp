@@ -11,12 +11,16 @@ class While
 private:
   Expression* cond;
   Statement* stmts;
+  int size;
 public:
-  While(Expression* _cond, Statement* _stmts) : cond(_cond), stmts(_stmts) {}
+  While(Expression* _cond, Statement* _stmts) : cond(_cond), stmts(_stmts) {size =0;}
+  While(Expression* _cond, Statement* _stmts, int _size) : cond(_cond), stmts(_stmts), size(_size) {}
 
   Expression* getCond() const
   { return cond; }
 
+  virtual int getSize() const override {return size;}
+  
   virtual Statement* getCompoundStmt() const override
   { return stmts; }
 

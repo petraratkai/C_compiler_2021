@@ -13,10 +13,13 @@ private:
   std::vector<Statement*>* stmts;
   //std::vector<Variable_hash> vars;
   int LocalVarNr;
+  int size;
 public:
-  CompoundStmt(std::vector<Statement*>* stmts) : stmts(stmts) {LocalVarNr = 0;}
+  CompoundStmt(std::vector<Statement*>* stmts) : stmts(stmts) {LocalVarNr = 0, size = 0;}
+  CompoundStmt(std::vector<Statement*>* stmts, int _size) : stmts(stmts), size(_size) {LocalVarNr = 0;}
   virtual std::vector<Statement*>* getStmts() const override {return stmts;}
   virtual bool IsCompoundStmt() const override {return true;}
+  virtual int getSize() const override {return size;}
   //virtual std::vector<Variable_hash> getVars() const override {return vars;}
   /*void addVar(const Variable_hash& var)
   {
