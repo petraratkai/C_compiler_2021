@@ -141,10 +141,18 @@ public:
   void allocateMem(int words, std::ostream& Out)
   {
     Out << "addiu $sp, $sp, " << (-1)*words*4 << std::endl;
+    for(int i = 0; i<words; i++)
+    {
+      stack[i]="0";
+    }
   }
   void freeMem(int words, std::ostream& Out)
   {
     Out << "addiu $sp, $sp, " << words*4 << std::endl;
+    for(int i = 0; i<words; i++)
+    {
+      stack[i]="";
+    }
   }
   void saveReg(const std::string& regname,  std::ostream& Out) //probably take the stack as argument
   {
