@@ -10,20 +10,20 @@ class Program
 {
 private:
   std::vector<Function*> functions;
-  std::vector<Declaration*> declarations;
+  std::vector<Statement*> declarations;
   int size;
 
   //later enum + struct
 
 public:
-  Program(std::vector<Function*> functions, std::vector<Declaration*> declarations) : functions(functions), declarations(declarations) {size = 0;}
+  Program(std::vector<Function*> functions, std::vector<Statement*> declarations) : functions(functions), declarations(declarations) {size = 0;}
  //   Program(std::vector<Function*> functions, int _size) : functions(functions), size(_size) {}
 
   Program() {}
   void push(Function* fn) {functions.push_back(fn);}
-  void push(Declaration* decl) {declarations.push_back(decl);}
+  void push(Statement* decl) {declarations.push_back(decl);}
   std::vector<Function*> getFunctions() const {return functions;}
-  std::vector<Declaration*> getDeclarations() const {return declarations;}
+  std::vector<Statement*> getDeclarations() const {return declarations;}
   int getSize() const {return size;}
 };
 

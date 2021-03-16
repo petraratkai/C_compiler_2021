@@ -54,7 +54,7 @@ translation_unit:
 
 external_declaration:
 		function_definition 																	{$$ = $1;}
-	|	declaration 																			//{$$ = $1;}
+	|	declaration 																			{g_root->push($1);}
 ;
 
 function_definition:
@@ -298,8 +298,8 @@ selection_statement:
 iteration_statement:
 		T_WHILE T_LBRACKET expression T_RBRACKET statement     												{$$ = new While($3, $5);} 
 	|	T_DO statement T_WHILE T_LBRACKET expression T_RBRACKET 											{$$ = $5;} //Currently don't support
-	|	T_FOR T_LBRACKET expression_statement expression_statement T_RBRACKET statement 					{$$ = $3;} //Currently don't support
-	|	T_FOR T_LBRACKET expression_statement expression_statement expression T_RBRACKET statement 			{$$ = $4;} //Currently don't support
+	|	T_FOR T_LBRACKET expression_statement expression_statement T_RBRACKET statement 					{$$ = new For($3, $4, NULL, $6);} 
+	|	T_FOR T_LBRACKET expression_statement expression_statement expression T_RBRACKET statement 			{$$ = new For($3, $4, $5, $7);} 
 ;
 
 
