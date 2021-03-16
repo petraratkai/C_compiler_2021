@@ -43,11 +43,26 @@ Context ctxt(0);
 	//CompoundStmt* body =
 	//vector<Statement*>* stmts = body->getStmts();*/
 	std::vector<Function*> fns = prog->getFunctions();
+	//(fns[0])->getName();
+	//std::cerr<<"here";
+	Out<<".data" << std::endl;
+
+	std::vector<Statement*> decl = prog->getDeclarations();
+	for(int i = 0; i<decl.size(); i++)
+	{
+		Out << decl[i]->getVariable() + ":	.word ";
+		if(decl[i]->getExpr())
+			Out<<decl[i]->getExpr()->getValue() << std::endl;
+	}
+
 	Out << "$Ltext0:" << std::endl;
+	std::vector<Variable_hash> global_vars;
+		//std::cerr<<"here";
 	for(int i = 0; i<fns.size(); i++)
 	{
 		Out << ".global " + fns[i]->getName()  << std::endl;
 	}
+		//std::cerr<<"here";
 	for(int i = 0; i<fns.size(); i++)
 	{
 	CompileFunct(fns[i], Out);

@@ -37,7 +37,7 @@
 
 %type <prog> translation_unit
 %type <expr> storage_class_specifier  struct_or_union_specifier struct_or_union struct_declaration_list struct_declaration struct_declarator_list struct_declarator enum_specifier enumerator_list enumerator type_qualifier pointer type_qualifier_list parameter_type_list parameter_list parameter_declaration  abstract_declarator direct_abstract_declarator initializer initializer_list labeled_statement expression_statement  constant_expression expression assignment_expression conditional_expression logical_or_expression logical_and_expression inclusive_or_expression exclusive_or_expression and_expression equality_expression relational_expression shift_expression additive_expression multiplicative_expression cast_expression unary_expression postfix_expression primary_expression argument_expression_list
-%type <string> unary_operator assignment_operator identifier_list declarator direct_declarator 
+%type <string> unary_operator assignment_operator identifier_list declarator direct_declarator
 %type <st> jump_statement iteration_statement statement selection_statement declaration_or_statement declaration init_declarator init_declarator_list
 %type <vst> declaration_or_statement_list
 %type <vtype> type_specifier specifier_qualifier_list type_name declaration_specifiers
@@ -48,14 +48,19 @@
 %%
 
 translation_unit:
+	function_definition 																{g_root->push($1), $$ = g_root;}
+	| declaration																					{g_root->pushDecl($1), $$ = g_root;}
+	| translation_unit function_definition							{g_root->push($2), $$ = g_root;}
+	| translation_unit declaration												{g_root->pushDecl($2), $$ = g_root;}
+/*translation_unit:
 		external_declaration 																	{g_root->push($1), $$ = g_root;}
 	|	translation_unit external_declaration													{g_root->push($2), $$ = g_root;}
-;
+;*/
 
-external_declaration:
+/*external_declaration:
 		function_definition 																	{$$ = $1;}
-	|	declaration 																			{g_root->push($1);}
-;
+	|	declaration 																			{g_root->pushDecl($1);}
+;*/
 
 function_definition:
 		declaration_specifiers declarator declaration_or_statement_list compound_statement		{$$ = new Function(*$2, $4, $3, $1);} //Check it again
@@ -67,7 +72,7 @@ function_definition:
 
 declaration:
 		declaration_specifiers T_SEMICOLON						//{$$ = $1;} //FIX THIS
-	|	declaration_specifiers init_declarator_list T_SEMICOLON {$$ = $2;}  
+	|	declaration_specifiers init_declarator_list T_SEMICOLON {$$ = $2;}
 ;
 
 declaration_specifiers:
@@ -76,7 +81,7 @@ declaration_specifiers:
 	|	type_specifier 											{$$ = $1;} //FIX THIS
 	|	type_specifier declaration_specifiers 					//{$$ = $1;} //FIX THIS
 	|	type_qualifier	 										//{$$ = $1;} //FIX THIS
-	|	type_qualifier declaration_specifiers					//{$$ = $1;} //FIX THIS	
+	|	type_qualifier declaration_specifiers					//{$$ = $1;} //FIX THIS
 ;
 
 init_declarator_list:
@@ -103,10 +108,10 @@ type_specifier:
 	|	T_VOID       											{$$ = VoidType;}
 	|	T_CHAR 													{$$ = CharType;}
 	|	T_SHORT 												{$$ = ShortType;}
-	|	T_FLOAT													{$$ = FloatType;} 
-	|	T_LONG 													{$$ = LongType;} 
-	|	T_SIGNED 												{$$ = SignedType;} 
-	|	T_UNSIGNED 												{$$ = UnsignedType;} 
+	|	T_FLOAT													{$$ = FloatType;}
+	|	T_LONG 													{$$ = LongType;}
+	|	T_SIGNED 												{$$ = SignedType;}
+	|	T_UNSIGNED 												{$$ = UnsignedType;}
 	|	struct_or_union_specifier 								//{$$ = $1;} //check
 	|	enum_specifier 											//{$$ = $1;} //check
 	|	type_name 												//{$$ = $1;} //check
@@ -183,7 +188,7 @@ direct_declarator:
 	|	direct_declarator T_LSQUAREBRACKET T_RSQUAREBRACKET 									//{$$ = $1;}
 	|	direct_declarator T_LBRACKET parameter_type_list T_RBRACKET 							//{$$ = $1;} //FIX THIS
 	|	direct_declarator T_LBRACKET identifier_list T_RBRACKET 								//{$$ = $1;} //FIX THIS
-	|	direct_declarator T_LBRACKET T_RBRACKET 												//{$$ = $1;} //FIX THIS 
+	|	direct_declarator T_LBRACKET T_RBRACKET 												//{$$ = $1;} //FIX THIS
 ;
 
 pointer:
@@ -214,8 +219,8 @@ parameter_declaration:
 ;
 
 identifier_list:
-		IDENTIFIER 																				{$$ = $1;}//FIX THIS							
-	|	identifier_list T_COMMA IDENTIFIER														//{$$ = $1;}//FIX THIS			
+		IDENTIFIER 																				{$$ = $1;}//FIX THIS
+	|	identifier_list T_COMMA IDENTIFIER														//{$$ = $1;}//FIX THIS
 ;
 
 type_name:
@@ -264,7 +269,7 @@ statement:
 labeled_statement:
 		IDENTIFIER T_COMMA statement 							//{$$ = $3;}  // Don't need to support this, as related to GOTO
 	|	T_CASE constant_expression T_COMMA statement     		//{$$ = $4;} // Don't need to support this, as related to GOTO
-	|	T_DEFAULT T_COMMA statement 							//{$$ = $3;} // Don't need to support this, as realted to GOTO 
+	|	T_DEFAULT T_COMMA statement 							//{$$ = $3;} // Don't need to support this, as realted to GOTO
 ;
 
 
@@ -290,16 +295,16 @@ expression_statement:
 ;
 
 selection_statement:
-		T_IF T_LBRACKET expression T_RBRACKET statement  													{$$ = new IfElse($3, $5, NULL);} 
-	|	T_IF T_LBRACKET expression T_RBRACKET statement T_ELSE statement 									{$$ = new IfElse($3, $5, $7);} 
+		T_IF T_LBRACKET expression T_RBRACKET statement  													{$$ = new IfElse($3, $5, NULL);}
+	|	T_IF T_LBRACKET expression T_RBRACKET statement T_ELSE statement 									{$$ = new IfElse($3, $5, $7);}
 	|	T_SWITCH T_LBRACKET expression T_RBRACKET statement       											{$$ = $3;} //Currently don't support
 ;
 
 iteration_statement:
-		T_WHILE T_LBRACKET expression T_RBRACKET statement     												{$$ = new While($3, $5);} 
+		T_WHILE T_LBRACKET expression T_RBRACKET statement     												{$$ = new While($3, $5);}
 	|	T_DO statement T_WHILE T_LBRACKET expression T_RBRACKET 											{$$ = $5;} //Currently don't support
-	|	T_FOR T_LBRACKET expression_statement expression_statement T_RBRACKET statement 					{$$ = new For($3, $4, NULL, $6);} 
-	|	T_FOR T_LBRACKET expression_statement expression_statement expression T_RBRACKET statement 			{$$ = new For($3, $4, $5, $7);} 
+	|	T_FOR T_LBRACKET expression_statement expression_statement T_RBRACKET statement 					{$$ = new For($3, $4, NULL, $6);}
+	|	T_FOR T_LBRACKET expression_statement expression_statement expression T_RBRACKET statement 			{$$ = new For($3, $4, $5, $7);}
 ;
 
 
@@ -322,7 +327,7 @@ expression:
 
 assignment_expression:
 		conditional_expression									{$$ = $1;}
-	|	unary_expression assignment_operator assignment_expression	{$$ = new AssignmentExpr($1, $3, *$2);}   
+	|	unary_expression assignment_operator assignment_expression	{$$ = new AssignmentExpr($1, $3, *$2);}
 ;
 
 assignment_operator:
@@ -343,7 +348,7 @@ conditional_expression:
 		logical_or_expression																	{$$ = $1;}
 	|	logical_or_expression T_QUESTIONMARK expression T_COLON conditional_expression 			{$$ = new CondOperator($1, $3, $5);}
 ;
- 
+
 logical_or_expression:
 		logical_and_expression											{$$ = $1;}
 	|	logical_or_expression T_OR logical_and_expression 				{$$ = new Operator($1, $3, *$2);}
@@ -411,7 +416,7 @@ unary_expression:
 		postfix_expression										{$$ = $1;}
 	|	T_INCREMENT unary_expression							{$$ = new Unary($2, *$1);}
 	|	T_DECREMENT unary_expression 							{$$ = new Unary($2, *$1);}
-	|	unary_operator cast_expression 							{$$ = new Unary($2, *$1);} 
+	|	unary_operator cast_expression 							{$$ = new Unary($2, *$1);}
 	|	T_SIZEOF unary_expression 								{$$ = new Unary($2, *$1);}
 	|	T_SIZEOF T_LBRACKET type_name T_RBRACKET 				//{$$ = new Unary($2, *$1);}
 ;
@@ -437,7 +442,7 @@ postfix_expression:
 ;
 
 argument_expression_list:
-		assignment_expression 												
+		assignment_expression
 		argument_expression_list T_COMMA assignment_expression 				{$$ = $3;} //Fix this
 
 primary_expression:

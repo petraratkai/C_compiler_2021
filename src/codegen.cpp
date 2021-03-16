@@ -14,7 +14,9 @@ std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //c
   if(expr->IsNumberStmt())
   {
     std::string regname = ctxt.findFreeReg(Out);
-    Out<<"addiu " + regname + ", " + "$zero" + ", " << expr->getValue() <<std::endl;
+    Out<<"addiu " + regname + ", " + "$zero" + ", " << (expr->getValue()>>16) <<std::endl;
+    Out<<"sll " + regname + ", " + regname + ", 16" << std::endl;
+    Out<<"addiu " + regname + ", " + "$zero" + ", " << ((expr->getValue()<<16)>>16) <<std::endl;
     return regname;
   }
   else if(expr->IsFakeVariableExpr())
