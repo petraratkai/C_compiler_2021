@@ -43,6 +43,11 @@ Context ctxt(0);
 	//CompoundStmt* body =
 	//vector<Statement*>* stmts = body->getStmts();*/
 	std::vector<Function*> fns = prog->getFunctions();
+	Out << "$Ltext0:" << std::endl;
+	for(int i = 0; i<fns.size(); i++)
+	{
+		Out << ".global " + fns[i]->getName()  << std::endl;
+	}
 	for(int i = 0; i<fns.size(); i++)
 	{
 	CompileFunct(fns[i], Out);

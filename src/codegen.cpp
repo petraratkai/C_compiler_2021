@@ -6,12 +6,7 @@
 #include "../include/ast.hpp"
 #include "../include/ast/Context.hpp"
 
-static int makeNameUnq=0;
 
-static std::string makeName(std::string base)
-{
-    return "." + base+"_"+std::to_string(makeNameUnq++);
-}
 
 std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //could return a string which is the regname
 {
@@ -27,9 +22,9 @@ std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //c
     //need to load it into some register
     //find a free register
     std::string regname = ctxt.loadVar(expr->getId(), Out);
-    std::string dest = ctxt.findFreeReg(Out);
-    Out << "add " + dest + ", " + regname + ", $zero" << std::endl;
-    return dest; //change this!!!
+    //std::string dest = ctxt.findFreeReg(Out);
+    //Out << "add " + dest + ", " + regname + ", $zero" << std::endl;
+    return regname; //change this!!!
     //find the variable in
   }
   else if(expr->IsFunctionCallExpr())
@@ -41,9 +36,10 @@ std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //c
     //std::cerr<<dest;
     ctxt.storeregs(false, (8+4+1+(4+1)%2)*4, Out); //params!!
     Out << "jal " + expr->getName() << std::endl;
+    ctxt.reloadregs(false, (8+4+1+(4+1)%2)*4, Out); //+params!!!
     Out << "addiu $v0, $v0, 0" << std::endl; //nop after jump
     Out << "addiu " + dest + ", $v0, 0" << std::endl;
-    ctxt.reloadregs(false, (8+4+1+(4+1)%2)*4, Out); //+params!!!
+
     return dest;
   }
   else if(expr->IsOperatorExpr())
@@ -157,6 +153,8 @@ void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables)
     Out << "addiu $v0, $v0, 0" << std::endl;
     variables.emptyRegifExpr(regCond, Out);
     CodeGen(stmt->getCompoundStmt(), Out, variables);
+    Out << "j " + whilelabel <<std::endl;
+    Out<< "addiu $zero, $zero, 0" << std::endl;
     Out << afterwhilelabel + ":" <<std::endl;
   }
   else throw("Invalid statement!");
@@ -186,10 +184,11 @@ void CompileFunct(const Function *funct, std::ofstream& Out)
   //for loop for the parameters maybe?
   CodeGen(body, Out, ctxt);
 
+   //is this correct?
   if(funct->getName()!="main")
   {
     ctxt.loadRetAddr(Out, 12*4);
-    Out<<"jr $ra" <<std::endl; //is this correct?
+
     ctxt.reloadregs(true, 4*4, Out);
   }
   else
@@ -198,4 +197,5 @@ void CompileFunct(const Function *funct, std::ofstream& Out)
     //ctxt.freeMem((funct->getSize()+21+(4/*+paramssize*/)%2)*4 + (funct->getSize()%2)*4, Out); //shouldn't matter i think ?? //FIX THIS
   }
   ctxt.freeMem((funct->getSize()+21+(4+1/*+paramssize*/)%2) + (funct->getSize()%2), Out); //shouldn't matter i think ?? //FIX THIS
+  Out<<"jr $ra" <<std::endl;
 }

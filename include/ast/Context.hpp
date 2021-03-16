@@ -93,7 +93,7 @@ public:
     int toidx = findRegIndex(toreg);
     int j = 0;
 
-    for(int i = fromidx; i<toidx; i++)
+    for(int i = fromidx; i<=toidx; i++)
     {
       Out<<"sw " + REGNAMES[i] + ", " << offset + j << "($sp)" << std::endl;
       j+=4;
@@ -122,7 +122,7 @@ public:
     int fromidx = findRegIndex(fromreg);
     int toidx = findRegIndex(toreg);
     int j = 0;
-    for(int i = fromidx; i<toidx; i++)
+    for(int i = fromidx; i<=toidx; i++)
     {
       Out<<"lw " + REGNAMES[i] + ", " << offset + j << "($sp)" << std::endl;
       j+=4;
@@ -190,6 +190,7 @@ public:
       {
         regs[i].setVarName("");
         regs[i].setIsused(true);
+        regs[i].setCanBeStored(false);
         return regs[i].getName();
       }
     }
@@ -202,7 +203,7 @@ public:
     {
       //pick a random number
       idx = rand() % (toindx-fromindx) + fromindx;
-      if(regs[idx].getName()!="")
+      if(regs[idx].getName()!="" && regs[idx].CanBeStored())
       {
         saveReg(regs[idx].getName(), Out);
         return regs[idx].getName();
@@ -308,7 +309,7 @@ public:
   void emptyRegifExpr(const std::string& regname,  std::ostream& Out)
   {
     int regidx = findRegIndex(regname);
-    if(regs[regidx].getVarName()=="" && regs[regidx].isUsed())
+    if(regs[regidx].getVarName()=="" && regs[regidx].isUsed() && regs[regidx].CanBeStored())
     {
       emptyReg(regname);
     }
@@ -334,7 +335,8 @@ void moveToOriginal( const std::string& id, Context& ctxtTo, std::ostream& Out);
   {
     //have to delete everything from this : last few variables
     //then put everything back to where they were in ctxt to
-    for(int i = NrOfVarsDeclared; i>0; i++)
+    //std::cerr<<NrOfVarsDeclared;
+    for(int i = NrOfVarsDeclared; i>0; i--)
     {
       if(!variables[ctxtTo.variables.size()+NrOfVarsDeclared-1].isInMemory())
       {

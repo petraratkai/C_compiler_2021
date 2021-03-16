@@ -42,4 +42,11 @@ void opcode_to_code(const std::string& dest, const std::string& left , const std
 void assignment_to_code(const std::string& dest, const std::string& src,
     const std::string& opcode, std::ostream&  Out);
 
+    static int makeNameUnq=0;
+
+    static std::string makeName(std::string base)
+    {
+        return "." + base+"_"+std::to_string(makeNameUnq++);
+    }
+
 #endif
