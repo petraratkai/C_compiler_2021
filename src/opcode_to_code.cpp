@@ -106,6 +106,7 @@ void opcode_to_code(const std::string& dest, const std::string& left , const std
   {
     std::string label = makeName("and");
     //std::string label2 = makeName("and2");
+        Out << "addiu " + dest + ", $zero, 0" <<std ::endl;
     Out << "beq " + left + ", $zero, " + label << std::endl;
     Out << "addiu " + dest + ", $zero, 0" <<std ::endl;
     Out << "beq " + right + ", $zero, " + label << std::endl;
@@ -115,15 +116,19 @@ void opcode_to_code(const std::string& dest, const std::string& left , const std
   }
   else if(opcode =="||")
   {
-    Out << "bnei " + left + ", $zero, 16" << std::endl;
+    std::string label = makeName("or");
     Out << "addiu " + dest + ", $zero, 1" <<std ::endl;
-    Out << "bnei " + right + ", $zero, 8" << std::endl;
+    Out << "bne " + left + ", $zero, " + label << std::endl;
+    Out << "addiu " + dest + ", $zero, 1" <<std ::endl;
+    Out << "bne " + right + ", $zero, " + label << std::endl;
     Out << "addiu " + dest + ", $zero, 1" <<std ::endl;
     Out << "addiu " + dest + ", $zero, 0" << std::endl;
+    Out << label + ":" << std::endl;
   }
   else if(opcode =="!")
   {
       std::string label = makeName("notequal");
+          Out << "addiu " + dest + ", $zero, 0" << std::endl;
       Out << "bne " + right + ", $zero, " + label <<std::endl; //if 0 -> need to set it to 1
       Out << "addiu " + dest + ", $zero, 0" << std::endl;
       Out << "addiu " + dest + ", $zero, 1" << std::endl;
