@@ -297,7 +297,7 @@ expression_statement:
 selection_statement:
 		T_IF T_LBRACKET expression T_RBRACKET statement  													{$$ = new IfElse($3, $5, NULL);}
 	|	T_IF T_LBRACKET expression T_RBRACKET statement T_ELSE statement 									{$$ = new IfElse($3, $5, $7);}
-	|	T_SWITCH T_LBRACKET expression T_RBRACKET statement       											{$$ = $3;} //Currently don't support
+	|	T_SWITCH T_LBRACKET expression T_RBRACKET statement       											{$$ = new Switch($3, $5);} 
 ;
 
 iteration_statement:
