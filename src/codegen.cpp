@@ -102,6 +102,7 @@ void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables)
     Out<<"addiu $v0, " << regname << ", 0" <<std::endl;
 
     variables.emptyReg(regname);
+    Out << "jr $ra" << std::endl;
   return;
   }
 
@@ -161,6 +162,8 @@ void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables)
     //nop
     if(stmt->getElseStmts())
       Out << "beq " + regCond + ", $zero, " +  elselabel << std::endl;
+    else
+      Out << "beq " +  regCond + ", $zero, " + afteriflabel<< std::endl;
     variables.emptyRegifExpr(regCond, Out);
     //if there is an else jump to elselabel
     Out << "addiu $v0, $v0, 0" << std::endl; //nop
@@ -274,5 +277,5 @@ void CompileFunct(const Function *funct, std::ofstream& Out, std::vector<Variabl
     //ctxt.freeMem((funct->getSize()+21+(4/*+paramssize*/)%2)*4 + (funct->getSize()%2)*4, Out); //shouldn't matter i think ?? //FIX THIS
   }
   ctxt.freeMem((funct->getSize()+21+(4+1/*+paramssize*/)%2) + (funct->getSize()%2), Out); //shouldn't matter i think ?? //FIX THIS
-  Out<<"jr $ra" <<std::endl;
+  //Out<<"jr $ra" <<std::endl;
 }
