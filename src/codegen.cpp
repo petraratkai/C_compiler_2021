@@ -103,13 +103,20 @@ void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables)
 
   else if(stmt->IsCompoundStmt())
   {
+    //variables.findInMem("a"); std::cerr<<"compound"<<std::endl;
     std::vector<Statement*>* stmts= stmt->getStmts();
+
     Context newCtxt(0);
+
     newCtxt.enterScope(variables);
+
+    if(stmts)
+    {
     for(int i = 0; i<stmts->size(); i++)
     {
       CodeGen((*stmts)[i], Out, newCtxt);
 
+    }
     }
 
     newCtxt.leaveScope(variables, Out);
@@ -119,8 +126,9 @@ void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables)
   {
 
     variables.newVar(stmt->getVariable());
+    //std::cerr<<stmt->getVariable()<<std::endl;
 
-
+        //std::cerr<<"decl\n";
 
     if(stmt->getExpr()!=nullptr)
     {
@@ -131,6 +139,10 @@ void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables)
     variables.saveNewVar(regname, stmt->getVariable(), Out);
 
     variables.emptyReg(regname);
+    }
+    else
+    {
+      variables.saveNewVar("$zero", stmt->getVariable(), Out);
     }
 
 
@@ -187,7 +199,7 @@ void CompileFunct(const Function *funct, std::ofstream& Out)
 {
   //label:
   Out << funct->getName() + ":" << std::endl;
-  
+
   CompoundStmt *body = funct->getBody();
   Context ctxt((funct->getSize()+21+(4+1/*+paramssize*/)%2 + (funct->getSize()%2)));
   //need to save return address

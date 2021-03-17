@@ -39,10 +39,19 @@ public:
     this->NrOfVarsDeclared = 0;
     for(int i = 0; i<sizeOfStack; i++)
     {
-      stack.push_back("");
+      stack.push_back("0");
     }
   }
   Context(const Context& Ctxt)
+  {
+    regs = Ctxt.regs;
+    variables = Ctxt.variables;
+    stackptrOffset = Ctxt.stackptrOffset;
+    sizeOfStack = Ctxt.sizeOfStack;
+    stack = Ctxt.stack;
+    NrOfVarsDeclared = Ctxt.NrOfVarsDeclared;
+  }
+  Context& operator=(const Context& Ctxt)
   {
     regs = Ctxt.regs;
     variables = Ctxt.variables;
@@ -256,9 +265,29 @@ public:
   {
 
     variables.push_back(Variable_hash(varname, IntType));
-    variables[variables.size()-1].setlocation("", NrOfVarsDeclared, true);
-    stack[NrOfVarsDeclared] = varname;
-    NrOfVarsDeclared++;
+    bool found = false;
+    int i = 0;
+    while(i<stack.size())
+    {
+      if(stack[i]=="0")
+      {
+        stack[i]=varname;
+        found = true;
+        variables[variables.size()-1].setlocation("", i, true);
+        NrOfVarsDeclared++;
+
+        return;
+      }
+      i++;
+    }
+    //variables[variables.size()-1].setlocation("", NrOfVarsDeclared, true);
+      /*std::cerr<<"newvar\n";
+      for(int j = 0; j< stack.size(); j++)
+      {
+        std::cerr<<stack[j] + " ";
+      }*/
+    //stack[NrOfVarsDeclared] = varname;
+    //NrOfVarsDeclared++;
     /*std::string regname = findFreeReg(Out);
     if(regname!="")
     {
@@ -286,11 +315,11 @@ public:
   std::string loadVar(std::string varId, std::ostream& Out) //finds the variable in variables, loads from the stack, returns the resserved register
   {
     int varidx = findVarHashIndex(varId);
-    if(!variables[varidx].isInMemory()) //should not need
-    { std::cerr<<"loadVar shouldn't get here";
+    /*if(!variables[varidx].isInMemory()) //should not need
+    { std::cerr<<"loadVar shouldn't get here "<<varId;
       return variables[varidx].getReg();
 
-    }
+    }*/ //std::cerr<<varidx<<std::endl;
     std::string regname = findFreeReg(Out);
     if(regname!="")
     {
@@ -374,7 +403,7 @@ void moveToOriginal( const std::string& id, Context& ctxtTo, std::ostream& Out);
       {//it is in memory
 
         int idxInStack = findInMem(variables[ctxtTo.variables.size()+i-1].getName());
-        stack[idxInStack] = "";
+        stack[idxInStack] = "0";
       }
       variables.erase(variables.begin()+ctxtTo.variables.size()+i-1);
     }
