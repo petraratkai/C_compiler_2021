@@ -12,7 +12,7 @@ private:
     std::string type_of_op2;
     int size;
   public:
-    Unary(Expression* _expr, std::string _type_of_op2)
+    Unary(Expression* _expr, const std::string& _type_of_op2)
         : expr(_expr)
         , type_of_op2(_type_of_op2)
     {size = (_expr->getSize() +1) ;}
