@@ -39,7 +39,7 @@
 
 %type <prog> translation_unit
 %type <expr> storage_class_specifier  struct_or_union_specifier struct_or_union struct_declaration_list struct_declaration struct_declarator_list struct_declarator enum_specifier enumerator_list enumerator type_qualifier pointer type_qualifier_list abstract_declarator direct_abstract_declarator initializer initializer_list labeled_statement expression_statement  constant_expression expression assignment_expression conditional_expression logical_or_expression logical_and_expression inclusive_or_expression exclusive_or_expression and_expression equality_expression relational_expression shift_expression additive_expression multiplicative_expression cast_expression unary_expression postfix_expression primary_expression
-%type <string> unary_operator assignment_operator identifier_list  
+%type <string> unary_operator assignment_operator identifier_list function_declaration
 %type <st> jump_statement iteration_statement statement selection_statement declaration_or_statement declaration init_declarator init_declarator_list parameter_declaration
 %type <vst> declaration_or_statement_list parameter_list parameter_type_list
 %type <vtype> type_specifier specifier_qualifier_list type_name declaration_specifiers
@@ -54,8 +54,10 @@
 translation_unit:
 	function_definition 																{g_root->push($1), $$ = g_root;}
 	| declaration																					{g_root->pushDecl($1), $$ = g_root;}
+	| function_declaration																{$$ = g_root;}
 	| translation_unit function_definition							{g_root->push($2), $$ = g_root;}
 	| translation_unit declaration												{g_root->pushDecl($2), $$ = g_root;}
+	| translation_unit function_declaration								{$$=g_root;}
 /*translation_unit:
 		external_declaration 																	{g_root->push($1), $$ = g_root;}
 	|	translation_unit external_declaration													{g_root->push($2), $$ = g_root;}
@@ -65,6 +67,12 @@ translation_unit:
 		function_definition 																	{$$ = $1;}
 	|	declaration 																			{g_root->pushDecl($1);}
 ;*/
+
+function_declaration:
+	declaration_specifiers declarator declaration_or_statement_list	T_SEMICOLON {$$ = nullptr;}
+	| declaration_specifiers declarator T_SEMICOLON {$$=nullptr;}
+	| declarator declaration_or_statement_list compound_statement T_SEMICOLON  {$$=nullptr;}
+	| declarator T_SEMICOLON {$$ = nullptr;}
 
 function_definition:
 		declaration_specifiers declarator declaration_or_statement_list compound_statement		{$$ = new Function($2->getId(), $4, $2->getParams(), $1);} //Check it again
