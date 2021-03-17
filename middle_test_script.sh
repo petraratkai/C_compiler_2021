@@ -183,7 +183,7 @@ bin/c_compiler -S "${filename%_*}"".c" -o output.s &>errors.txt
 mips-linux-gnu-gcc -mfp32 -o output.o -c output.s &>errors.txt
 mips-linux-gnu-gcc -mfp32 -static -o output output.o "${filename%_*}""_driver.c" &>errors.txt
 qemu-mips output &>errors.txt
-#echo $?
+echo $?
 if [[ $? == 0 ]]; then
 	echo "Passed"
 	PASSED=$((${PASSED}+1));

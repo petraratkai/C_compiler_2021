@@ -452,8 +452,8 @@ postfix_expression:
 	|	postfix_expression T_LBRACKET argument_expression_list T_RBRACKET 	{$$ = new FunctionCall($3, $1);} //Fix this
 	|	postfix_expression T_ACCESS IDENTIFIER 								{$$ = $1;} //Fix this
 	|	postfix_expression T_POINTERACCESS IDENTIFIER 						{$$ = $1;} //Fix this
-	|	postfix_expression T_INCREMENT									{$$ = $1;} //Fix this
-	|	postfix_expression T_DECREMENT 										{$$ = $1;} //Fix this
+	|	postfix_expression T_INCREMENT										{$$ = new Unary($1, "++post");} //Fix this
+	|	postfix_expression T_DECREMENT 										{$$ = new Unary($1, "--post");} //Fix this
 ;
 
 argument_expression_list:
