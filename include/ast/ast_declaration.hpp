@@ -28,7 +28,8 @@ public:
   virtual std::string getVariable() const override {return var->getId();}
   virtual Statement *getExpr() const override {return rhs;}
   virtual bool IsDeclarationStmt() const override {return true;}
-  virtual int getSize() const override {return size;}
+  virtual int getSize() const override{return size;}
+  VarType getType() const {return var->getType();}
 };
 
 

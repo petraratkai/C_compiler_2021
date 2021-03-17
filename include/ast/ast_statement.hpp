@@ -14,7 +14,7 @@ public:
   virtual std::string getName() const {}
   virtual bool IsReturnStmt() const {return false;}
   virtual bool IsBreakStmt() const {return false;}
-  virtual bool IsContinueStmt() const {return false;}  
+  virtual bool IsContinueStmt() const {return false;}
   virtual bool IsAssignExpr() const {return false;}
   virtual bool IsDeclarationStmt() const {return false;}
   //virtual bool IsDefineExpr() const {return false;}
@@ -45,6 +45,8 @@ public:
 
   virtual Statement* getSwitchStmts() const
   { return nullptr; }
+
+  //virtual VarType getType() const {}
 
 };
 

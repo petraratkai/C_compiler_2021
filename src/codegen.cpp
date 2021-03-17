@@ -105,8 +105,8 @@ void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables)
   {
     //variables.findInMem("a"); std::cerr<<"compound"<<std::endl;
     std::vector<Statement*>* stmts= stmt->getStmts();
-
-    Context newCtxt(0);
+    std::vector<Variable_hash> gv;
+    Context newCtxt(0, gv);
 
     newCtxt.enterScope(variables);
 
@@ -195,13 +195,13 @@ void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables)
   else throw("Invalid statement!");
 }
 
-void CompileFunct(const Function *funct, std::ofstream& Out)
+void CompileFunct(const Function *funct, std::ofstream& Out, std::vector<Variable_hash> global_vars)
 {
   //label:
   Out << funct->getName() + ":" << std::endl;
 
   CompoundStmt *body = funct->getBody();
-  Context ctxt((funct->getSize()+21+(4+1/*+paramssize*/)%2 + (funct->getSize()%2)));
+  Context ctxt((funct->getSize()+21+(4+1/*+paramssize*/)%2 + (funct->getSize()%2)), global_vars);
   //need to save return address
   //need to save registers
   //fprintf(stderr, c_str(std::to_string(funct->getSize())));

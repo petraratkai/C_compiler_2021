@@ -48,15 +48,18 @@ int main(int argc, char *argv[])
 	Out<<".data" << std::endl;
 
 	std::vector<Statement*> decl = prog->getDeclarations();
+	std::vector<Variable_hash> global_variables;
 	for(int i = 0; i<decl.size(); i++)
 	{
 		Out << decl[i]->getVariable() + ":	.word ";
 		if(decl[i]->getExpr())
 			Out<<decl[i]->getExpr()->getValue() << std::endl;
+		Variable_hash newGlobal(decl[i]->getVariable(), ((Declaration*)decl[i])->getType(), true);
+		global_variables.push_back(newGlobal);
 	}
 
 	Out << "$Ltext0:" << std::endl;
-	std::vector<Variable_hash> global_vars;
+	//std::vector<Variable_hash> global_vars;
 		//std::cerr<<"here";
 	for(int i = 0; i<fns.size(); i++)
 	{
@@ -65,7 +68,7 @@ int main(int argc, char *argv[])
 		//std::cerr<<"here";
 	for(int i = 0; i<fns.size(); i++)
 	{
-	CompileFunct(fns[i], Out);
+	CompileFunct(fns[i], Out, global_variables);
 	}
 
 //delete ret2;
