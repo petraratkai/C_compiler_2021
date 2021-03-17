@@ -14,6 +14,8 @@ private:
   int size;
 public:
   IfElse(Expression* _cond, Statement* _ifstmts, Statement* _elsestmts) : cond(_cond), ifstmts(_ifstmts), elsestmts(_elsestmts) {size = (std::max(ifstmts->getSize(), elsestmts->getSize())+1+_cond->getSize());}
+  IfElse(Expression* _cond, Statement* _ifstmts) : cond(_cond), ifstmts(_ifstmts) {elsestmts = NULL; size = (ifstmts->getSize()+1+_cond->getSize());}
+
 //  IfElse(Expression* _cond, Statement* _ifstmts, Statement* _elsestmts, int _size) : cond(_cond), ifstmts(_ifstmts), elsestmts(_elsestmts), size(_size) {}
 
   virtual Statement* getCond() const override
