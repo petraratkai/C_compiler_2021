@@ -274,7 +274,7 @@ labeled_statement:
 
 
 compound_statement:
-		T_LCURLBRACKET T_RCURLBRACKET 						{$$ = new CompoundStmt(NULL);}
+		T_LCURLBRACKET T_RCURLBRACKET 						{$$ = new CompoundStmt();}
 	|	T_LCURLBRACKET declaration_or_statement_list T_RCURLBRACKET {$$ = new CompoundStmt($2);}
 ;
 

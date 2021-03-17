@@ -28,6 +28,7 @@ public:
       size +=nrOfDecl;
     }
 
+  CompoundStmt() : size(0) {LocalVarNr = 0; size = 0; stmts = NULL;}
 
   //virtual int getSize() const override {
   //  int i = stmts->size();
