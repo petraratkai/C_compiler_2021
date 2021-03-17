@@ -38,7 +38,7 @@ extern Program *parseAST(const std::string name);
 
 void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables);
 
-void CompileFunct(const Function *funct, std::ofstream& Out);
+void CompileFunct(const Function *funct, std::ofstream& Out, std::vector<Variable_hash> global_vars);
 
 void insert_var(std::vector<Variable_hash>* variables, const Variable* var);
 

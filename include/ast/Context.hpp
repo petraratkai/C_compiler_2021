@@ -30,7 +30,7 @@ private:
   unsigned int NrOfVarsDeclared;
 public:
 
-  Context(int sizeOfStack)
+  Context(int sizeOfStack, std::vector<Variable_hash> global_vars)
   {
     for(int i = 0; i<REGNAMES.size(); i++)
     {
@@ -41,6 +41,7 @@ public:
     {
       stack.push_back("0");
     }
+    variables = global_vars;
   }
   Context(const Context& Ctxt)
   {
@@ -179,7 +180,16 @@ public:
 
     std::string varName = regs[regidx].getVarName();
     int varidx = findVarHashIndex(varName);
+    if(!variables[varidx].isGlobal())
+    {
     Out<<"sw " + regname + ", " << (variables[varidx].getMemAddr())*4 << "($sp)" <<std::endl;
+    }
+    else
+    {
+      std::string address = findFreeReg(Out);
+      Out << "la " + address + ", " + variables[varidx].getName() << std::endl;
+      Out << "sw " + regname + ", " + "0(" + address + ")" << std::endl; 
+    }
     //emptyReg(regname);
   }
   void saveReg(const std::string& regname,  std::ostream& Out) //probably take the stack as argument
@@ -326,8 +336,15 @@ public:
       int idx = findRegIndex(regname);
       regs[idx].setVarName(varId); //shouldn't need
       regs[idx].setIsused(true);
+      if(!variables[varidx].isGlobal())
+      {
       Out<<"lw "<< regname <<", " << (variables[varidx].getMemAddr()) * 4<<"($sp)"<<std::endl; //+offset!!!!
+      }
       //variables[varidx].setlocation(regname, 0, false);
+      else
+      {
+        Out<<"lw "<< regname <<", " << variables[varidx].getName() << std::endl;
+      }
 
     }
     //if no more free registers!!
