@@ -20,6 +20,8 @@
 #include "ast/ast_variable.hpp"
 #include "ast/ast_while.hpp"
 #include "ast/ast_switch.hpp"
+#include "ast/ast_continue.hpp"
+#include "ast/ast_break.hpp"
 #include "ast/ast_for.hpp"
 #include "ast/Context.hpp"
 #include "ast/fakevariable.hpp"

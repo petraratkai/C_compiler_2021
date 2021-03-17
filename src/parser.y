@@ -311,8 +311,8 @@ iteration_statement:
 jump_statement:
 		T_RETURN T_SEMICOLON 									{$$ = new ReturnStmt(NULL);}
 	|	T_RETURN expression T_SEMICOLON 						{$$ = new ReturnStmt($2);}
-	|	T_BREAK T_SEMICOLON										//{$$ = new ReturnStmt(NULL);}		//Currently don't support
-	|	T_CONTINUE T_SEMICOLON									//{$$ = new ReturnStmt(NULL);}		//Currently don't support
+	|	T_BREAK T_SEMICOLON										{$$ = new BreakStmt();}		//Currently don't support
+	|	T_CONTINUE T_SEMICOLON									{$$ = new ContinueStmt();}		//Currently don't support
 	|	T_GOTO IDENTIFIER T_SEMICOLON							//{$$ = $2;}  // Don't need to support GOTO
 ;
 
