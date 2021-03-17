@@ -30,6 +30,7 @@
 #include "ast/Variable_hash.hpp"
 #include "ast/ast_cond_operator.hpp"
 #include "ast/ast_assignmentexpr.hpp"
+#include "ast/direct_declarator.hpp"
 
 
 
