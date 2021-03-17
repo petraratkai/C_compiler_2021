@@ -163,7 +163,7 @@ public:
   void freeMem(int words, std::ostream& Out)
   {
     Out << "addiu $sp, $sp, " << words*4 << std::endl;
-    for(int i = 0; i<words; i++)
+    for(int i = 0; i<words/4; i++)
     {
       stack[i]="";
     }
@@ -188,7 +188,7 @@ public:
     {
       std::string address = findFreeReg(Out);
       Out << "la " + address + ", " + variables[varidx].getName() << std::endl;
-      Out << "sw " + regname + ", " + "0(" + address + ")" << std::endl; 
+      Out << "sw " + regname + ", " + "0(" + address + ")" << std::endl;
     }
     //emptyReg(regname);
   }

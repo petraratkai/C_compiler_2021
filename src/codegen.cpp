@@ -24,8 +24,9 @@ std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //c
     //need to load it into some register
     //find a free register
     std::string regname = ctxt.loadVar(expr->getId(), Out);
+
     //std::string dest = ctxt.findFreeReg(Out);
-    //Out << "add " + dest + ", " + regname + ", $zero" << std::endl;
+    Out << "nop"<< std::endl;
     return regname; //change this!!!
     //find the variable in
   }
@@ -50,7 +51,7 @@ std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //c
     Out << "addiu $v0, $v0, 0" << std::endl; //nop after jump
     Out << "addiu " + dest + ", $v0, 0" << std::endl;
 
-    return "$v0";
+    return dest;
   }
   else if(expr->IsOperatorExpr())
   {
@@ -119,6 +120,7 @@ void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables, int 
     //(funct->getSize()+21+(4+1/*+paramssize*/)%2) + (funct->getSize()%2)
     variables.freeMem(memsize, Out); //shouldn't matter i think ?? //FIX THIS
     Out << "jr $ra" << std::endl;
+
   return;
   }
 
@@ -249,19 +251,21 @@ void CompileFunct(const Function *funct, std::ofstream& Out, std::vector<Variabl
   //need to save registers
   //fprintf(stderr, c_str(std::to_string(funct->getSize())));
   //std::cerr<<std::to_string(funct->getSize());
-    int memsize = (funct->getSize()+21+(4+1/*+paramssize*/)%2) + (funct->getSize()%2);
+    int memsize = (funct->getSize()+21+(4+1+ParamSize)%2) + (funct->getSize()%2);
+ctxt.allocateMem((funct->getSize()+21+(4+1+ParamSize)%2) + (funct->getSize()%2), Out);
   if(funct->getParams())
   {
   for(int i = 0; i<(funct->getParams())->size(); i++)
   {
     CodeGen((*funct->getParams())[i], Out, ctxt, memsize);
   }
+
   for(int i = 0; i<4 && i< ParamSize; i++)
   {
     Out << "sw $a" << i << ", " << i*4 << "($sp)" << std::endl;
   }
   }
-  ctxt.allocateMem((funct->getSize()+21+(4+1+ParamSize)%2) + (funct->getSize()%2), Out); //FIX THIS
+  //ctxt.allocateMem((funct->getSize()+21+(4+1+ParamSize)%2) + (funct->getSize()%2), Out); //FIX THIS
 
   if(funct->getName()=="main")
   {
