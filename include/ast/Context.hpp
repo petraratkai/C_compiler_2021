@@ -314,12 +314,14 @@ public:
   }
   int findVarHashIndex(std::string varname)
   {
+    int j = -1;
     for (int i = 0; i<variables.size(); i++)
     {
       if(variables[i].getName() == varname)
-        return i;
+        //return i;
+        j = i;
     }
-    return -1;
+    return j;
   }
 
   std::string loadVar(std::string varId, std::ostream& Out) //finds the variable in variables, loads from the stack, returns the resserved register

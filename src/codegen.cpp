@@ -120,6 +120,7 @@ void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables, int 
     //(funct->getSize()+21+(4+1/*+paramssize*/)%2) + (funct->getSize()%2)
     variables.freeMem(memsize, Out); //shouldn't matter i think ?? //FIX THIS
     Out << "jr $ra" << std::endl;
+    Out << "nop" << std::endl;
 
   return;
   }
