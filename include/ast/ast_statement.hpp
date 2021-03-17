@@ -25,6 +25,7 @@ public:
   virtual bool IsOperatorStmt() const {return false;}
   virtual bool IsCompoundStmt() const {return false;}
   virtual bool IsWhile() const {return false;}
+  virtual bool IsFor() const {return false;}
   virtual bool IsDo() const {return false;}
   virtual Statement* getCompoundStmt() const {return nullptr;}
   virtual std::vector<Statement*>* getStmts() const{}
@@ -45,6 +46,13 @@ public:
 
   virtual Statement* getSwitchStmts() const
   { return nullptr; }
+
+  virtual Statement* getFirst() const
+  { }
+  virtual Statement* getSecond() const
+  { }
+  virtual Statement* getThird() const
+  { }
 
   //virtual VarType getType() const {}
 

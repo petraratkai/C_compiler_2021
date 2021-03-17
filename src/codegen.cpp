@@ -192,6 +192,24 @@ void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables)
     Out<< "addiu $zero, $zero, 0" << std::endl;
     Out << afterwhilelabel + ":" <<std::endl;
   }
+  else if(stmt->IsFor())
+  {
+    std::string forlabel = makeName("for");
+    std::string afterforlabel = makeName("afterfor");
+    if(stmt->getFirst())
+      CodeGen(stmt->getFirst(), Out, variables);
+    Out << forlabel + ":" << std::endl;
+    std::string regCond = CodeGenExpr((Expression*)stmt->getSecond(), Out, variables);
+    Out << "beq " + regCond + ", $zero, " +  afterforlabel << std::endl;
+    Out << "addiu $v0, $v0, 0" << std::endl;
+    variables.emptyRegifExpr(regCond, Out);
+    CodeGen(stmt->getCompoundStmt(), Out, variables);
+    if(stmt->getThird())
+      CodeGenExpr((Expression*)stmt->getThird(), Out, variables);
+    Out << "j " + forlabel <<std::endl;
+    Out<< "addiu $zero, $zero, 0" << std::endl;
+    Out << afterforlabel + ":" <<std::endl;
+  }
   else throw("Invalid statement!");
 }
 

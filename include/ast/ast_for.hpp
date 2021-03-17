@@ -9,28 +9,28 @@ class For
   :public Statement
 {
 private:
-  Expression* first;
+  Statement* first;
   Expression* second;
   Expression* third;
   Statement* stmts;
   int size;
 public:
-  For(Expression* _first, Expression* _second, Expression* _third, Statement* _stmts) : first(_first), second(_second), third(_third), stmts(_stmts) {size = _stmts->getSize() +3;}
+  For(Statement* _first, Expression* _second, Expression* _third, Statement* _stmts) : first(_first), second(_second), third(_third), stmts(_stmts) {size = _stmts->getSize() +3;}
   //While(Expression* _cond, Statement* _stmts, int _size) : cond(_cond), stmts(_stmts), size(_size) {}
 
-  Expression* getFirst() const
+  virtual Statement* getFirst() const override
   { return first; }
-  Expression* getSecond() const
+  virtual Statement* getSecond() const override
   { return second; }
-  Expression* getThird() const
+  virtual Statement* getThird() const override
   { return third; }
 
   virtual int getSize() const override {return size;}
-  
+
   virtual Statement* getCompoundStmt() const override
   { return stmts; }
 
-  virtual bool IsWhile() const {return true;}
+  virtual bool IsFor() const {return true;}
 };
 
 #endif
