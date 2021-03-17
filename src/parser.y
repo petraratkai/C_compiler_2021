@@ -19,6 +19,7 @@
 	Function* fn;
 	VarType vtype;
 	std::vector<Statement*>* vst;
+	std::vector<Expression*>* vexpr;
 	std::string* string;
 }
 
@@ -36,13 +37,14 @@
 %type <string> T_AUTO T_BREAK T_CASE T_CHAR T_CONST T_CONTINUE T_DEFAULT T_DO T_DOUBLE T_ELSE T_ENUM T_EXTERN T_FLOAT T_FOR T_GOTO T_IF T_INT T_LONG T_REGISTER T_RETURN T_SHORT T_SIGNED T_SIZEOF T_STATIC T_STRUCT T_SWITCH T_TYPEDEF T_UNION T_UNSIGNED T_VOID T_VOLATILE T_WHILE T_PLUS T_MINUS T_MULT T_DIVIDE T_MODULO T_INCREMENT T_DECREMENT T_EQUAL T_UNEQUAL T_GREATER T_LESSER T_GREATEREQ T_LESSEREQ T_AND T_OR T_NOT T_BITAND T_BITOR T_BITXOR T_BITCOMP T_BITLSHFT T_BITRSHFT T_ASSIGN T_PLUSASSIGN T_MINUSASSIGN T_MULTASSIGN T_DIVIDEASSIGN T_MODULOASSIGN T_LSHFTASSIGN T_RSHFTASSIGN T_ANDASSIGN T_XORASSIGN T_ORASSIGN T_LCURLBRACKET T_RCURLBRACKET T_LSQUAREBRACKET T_RSQUAREBRACKET T_LBRACKET T_RBRACKET T_ACCESS T_POINTERACCESS T_SEMICOLON T_QUESTIONMARK T_COLON T_COMMA IDENTIFIER INT_CONST FLOAT_CONST CHAR_CONST STRING_CONST
 
 %type <prog> translation_unit
-%type <expr> storage_class_specifier  struct_or_union_specifier struct_or_union struct_declaration_list struct_declaration struct_declarator_list struct_declarator enum_specifier enumerator_list enumerator type_qualifier pointer type_qualifier_list parameter_type_list parameter_list parameter_declaration  abstract_declarator direct_abstract_declarator initializer initializer_list labeled_statement expression_statement  constant_expression expression assignment_expression conditional_expression logical_or_expression logical_and_expression inclusive_or_expression exclusive_or_expression and_expression equality_expression relational_expression shift_expression additive_expression multiplicative_expression cast_expression unary_expression postfix_expression primary_expression argument_expression_list
+%type <expr> storage_class_specifier  struct_or_union_specifier struct_or_union struct_declaration_list struct_declaration struct_declarator_list struct_declarator enum_specifier enumerator_list enumerator type_qualifier pointer type_qualifier_list parameter_type_list parameter_list parameter_declaration  abstract_declarator direct_abstract_declarator initializer initializer_list labeled_statement expression_statement  constant_expression expression assignment_expression conditional_expression logical_or_expression logical_and_expression inclusive_or_expression exclusive_or_expression and_expression equality_expression relational_expression shift_expression additive_expression multiplicative_expression cast_expression unary_expression postfix_expression primary_expression
 %type <string> unary_operator assignment_operator identifier_list declarator direct_declarator
 %type <st> jump_statement iteration_statement statement selection_statement declaration_or_statement declaration init_declarator init_declarator_list
 %type <vst> declaration_or_statement_list
 %type <vtype> type_specifier specifier_qualifier_list type_name declaration_specifiers
 %type <fn> function_definition external_declaration
 %type <cst> compound_statement
+%type <vexpr> argument_expression_list
 %start translation_unit
 
 %%
@@ -437,7 +439,7 @@ postfix_expression:
 		primary_expression													{$$ = $1;}
 	|	postfix_expression T_LSQUAREBRACKET expression T_RSQUAREBRACKET		{$$ = $1;} //Fix this
 	|	postfix_expression T_LBRACKET T_RBRACKET 							{$$ = new FunctionCall (NULL, $1);}
-	|	postfix_expression T_LBRACKET argument_expression_list T_RBRACKET 	{$$ = $1;} //Fix this
+	|	postfix_expression T_LBRACKET argument_expression_list T_RBRACKET 	{$$ = new FunctionCall($3, $1);} //Fix this
 	|	postfix_expression T_ACCESS IDENTIFIER 								{$$ = $1;} //Fix this
 	|	postfix_expression T_POINTERACCESS IDENTIFIER 						{$$ = $1;} //Fix this
 	|	postfix_expression T_INCREMENT									{$$ = $1;} //Fix this
@@ -445,8 +447,8 @@ postfix_expression:
 ;
 
 argument_expression_list:
-		assignment_expression
-		argument_expression_list T_COMMA assignment_expression 				{$$ = $3;} //Fix this
+		assignment_expression																			{std::vector<Expression*>* argList = new std::vector<Expression*>; argList->push_back($1); $$ = argList; }
+		| argument_expression_list T_COMMA assignment_expression 				{$1->push_back($3); $$ = $1;} //Fix this
 
 primary_expression:
 		IDENTIFIER												{$$ = new FakeVariable(*$1);}

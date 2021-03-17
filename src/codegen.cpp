@@ -35,18 +35,22 @@ std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //c
     //save registers
     //need to save the return address later
     std::string dest = ctxt.findFreeReg(Out);
-    //std::cerr<<dest;
-    for(int i=0; i<4 && i<expr->getParams()->size(); i++)
+    if(expr->getParams())
     {
-
+    for(int i=0; i<4 && i<expr->getParams()->size(); i++) //need to calculate them + need to store them in $a0-$a1
+    {
+      dest = CodeGenExpr((*expr->getParams())[i], Out, ctxt);
+      Out << "addiu $a" << i << ", " + dest + ", 0" << std::endl;
     }
+  }
+
     ctxt.storeregs(false, (8+4+1+(4+1)%2)*4, Out); //params!!
     Out << "jal " + expr->getName() << std::endl;
     ctxt.reloadregs(false, (8+4+1+(4+1)%2)*4, Out); //+params!!!
     Out << "addiu $v0, $v0, 0" << std::endl; //nop after jump
     Out << "addiu " + dest + ", $v0, 0" << std::endl;
 
-    return dest;
+    return "$v0";
   }
   else if(expr->IsOperatorExpr())
   {
@@ -81,7 +85,7 @@ std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //c
   else throw("Invalid expression!");
 }
 
-void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables)
+void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables, int memsize)
 {
 
 
@@ -102,6 +106,18 @@ void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables)
     Out<<"addiu $v0, " << regname << ", 0" <<std::endl;
 
     variables.emptyReg(regname);
+    //if(funct->getName()!="main")
+    //{
+      variables.loadRetAddr(Out, 12*4);
+
+      variables.reloadregs(true, 4*4, Out);
+    //}
+    //else
+
+      //need to load s0-s7 back
+      //ctxt.freeMem((funct->getSize()+21+(4/*+paramssize*/)%2)*4 + (funct->getSize()%2)*4, Out); //shouldn't matter i think ?? //FIX THIS
+    //(funct->getSize()+21+(4+1/*+paramssize*/)%2) + (funct->getSize()%2)
+    variables.freeMem(memsize, Out); //shouldn't matter i think ?? //FIX THIS
     Out << "jr $ra" << std::endl;
   return;
   }
@@ -114,12 +130,12 @@ void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables)
     Context newCtxt(0, gv);
 
     newCtxt.enterScope(variables);
-
+    //std::cerr<<"here\n";
     if(stmts)
     {
     for(int i = 0; i<stmts->size(); i++)
     {
-      CodeGen((*stmts)[i], Out, newCtxt);
+      CodeGen((*stmts)[i], Out, newCtxt, memsize);
 
     }
     }
@@ -167,7 +183,7 @@ void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables)
     variables.emptyRegifExpr(regCond, Out);
     //if there is an else jump to elselabel
     Out << "addiu $v0, $v0, 0" << std::endl; //nop
-    CodeGen(stmt->getIfStmts(), Out, variables);
+    CodeGen(stmt->getIfStmts(), Out, variables, memsize);
     Out << "j " + afteriflabel << std::endl;
     Out << "addiu $v0, $v0, 0" << std::endl;
     //jump to afterifelse
@@ -175,7 +191,7 @@ void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables)
     {
     Out << elselabel +":" << std::endl;
     //if(stmt->getElseStmts()!=nullptr)
-      CodeGen(stmt->getElseStmts(), Out, variables);
+      CodeGen(stmt->getElseStmts(), Out, variables, memsize);
     Out << "j " + afteriflabel << std::endl;
     Out << "addiu $v0, $v0, 0" << std::endl;
     }
@@ -195,7 +211,7 @@ void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables)
     Out << "beq " + regCond + ", $zero, " +  afterwhilelabel << std::endl;
     Out << "addiu $v0, $v0, 0" << std::endl;
     variables.emptyRegifExpr(regCond, Out);
-    CodeGen(stmt->getCompoundStmt(), Out, variables);
+    CodeGen(stmt->getCompoundStmt(), Out, variables, memsize);
     Out << "j " + whilelabel <<std::endl;
     Out<< "addiu $zero, $zero, 0" << std::endl;
     Out << afterwhilelabel + ":" <<std::endl;
@@ -205,13 +221,13 @@ void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables)
     std::string forlabel = makeName("for");
     std::string afterforlabel = makeName("afterfor");
     if(stmt->getFirst())
-      CodeGen(stmt->getFirst(), Out, variables);
+      CodeGen(stmt->getFirst(), Out, variables, memsize);
     Out << forlabel + ":" << std::endl;
     std::string regCond = CodeGenExpr((Expression*)stmt->getSecond(), Out, variables);
     Out << "beq " + regCond + ", $zero, " +  afterforlabel << std::endl;
     Out << "addiu $v0, $v0, 0" << std::endl;
     variables.emptyRegifExpr(regCond, Out);
-    CodeGen(stmt->getCompoundStmt(), Out, variables);
+    CodeGen(stmt->getCompoundStmt(), Out, variables, memsize);
     if(stmt->getThird())
       CodeGenExpr((Expression*)stmt->getThird(), Out, variables);
     Out << "j " + forlabel <<std::endl;
@@ -233,11 +249,12 @@ void CompileFunct(const Function *funct, std::ofstream& Out, std::vector<Variabl
   //need to save registers
   //fprintf(stderr, c_str(std::to_string(funct->getSize())));
   //std::cerr<<std::to_string(funct->getSize());
+    int memsize = (funct->getSize()+21+(4+1/*+paramssize*/)%2) + (funct->getSize()%2);
   if(funct->getParams())
   {
   for(int i = 0; i<(funct->getParams())->size(); i++)
   {
-    CodeGen((*funct->getParams())[i], Out, ctxt);
+    CodeGen((*funct->getParams())[i], Out, ctxt, memsize);
   }
   for(int i = 0; i<4 && i< ParamSize; i++)
   {
@@ -262,20 +279,20 @@ void CompileFunct(const Function *funct, std::ofstream& Out, std::vector<Variabl
   }
   //for loop for the parameters maybe?
 
-  CodeGen(body, Out, ctxt);
+  CodeGen(body, Out, ctxt, memsize);
 
    //is this correct?
-  if(funct->getName()!="main")
+  /*if(funct->getName()!="main")
   {
     ctxt.loadRetAddr(Out, 12*4);
 
     ctxt.reloadregs(true, 4*4, Out);
   }
   else
-  {
+  {*/
     //need to load s0-s7 back
     //ctxt.freeMem((funct->getSize()+21+(4/*+paramssize*/)%2)*4 + (funct->getSize()%2)*4, Out); //shouldn't matter i think ?? //FIX THIS
-  }
-  ctxt.freeMem((funct->getSize()+21+(4+1/*+paramssize*/)%2) + (funct->getSize()%2), Out); //shouldn't matter i think ?? //FIX THIS
+  //}
+/*ctxt.freeMem((funct->getSize()+21+(4+1/*+paramssize*///)%2) + (funct->getSize()%2), Out); //shouldn't matter i think ?? //FIX THIS
   //Out<<"jr $ra" <<std::endl;
 }
