@@ -16,6 +16,7 @@
 	Expression* expr;
 	Statement* st;
 	CompoundStmt* cst;
+	DirectDecl* ddecl;
 	Function* fn;
 	VarType vtype;
 	std::vector<Statement*>* vst;
@@ -38,13 +39,14 @@
 
 %type <prog> translation_unit
 %type <expr> storage_class_specifier  struct_or_union_specifier struct_or_union struct_declaration_list struct_declaration struct_declarator_list struct_declarator enum_specifier enumerator_list enumerator type_qualifier pointer type_qualifier_list abstract_declarator direct_abstract_declarator initializer initializer_list labeled_statement expression_statement  constant_expression expression assignment_expression conditional_expression logical_or_expression logical_and_expression inclusive_or_expression exclusive_or_expression and_expression equality_expression relational_expression shift_expression additive_expression multiplicative_expression cast_expression unary_expression postfix_expression primary_expression
-%type <string> unary_operator assignment_operator identifier_list declarator direct_declarator
+%type <string> unary_operator assignment_operator identifier_list  
 %type <st> jump_statement iteration_statement statement selection_statement declaration_or_statement declaration init_declarator init_declarator_list parameter_declaration
 %type <vst> declaration_or_statement_list parameter_list parameter_type_list
 %type <vtype> type_specifier specifier_qualifier_list type_name declaration_specifiers
 %type <fn> function_definition external_declaration
 %type <cst> compound_statement
 %type <vexpr> argument_expression_list
+%type <ddecl> direct_declarator declarator
 %start translation_unit
 
 %%
@@ -92,8 +94,8 @@ init_declarator_list:
 ;
 
 init_declarator:
-		declarator 												{$$ = new Declaration(new Variable(*$1, IntType), NULL);} //FIX THIS // Vartype isn't available yet so can't actually give it intype technically yet
-	|	declarator T_ASSIGN initializer 						{$$ = new Declaration(new Variable(*$1, IntType), $3);} //FIX THIS
+		declarator 												{$$ = new Declaration(new Variable($1->getId(), IntType), NULL);} //FIX THIS // Vartype isn't available yet so can't actually give it intype technically yet
+	|	declarator T_ASSIGN initializer 						{$$ = new Declaration(new Variable($1->getId(), IntType), $3);} //FIX THIS
 ;
 
 storage_class_specifier:
@@ -184,13 +186,13 @@ declarator:
 ;
 
 direct_declarator:
-		IDENTIFIER 																				{$$ = $1;}
+		IDENTIFIER 																				{$$ = new DirectDecl(*$1);}
 	|	T_LBRACKET declarator T_RBRACKET 														{$$ = $2;}
 	|	direct_declarator T_LSQUAREBRACKET constant_expression T_RSQUAREBRACKET  				//{$$ = $1;} //FIX THIS
 	|	direct_declarator T_LSQUAREBRACKET T_RSQUAREBRACKET 									//{$$ = $1;}
-	|	direct_declarator T_LBRACKET parameter_type_list T_RBRACKET 							//{$$ = $1;} //FIX THIS
+	|	direct_declarator T_LBRACKET parameter_type_list T_RBRACKET 							{$$ = new DirectDecl($1->getId(),$3);} //FIX THIS
 	|	direct_declarator T_LBRACKET identifier_list T_RBRACKET 								//{$$ = $1;} //FIX THIS
-	|	direct_declarator T_LBRACKET T_RBRACKET 												//{$$ = $1;} //FIX THIS
+	|	direct_declarator T_LBRACKET T_RBRACKET 												{$$ = new DirectDecl($1->getId());} //FIX THIS
 ;
 
 pointer:
@@ -215,7 +217,7 @@ parameter_list:
 	|	parameter_list T_COMMA parameter_declaration 											{$1->push_back($3); $$ = $1;}
 
 parameter_declaration:
-		declaration_specifiers declarator     													{$$ = new Declaration( new Variable(*$2, $1), NULL);} //FIX THIS
+		declaration_specifiers declarator     													{$$ = new Declaration( new Variable($2->getId(), $1), NULL);} //FIX THIS
 	|	declaration_specifiers abstract_declarator 												//{$$ = $1;} //FIX THIS
 	|	declaration_specifiers																	//{$$ = $1;}
 ;
