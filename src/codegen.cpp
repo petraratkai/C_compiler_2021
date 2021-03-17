@@ -50,7 +50,7 @@ std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //c
     ctxt.reloadregs(false, (8+4+1+(4+1)%2)*4, Out); //+params!!!
     Out << "addiu $v0, $v0, 0" << std::endl; //nop after jump
     Out << "addiu " + dest + ", $v0, 0" << std::endl;
-
+    ctxt.emptyReg("$v0");
     return dest;
   }
   else if(expr->IsOperatorExpr())
@@ -60,8 +60,8 @@ std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //c
     std::string right = CodeGenExpr(expr->getRight(), Out, ctxt);
     std::string dest = ctxt.findFreeReg(Out);
     opcode_to_code(dest, left, right, expr->getOpcode(), Out);
-    ctxt.emptyRegifExpr(left, Out);
-    ctxt.emptyRegifExpr(right, Out);
+    ctxt.emptyReg(left);
+    ctxt.emptyReg(right);
     return dest;
   }
   else if(expr->IsUnary())
@@ -71,9 +71,9 @@ std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //c
     opcode_to_code(dest, "$zero", src, expr->getOpcode(), Out); //need to fix the function! or would it work?
     if(expr->getOpcode()=="++" || expr->getOpcode() == "--" || expr->getOpcode()=="++post" || expr->getOpcode()=="--post")
     {
-      ctxt.saveNewVar(dest, expr->getExpr()->getId(), Out);
+      ctxt.saveNewVar(src, expr->getExpr()->getId(), Out);
     }
-    ctxt.emptyRegifExpr(src, Out);
+    ctxt.emptyReg(src);
     return dest;
   }
   else if(expr->IsAssignExpr())
@@ -82,7 +82,7 @@ std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //c
     std::string src = CodeGenExpr(expr->getRhs(), Out, ctxt);
     std::string dest = CodeGenExpr(expr->getLhs(), Out, ctxt);
     assignment_to_code(dest, src, expr->getOpcode(), Out);
-    ctxt.saveVar(dest, Out);
+    ctxt.saveNewVar(dest, expr->getLhs()->getId(), Out);
     ctxt.emptyReg(src);
     //ctxt.emptyRegifExpr(src, Out);
     return dest;
@@ -99,7 +99,7 @@ void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables, int 
       //find variable in hash table
         //fprintf(stderr, "here");
       std::string regname = CodeGenExpr((Expression*)stmt, Out, variables);
-      variables.emptyRegifExpr(regname, Out);
+      variables.emptyReg(regname);
   }
   else if(stmt->IsReturnStmt())
   {

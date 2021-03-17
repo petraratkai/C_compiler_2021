@@ -190,6 +190,7 @@ public:
       Out << "la " + address + ", " + variables[varidx].getName() << std::endl;
       Out << "sw " + regname + ", " + "0(" + address + ")" << std::endl;
     }
+
     //emptyReg(regname);
   }
   void saveReg(const std::string& regname,  std::ostream& Out) //probably take the stack as argument
@@ -347,6 +348,7 @@ public:
       {
         Out<<"lw "<< regname <<", " << variables[varidx].getName() << std::endl;
       }
+      Out<<"nop"<<std::endl;
 
     }
     //if no more free registers!!
