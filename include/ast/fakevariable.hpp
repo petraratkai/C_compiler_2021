@@ -14,7 +14,7 @@ public:
         : id(_id)
     {size =2;}
 
-    const std::string getId() const
+    virtual const std::string getId() const override
     { return id; }
 
     virtual int getSize() const override
