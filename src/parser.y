@@ -67,10 +67,10 @@ translation_unit:
 ;*/
 
 function_definition:
-		declaration_specifiers declarator declaration_or_statement_list compound_statement		{$$ = new Function(*$2, $4, $3, $1);} //Check it again
-	|	declaration_specifiers declarator compound_statement 									{$$ = new Function(*$2, $3, NULL, $1);} //Check it again
-	|	declarator declaration_or_statement_list compound_statement 							{$$ = new Function(*$1, $3, $2, VoidType);} //Check it again
-	|	declarator compound_statement 															{$$ = new Function(*$1, $2, NULL, VoidType);} //Check it again
+		declaration_specifiers declarator declaration_or_statement_list compound_statement		{$$ = new Function($2->getId(), $4, $2->getParams(), $1);} //Check it again
+	|	declaration_specifiers declarator compound_statement 									{$$ = new Function($2->getId(), $3, $2->getParams(), $1);} //Check it again
+	|	declarator declaration_or_statement_list compound_statement 							{$$ = new Function($1->getId(), $3, $1->getParams(), VoidType);} //Check it again
+	|	declarator compound_statement 															{$$ = new Function($1->getId(), $2, $1->getParams(), VoidType);} //Check it again
 ;
 
 
