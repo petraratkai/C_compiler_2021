@@ -69,7 +69,9 @@ std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //c
     std::string src = CodeGenExpr(expr->getRhs(), Out, ctxt);
     std::string dest = CodeGenExpr(expr->getLhs(), Out, ctxt);
     assignment_to_code(dest, src, expr->getOpcode(), Out);
-    ctxt.emptyRegifExpr(src, Out);
+    ctxt.saveVar(dest, Out);
+    ctxt.emptyReg(src);
+    //ctxt.emptyRegifExpr(src, Out);
     return dest;
   }
   else throw("Invalid expression!");
@@ -92,8 +94,11 @@ void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables)
     //move that value to v0
       //fprintf(stderr, "here");
     std::string regname = CodeGenExpr((Expression*)stmt->getRetVal(), Out, variables);
+
     Out<<"addiu $v0, " << regname << ", 0" <<std::endl;
-    variables.emptyRegifExpr(regname, Out);
+
+    variables.emptyReg(regname);
+  return;
   }
 
   else if(stmt->IsCompoundStmt())
@@ -106,17 +111,29 @@ void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables)
       CodeGen((*stmts)[i], Out, newCtxt);
 
     }
+
     newCtxt.leaveScope(variables, Out);
+
   }
   else if(stmt->IsDeclarationStmt())
   {
-    std::string dest = variables.newVar(stmt->getVariable(), Out);
+
+    variables.newVar(stmt->getVariable());
+
+
+
     if(stmt->getExpr()!=nullptr)
     {
+    //std::string dest = variables.findFreeReg(Out);
     std::string regname = CodeGenExpr((Expression*)(stmt->getExpr()), Out, variables);
-    Out << "add " + dest + ", " + regname + ", $zero" << std::endl;
+    //Out << "add " + dest + ", " + regname + ", $zero" << std::endl;
+
+    variables.saveNewVar(regname, stmt->getVariable(), Out);
+
     variables.emptyReg(regname);
     }
+
+
   }
   else if(stmt->IsIfElseStmt())
   {
@@ -134,11 +151,15 @@ void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables)
     Out << "j " + afteriflabel << std::endl;
     Out << "addiu $v0, $v0, 0" << std::endl;
     //jump to afterifelse
+    if(stmt->getElseStmts())
+    {
     Out << elselabel +":" << std::endl;
-    if(stmt->getElseStmts()!=nullptr)
+    //if(stmt->getElseStmts()!=nullptr)
       CodeGen(stmt->getElseStmts(), Out, variables);
     Out << "j " + afteriflabel << std::endl;
     Out << "addiu $v0, $v0, 0" << std::endl;
+    }
+
     //jump to afterifelse
     Out << afteriflabel + ":" <<std::endl;
 
@@ -166,24 +187,31 @@ void CompileFunct(const Function *funct, std::ofstream& Out)
 {
   //label:
   Out << funct->getName() + ":" << std::endl;
+  
   CompoundStmt *body = funct->getBody();
-  Context ctxt((funct->getSize()+21+(4/*+paramssize*/)%2)*4);
+  Context ctxt((funct->getSize()+21+(4+1/*+paramssize*/)%2 + (funct->getSize()%2)));
   //need to save return address
   //need to save registers
   //fprintf(stderr, c_str(std::to_string(funct->getSize())));
   //std::cerr<<std::to_string(funct->getSize());
   ctxt.allocateMem((funct->getSize()+21+(4+1/*+paramssize*/)%2) + (funct->getSize()%2), Out); //FIX THIS
+
   if(funct->getName()=="main")
   {
     //ctxt.allocateMem((funct->getSize()+21+(4+1/*+paramssize*/)%2)*4 + (funct->getSize()%2)*4, Out); //FIX THIS
   }
   else
   {
+
     ctxt.saveRetAddr(Out, 12*4); //+params size
+
     //need to save s0-s7
     ctxt.storeregs(true, 4*4, Out); //+params size
+    //std::cerr<<"here";
+
   }
   //for loop for the parameters maybe?
+
   CodeGen(body, Out, ctxt);
 
    //is this correct?

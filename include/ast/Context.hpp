@@ -65,7 +65,7 @@ public:
   void saveRetAddr(std::ostream& Out, int offset)
   {
     Out << "sw $ra, "<< offset << "($sp)" << std::endl;
-    stack[0]="$ra";
+    stack[offset/4]="$ra";
     //std::cerr<<"hello";
   }
 
@@ -99,11 +99,15 @@ public:
       j+=4;
       //set the name in the stack!!
       if(savedReg)
-        stack[offset/4+j] = "$s";
+      {
+        stack[offset/4+i-fromidx] = "$s";
+      }
       else
-        stack[offset/4+j] ="$t";
-
+      {
+        stack[offset/4+i-fromidx] ="$t";
+      }
     }
+
   }
 
   void reloadregs(bool savedReg, int offset, std::ostream& Out)
@@ -127,7 +131,7 @@ public:
       Out<<"lw " + REGNAMES[i] + ", " << offset + j << "($sp)" << std::endl;
       j+=4;
       //set the name in the stack!!
-        stack[offset/4+j] = "";
+        stack[offset/4+i-fromidx] = "";
     }
   }
 
@@ -153,6 +157,21 @@ public:
     {
       stack[i]="";
     }
+  }
+  void saveNewVar(const std::string& regname, const std::string& varName, std::ostream& Out)
+  {
+    //int regidx = findRegIndex(regname);
+    int varidx = findVarHashIndex(varName);
+    Out<<"sw " + regname + ", " << (variables[varidx].getMemAddr())*4 << "($sp)" <<std::endl;
+  }
+  void saveVar(const std::string& regname, std::ostream& Out)
+  {
+    int regidx = findRegIndex(regname);
+
+    std::string varName = regs[regidx].getVarName();
+    int varidx = findVarHashIndex(varName);
+    Out<<"sw " + regname + ", " << (variables[varidx].getMemAddr())*4 << "($sp)" <<std::endl;
+    //emptyReg(regname);
   }
   void saveReg(const std::string& regname,  std::ostream& Out) //probably take the stack as argument
   {
@@ -232,10 +251,15 @@ public:
 
   }*/
 
-  std::string newVar(const std::string& varname, std::ostream& Out) //only for declarations, adds new variable to variable hashes and reserves a register
+  void newVar(const std::string& varname) //only for declarations, adds new variable to variable hashes and reserves a register
   //then returns the reserved register name
   {
-    std::string regname = findFreeReg(Out);
+
+    variables.push_back(Variable_hash(varname, IntType));
+    variables[variables.size()-1].setlocation("", NrOfVarsDeclared, true);
+    stack[NrOfVarsDeclared] = varname;
+    NrOfVarsDeclared++;
+    /*std::string regname = findFreeReg(Out);
     if(regname!="")
     {
       int idx = findRegIndex(regname);
@@ -245,7 +269,7 @@ public:
       variables[variables.size()-1].setlocation(regname, 0, false);
 
     }
-    return regname;
+    return regname;*/
     //if no free register?
     //store something else on the stack
   }
@@ -262,17 +286,19 @@ public:
   std::string loadVar(std::string varId, std::ostream& Out) //finds the variable in variables, loads from the stack, returns the resserved register
   {
     int varidx = findVarHashIndex(varId);
-    if(!variables[varidx].isInMemory())
+    if(!variables[varidx].isInMemory()) //should not need
+    { std::cerr<<"loadVar shouldn't get here";
       return variables[varidx].getReg();
 
+    }
     std::string regname = findFreeReg(Out);
     if(regname!="")
     {
       int idx = findRegIndex(regname);
-      regs[idx].setVarName(varId);
+      regs[idx].setVarName(varId); //shouldn't need
       regs[idx].setIsused(true);
-      Out<<"lw "<< regname <<", " << variables[varidx].getMemAddr() * 4<<"($sp)"<<std::endl;
-      variables[varidx].setlocation(regname, 0, false);
+      Out<<"lw "<< regname <<", " << (variables[varidx].getMemAddr()) * 4<<"($sp)"<<std::endl; //+offset!!!!
+      //variables[varidx].setlocation(regname, 0, false);
 
     }
     //if no more free registers!!
@@ -329,7 +355,8 @@ void moveToOriginal( const std::string& id, Context& ctxtTo, std::ostream& Out);
       if(stack[i]== varname)
         return i;
     }
-    throw(varname + "not in mem");
+    std::cout<<varname + "not in mem";
+    return 0;
   }
   void leaveScope(Context& ctxtTo, std::ostream& Out) //ctxtFrom won't be used anymore
   {
@@ -338,16 +365,18 @@ void moveToOriginal( const std::string& id, Context& ctxtTo, std::ostream& Out);
     //std::cerr<<NrOfVarsDeclared;
     for(int i = NrOfVarsDeclared; i>0; i--)
     {
-      if(!variables[ctxtTo.variables.size()+NrOfVarsDeclared-1].isInMemory())
+
+      if(!variables[ctxtTo.variables.size()+i-1].isInMemory())
       {
-        emptyReg(variables[ctxtTo.variables.size()+NrOfVarsDeclared-1].getReg());
+        emptyReg(variables[ctxtTo.variables.size()+i-1].getReg());
       }
       else
       {//it is in memory
-        int idxInStack = findInMem(variables[ctxtTo.variables.size()+NrOfVarsDeclared-1].getName());
+
+        int idxInStack = findInMem(variables[ctxtTo.variables.size()+i-1].getName());
         stack[idxInStack] = "";
       }
-      variables.erase(variables.begin()+ctxtTo.variables.size()+NrOfVarsDeclared-1);
+      variables.erase(variables.begin()+ctxtTo.variables.size()+i-1);
     }
     ctxtTo = *this;
     /*for(int i = 0; i<variables.size(); i++)
