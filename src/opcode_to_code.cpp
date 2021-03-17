@@ -147,14 +147,14 @@ void opcode_to_code(const std::string& dest, const std::string& left , const std
     }
     else if(opcode == "++post") //post Increment
     {
-      Out << "addiu " + dest + ", " + src + ", 0"<< std::endl;
-      Out << "addiu " + src + ", " + src + ", 1" << std::endl;
+      Out << "addiu " + dest + ", " + right + ", 0"<< std::endl;
+      Out << "addiu " + right + ", " + right + ", 1" << std::endl;
     }
 
     else if(opcode == "--post")
     {
-      Out << "addiu " + dest + ", " + src + ", 0"<< std::endl;
-      Out << "addiu " + src + ", " + src + ", -1" << std::endl;
+      Out << "addiu " + dest + ", " + right + ", 0"<< std::endl;
+      Out << "addiu " + right + ", " + right + ", -1" << std::endl;
     }
 
   else throw ("Invalid operator!");

@@ -69,7 +69,7 @@ std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //c
     std::string src = CodeGenExpr(expr->getExpr(), Out, ctxt);
     std::string dest = ctxt.findFreeReg(Out);
     opcode_to_code(dest, "$zero", src, expr->getOpcode(), Out); //need to fix the function! or would it work?
-    if(expr->getOpcode()=="++" || expr->getOpcode() == "--" || expr->getOpcode()=="++post" || expr->getOpcode()=="++post")
+    if(expr->getOpcode()=="++" || expr->getOpcode() == "--" || expr->getOpcode()=="++post" || expr->getOpcode()=="--post")
     {
       ctxt.saveNewVar(dest, expr->getExpr()->getId(), Out);
     }
