@@ -10,12 +10,25 @@ class Variable
 private:
     std::string id;
     VarType type;
+    VarStorage storage;
+    VarQualifier qualifier;
     int size;
 public:
     Variable(const std::string &_id, VarType type)
         : id(_id), type(type)
-    {size = 2;}
+    {size = 2; storage = NoStorage; qualifier = NoQualifier;}
 
+    Variable(const std::string &_id, VarType type, VarQualifier qualifier)
+        : id(_id), type(type), qualifier(qualifier)
+    {size = 2; storage = NoStorage;}
+
+    Variable(const std::string &_id, VarType type, VarStorage storage)
+        : id(_id), type(type), storage(storage)
+    {size = 2; qualifier = NoQualifier;}
+
+    Variable(const std::string &_id, VarType type, VarQualifier qualifier, VarStorage storage)
+        : id(_id), type(type), qualifier(qualifier), storage(storage)
+    {size = 2;}
 //Variable(const std::string &_id, VarType type, int _size)
 //        : id(_id), type(type), size(_size)
 //    {}
@@ -24,6 +37,10 @@ public:
     { return id; }
 
     VarType getType() const {return type;}
+
+    VarQualifier getQualifier() {return qualifier;}
+
+    VarStorage getStorage() {return storage;}
 
     virtual int getSize() const override {return size;}
 
