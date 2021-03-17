@@ -25,6 +25,7 @@ public:
   virtual bool IsOperatorStmt() const {return false;}
   virtual bool IsCompoundStmt() const {return false;}
   virtual bool IsWhile() const {return false;}
+  virtual bool IsDo() const {return false;}
   virtual Statement* getCompoundStmt() const {return nullptr;}
   virtual std::vector<Statement*>* getStmts() const{}
   virtual int getSize() const {}

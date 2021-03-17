@@ -19,6 +19,7 @@
 #include "ast/ast_unary.hpp"
 #include "ast/ast_variable.hpp"
 #include "ast/ast_while.hpp"
+#include "ast/ast_do.hpp"
 #include "ast/ast_switch.hpp"
 #include "ast/ast_continue.hpp"
 #include "ast/ast_break.hpp"
