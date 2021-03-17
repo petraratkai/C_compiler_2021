@@ -10,11 +10,11 @@
 class FunctionCall
     : public Expression {
 private:
-    Expression* arg;
+    std::vector<Expression*>* arg;
     Expression* funct_name;
     int size;
 public:
-    FunctionCall(Expression* _arg, Expression* funct_name)
+    FunctionCall(std::vector<Expression*>* _arg, Expression* funct_name)
         : arg(_arg), funct_name(funct_name)
     {size = /*arg->getSize()*/+1;}
     //FunctionCall(ExpressionPtr _arg, std::string funct_name, int _size)
@@ -27,14 +27,16 @@ public:
     }
 
 
-    ExpressionPtr getArg() const
-    { return arg; }
+    /*Expressionr getArg() const
+    { return arg; }*/
 
     virtual std::string getName() const override{ return funct_name->getName();}
 
     virtual bool IsFunctionCallExpr() const override {return true;}
 
     virtual int getSize() const override {return size;}
+
+    virtual std::vector<Expression*>* getParams() const override {return arg;}
 
     /*virtual void print(std::ostream &dst) const override
     {

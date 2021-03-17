@@ -36,6 +36,10 @@ std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //c
     //need to save the return address later
     std::string dest = ctxt.findFreeReg(Out);
     //std::cerr<<dest;
+    for(int i=0; i<4 && i<expr->getParams()->size(); i++)
+    {
+
+    }
     ctxt.storeregs(false, (8+4+1+(4+1)%2)*4, Out); //params!!
     Out << "jal " + expr->getName() << std::endl;
     ctxt.reloadregs(false, (8+4+1+(4+1)%2)*4, Out); //+params!!!
@@ -142,7 +146,7 @@ void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables)
     }
     else
     {
-      variables.saveNewVar("$zero", stmt->getVariable(), Out);
+    //  variables.saveNewVar("$zero", stmt->getVariable(), Out);
     }
 
 
@@ -155,7 +159,8 @@ void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables)
     std::string afteriflabel = makeName("afterif");
     //if cond true jump to iflabel
     //nop
-    Out << "beq " + regCond + ", $zero, " +  elselabel << std::endl;
+    if(stmt->getElseStmts())
+      Out << "beq " + regCond + ", $zero, " +  elselabel << std::endl;
     variables.emptyRegifExpr(regCond, Out);
     //if there is an else jump to elselabel
     Out << "addiu $v0, $v0, 0" << std::endl; //nop
@@ -219,12 +224,24 @@ void CompileFunct(const Function *funct, std::ofstream& Out, std::vector<Variabl
   Out << funct->getName() + ":" << std::endl;
 
   CompoundStmt *body = funct->getBody();
-  Context ctxt((funct->getSize()+21+(4+1/*+paramssize*/)%2 + (funct->getSize()%2)), global_vars);
+  int ParamSize = funct->getParams()?funct->getParams()->size():0; //should be different with different types
+  Context ctxt((funct->getSize()+21+(4+1+ParamSize)%2 + (funct->getSize()%2)), global_vars);
   //need to save return address
   //need to save registers
   //fprintf(stderr, c_str(std::to_string(funct->getSize())));
   //std::cerr<<std::to_string(funct->getSize());
-  ctxt.allocateMem((funct->getSize()+21+(4+1/*+paramssize*/)%2) + (funct->getSize()%2), Out); //FIX THIS
+  if(funct->getParams())
+  {
+  for(int i = 0; i<(funct->getParams())->size(); i++)
+  {
+    CodeGen((*funct->getParams())[i], Out, ctxt);
+  }
+  for(int i = 0; i<4 && i< ParamSize; i++)
+  {
+    Out << "sw $a" << i << ", " << i*4 << "($sp)" << std::endl;
+  }
+  }
+  ctxt.allocateMem((funct->getSize()+21+(4+1+ParamSize)%2) + (funct->getSize()%2), Out); //FIX THIS
 
   if(funct->getName()=="main")
   {

@@ -26,6 +26,8 @@ public:
 
   std::vector<Variable_hash>* getVariables() const {return local_variables;}
 
+  std::vector<Statement*>* getParams() const {return parameters;}
+
   int getSize() const {return size;}
 
 };

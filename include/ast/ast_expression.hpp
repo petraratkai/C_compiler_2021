@@ -69,5 +69,7 @@ public:
 
     virtual std::string getName() const { return "hey";}
 
+    virtual std::vector<Expression*>* getParams() const {}
+
 };
 #endif
