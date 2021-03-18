@@ -217,7 +217,7 @@ void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables, int 
     std::string regCond = CodeGenExpr((Expression*)stmt->getCond(), Out, variables);
     Out << "beq " + regCond + ", $zero, " +  afterwhilelabel << std::endl;
     Out << "addiu $v0, $v0, 0" << std::endl;
-    variables.emptyRegifExpr(regCond, Out);
+    variables.emptyReg(regCond);
     CodeGen(stmt->getCompoundStmt(), Out, variables, memsize);
     Out << "j " + whilelabel <<std::endl;
     Out<< "addiu $zero, $zero, 0" << std::endl;
@@ -256,6 +256,7 @@ void CompileFunct(const Function *funct, std::ofstream& Out, std::vector<Variabl
   //need to save registers
   //fprintf(stderr, c_str(std::to_string(funct->getSize())));
   //std::cerr<<std::to_string(funct->getSize());
+  ctxt.setMemEmpty(13+13%2);
     int memsize = (funct->getSize()+21+(4+1+ParamSize)%2) + (funct->getSize()%2);
 ctxt.allocateMem((funct->getSize()+21+(4+1+ParamSize)%2) + (funct->getSize()%2), Out);
   if(funct->getParams())

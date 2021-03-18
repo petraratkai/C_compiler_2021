@@ -80,15 +80,15 @@ void opcode_to_code(const std::string& dest, const std::string& left , const std
   }
   else if(opcode == "&")
   {
-    Out << "and " + dest + ", " + right + ", " + left << std::endl;
+    Out << "and " + dest + ", " + left + ", " + right << std::endl;
   }
   else if(opcode=="|")
   {
-    Out << "or " + dest + ", " + right + ", " + left << std::endl;
+    Out << "or " + dest + ", " + left + ", " + right << std::endl;
   }
   else if(opcode =="^")
   {
-    Out << "xor " + dest + ", " + right + ", " + left << std::endl;
+    Out << "xor " + dest + ", " + left + ", " + right << std::endl;
   }
   else if(opcode == "~")
   {
@@ -96,11 +96,11 @@ void opcode_to_code(const std::string& dest, const std::string& left , const std
   }
   else if(opcode == "<<")
   {
-    Out << "sllv " + dest + ", " + right + ", " + left << std::endl;
+    Out << "sllv " + dest + ", " + left + ", " + right << std::endl;
   }
   else if(opcode == ">>")
   {
-    Out << "srlv " + dest + ", " + right + ", " + left << std::endl; //arithmetic or logical???
+    Out << "srlv " + dest + ", " + left + ", " + right << std::endl; //arithmetic or logical???
   }
   else if(opcode == "&&") // logical or? if a >= 1 and b >= 1
   {

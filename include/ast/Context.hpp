@@ -39,7 +39,7 @@ public:
     this->NrOfVarsDeclared = 0;
     for(int i = 0; i<sizeOfStack; i++)
     {
-      stack.push_back("0");
+      stack.push_back("");
     }
     variables = global_vars;
   }
@@ -157,7 +157,7 @@ public:
     Out << "addiu $sp, $sp, " << (-1)*words*4 << std::endl;
     for(int i = 0; i<words; i++)
     {
-      stack[i]="0";
+      stack[i]="";
     }
   }
   void freeMem(int words, std::ostream& Out)
@@ -280,7 +280,7 @@ public:
     int i = 0;
     while(i<stack.size())
     {
-      if(stack[i]=="0")
+      if(stack[i]=="")
       {
         stack[i]=varname;
         found = true;
@@ -405,7 +405,7 @@ void moveToOriginal( const std::string& id, Context& ctxtTo, std::ostream& Out);
       if(stack[i]== varname)
         return i;
     }
-    std::cout<<varname + "not in mem";
+    //std::cout<<varname + "not in mem";
     return 0;
   }
   void leaveScope(Context& ctxtTo, std::ostream& Out) //ctxtFrom won't be used anymore
@@ -424,7 +424,7 @@ void moveToOriginal( const std::string& id, Context& ctxtTo, std::ostream& Out);
       {//it is in memory
 
         int idxInStack = findInMem(variables[ctxtTo.variables.size()+i-1].getName());
-        stack[idxInStack] = "0";
+        stack[idxInStack] = "";
       }
       variables.erase(variables.begin()+ctxtTo.variables.size()+i-1);
     }
@@ -434,6 +434,14 @@ void moveToOriginal( const std::string& id, Context& ctxtTo, std::ostream& Out);
       moveToOriginal(variables[i].getName(), ctxtTo, Out);
     }*/
 
+  }
+
+  void setMemEmpty(int nrOfwords) //sets first nrOfwords locations of the stack to empty
+  {
+    for(int i=0; i<nrOfwords; i++)
+    {
+      stack[i] = "0";
+    }
   }
 
 
