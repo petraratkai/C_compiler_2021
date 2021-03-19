@@ -447,7 +447,7 @@ unary_operator:
 
 postfix_expression:
 		primary_expression													{$$ = $1;}
-	|	postfix_expression T_LSQUAREBRACKET expression T_RSQUAREBRACKET		{$$ = $1;} //Fix this
+	|	postfix_expression T_LSQUAREBRACKET expression T_RSQUAREBRACKET		{$$ = new Operator($1, $3, "[]");} //Fix this
 	|	postfix_expression T_LBRACKET T_RBRACKET 							{$$ = new FunctionCall (NULL, $1);}
 	|	postfix_expression T_LBRACKET argument_expression_list T_RBRACKET 	{$$ = new FunctionCall($3, $1);} //Fix this
 	|	postfix_expression T_ACCESS IDENTIFIER 								{$$ = $1;} //Fix this
