@@ -6,22 +6,22 @@ echo "testing array"
 PASSED =0
 CHECKED =0
 suffix="_driver.c"
-#for filename in compiler_tests/array/*_driver.c; do &>errors.txt
-#	CHECKED=$((${CHECKED}+1)); 
-#bin/c_compiler -S "${filename%_*}"".c" -o output.s &>errors.txt 
-#mips-linux-gnu-gcc -mfp32 -o output.o -c output.s &>errors.txt
-#mips-linux-gnu-gcc -mfp32 -static -o output output.o "${filename%_*}""_driver.c" &>errors.txt
-#qemu-mips output
+for filename in compiler_tests/array/*_driver.c; do &>errors.txt
+	CHECKED=$((${CHECKED}+1)); 
+bin/c_compiler -S "${filename%_*}"".c" -o output.s &>errors.txt 
+mips-linux-gnu-gcc -mfp32 -o output.o -c output.s &>errors.txt
+mips-linux-gnu-gcc -mfp32 -static -o output output.o "${filename%_*}""_driver.c" &>errors.txt
+qemu-mips output
 #echo $?
-#if [[ $? == 0 ]]; then
-#	echo "Passed"
-#	PASSED=$((${PASSED}+1));
-#else echo "FAILED >>>>>>>>>>>>>>>>>>>>>>>" "$(basename -- $filename)" "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
-#fi
-#rm output.o &>errors.txt
-#rm output.s &>errors.txt
-#rm output &>errors.txt
-#done 
+if [[ $? == 0 ]]; then
+	echo "Passed"
+	PASSED=$((${PASSED}+1));
+else echo "FAILED >>>>>>>>>>>>>>>>>>>>>>>" "$(basename -- $filename)" "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
+fi
+rm output.o &>errors.txt
+rm output.s &>errors.txt
+rm output &>errors.txt
+done 
 echo "====================================="
 echo "testing control_flow"
 suffix="_driver.c"
@@ -183,7 +183,7 @@ bin/c_compiler -S "${filename%_*}"".c" -o output.s &>errors.txt
 mips-linux-gnu-gcc -mfp32 -o output.o -c output.s &>errors.txt
 mips-linux-gnu-gcc -mfp32 -static -o output output.o "${filename%_*}""_driver.c" &>errors.txt
 qemu-mips output &>errors.txt
-echo $?
+#echo $?
 if [[ $? == 0 ]]; then
 	echo "Passed"
 	PASSED=$((${PASSED}+1));
