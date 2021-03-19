@@ -17,7 +17,7 @@ private:
   Expression* arraySize;
 public:
   Declaration(Variable* var, Expression *rhs) : var(var)
-  { std::cerr<<"here";
+  { 
     if(rhs!=nullptr)
       size = rhs->getSize()+1;
     else size = 1;
@@ -39,7 +39,7 @@ public:
     size = arraySize;
   }*/
   Declaration(Variable* var, std::vector<Expression*>* rhs = nullptr, Expression* arraySize = nullptr) :var(var), arraySize(arraySize)
-  {std::cerr<<"here";
+  {
     if(rhs!=nullptr)
     {
       this->rhs = rhs;
@@ -55,7 +55,7 @@ public:
     else if(arraySize==nullptr) arraySize = new Number(1);
   }
   Declaration(VarType type, const std::string& name, Expression* rhs, Expression* arraySize = nullptr) : var(new Variable(name, type)), arraySize(arraySize)
-  {std::cerr<<"here";
+  {
       this->rhs = new std::vector<Expression*>;
       this->rhs->push_back(rhs);
       if(rhs!=nullptr)

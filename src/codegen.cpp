@@ -44,9 +44,11 @@ std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //c
       Out << "addiu $a" << i << ", " + dest + ", 0" << std::endl;
     }
   }
-  ctxt.emptyReg(dest);
+  //ctxt.emptyReg(dest);
+  //ctxt.storeregs(false, ctxt.FirstEmptyIndex()*4, Out);
     ctxt.storeregs(false, (8+4+1+(4+1)%2)*4, Out); //params!!
     Out << "jal " + expr->getName() << std::endl;
+    //ctxt.reloadregs(false, ctxt.FirstEmptyIndex()*4, Out);
     ctxt.reloadregs(false, (8+4+1+(4+1)%2)*4, Out); //+params!!!
     Out << "addiu $v0, $v0, 0" << std::endl; //nop after jump
     Out << "addiu " + dest + ", $v0, 0" << std::endl;
@@ -256,15 +258,17 @@ void CompileFunct(const Function *funct, std::ofstream& Out, std::vector<Variabl
   //need to save registers
   //fprintf(stderr, c_str(std::to_string(funct->getSize())));
   //std::cerr<<std::to_string(funct->getSize());
-  ctxt.setMemEmpty(13+13%2);
+
     int memsize = (funct->getSize()+21+(4+1+ParamSize)%2) + (funct->getSize()%2);
 ctxt.allocateMem((funct->getSize()+21+(4+1+ParamSize)%2) + (funct->getSize()%2), Out);
+
   if(funct->getParams())
   {
   for(int i = 0; i<(funct->getParams())->size(); i++)
   {
     CodeGen((*funct->getParams())[i], Out, ctxt, memsize);
   }
+  ctxt.setMemEmpty(13+13%2);
 
   for(int i = 0; i<4 && i< ParamSize; i++)
   {

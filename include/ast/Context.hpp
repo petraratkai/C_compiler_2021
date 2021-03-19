@@ -61,6 +61,13 @@ public:
     stack = Ctxt.stack;
     NrOfVarsDeclared = Ctxt.NrOfVarsDeclared;
   }
+  int FirstEmptyIndex() const
+  {
+    for(int i =0; i<stack.size(); i++)
+    {
+      if(stack[i] == "") return i;
+    }
+  }
   int findRegIndex(const std::string& regname) const
   {
     for(int i = 0; i<regs.size(); i++)
@@ -139,11 +146,11 @@ public:
     int j = 0;
     for(int i = fromidx; i<=toidx; i++)
     {
-      if(!savedReg && regs[i].isUsed())
+      if(!savedReg && regs[i].isUsed() || savedReg)
       Out<<"lw " + REGNAMES[i] + ", " << offset + j << "($sp)" << std::endl;
       j+=4;
       //set the name in the stack!!
-      if(!savedReg && regs[i].isUsed())
+      if(!savedReg && regs[i].isUsed() || savedReg)
         stack[offset/4+i-fromidx] = "";
     }
   }
@@ -416,6 +423,7 @@ void moveToOriginal( const std::string& id, Context& ctxtTo, std::ostream& Out);
     //have to delete everything from this : last few variables
     //then put everything back to where they were in ctxt to
     //std::cerr<<NrOfVarsDeclared;
+
     for(int i = NrOfVarsDeclared; i>0; i--)
     {
 
@@ -431,7 +439,9 @@ void moveToOriginal( const std::string& id, Context& ctxtTo, std::ostream& Out);
       }
       variables.erase(variables.begin()+ctxtTo.variables.size()+i-1);
     }
+    int originalNrOfDecl = ctxtTo.NrOfVarsDeclared;
     ctxtTo = *this;
+    ctxtTo.NrOfVarsDeclared = originalNrOfDecl;
     /*for(int i = 0; i<variables.size(); i++)
     {
       moveToOriginal(variables[i].getName(), ctxtTo, Out);
@@ -443,7 +453,8 @@ void moveToOriginal( const std::string& id, Context& ctxtTo, std::ostream& Out);
   {
     for(int i=0; i<nrOfwords; i++)
     {
-      stack[i] = "0";
+      if(stack[i]=="")
+        stack[i] = "0";
     }
   }
 
