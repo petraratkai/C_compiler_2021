@@ -13,22 +13,27 @@ private:
     VarStorage storage;
     VarQualifier qualifier;
     int size;
+    Expression* arraySize;
 public:
     Variable(const std::string &_id, VarType type)
         : id(_id), type(type)
-    {size = 2; storage = NoStorage; qualifier = NoQualifier;}
+    {size = 1; storage = NoStorage; qualifier = NoQualifier; arraySize = nullptr;}
 
     Variable(const std::string &_id, VarType type, VarQualifier qualifier)
         : id(_id), type(type), qualifier(qualifier)
-    {size = 2; storage = NoStorage;}
+    {size = 1; storage = NoStorage; arraySize = nullptr;}
 
     Variable(const std::string &_id, VarType type, VarStorage storage)
         : id(_id), type(type), storage(storage)
-    {size = 2; qualifier = NoQualifier;}
+    {size = 1; qualifier = NoQualifier; arraySize = nullptr;}
 
     Variable(const std::string &_id, VarType type, VarQualifier qualifier, VarStorage storage)
         : id(_id), type(type), qualifier(qualifier), storage(storage)
-    {size = 2;}
+    {size = 1; arraySize = nullptr;}
+
+    Variable(const std::string &_id, VarType type, VarQualifier qualifier, VarStorage storage, Expression* arraySize)
+        : id(_id), type(type), qualifier(qualifier), storage(storage), arraySize(arraySize)
+    {size = 1;}
 //Variable(const std::string &_id, VarType type, int _size)
 //        : id(_id), type(type), size(_size)
 //    {}
@@ -43,6 +48,8 @@ public:
     VarStorage getStorage() {return storage;}
 
     virtual int getSize() const override {return size;}
+
+    virtual Statement* getArraySize() const override {return arraySize;}
 
     virtual bool IsVariableStmt() const override {return true;}
     /*virtual double evaluate(

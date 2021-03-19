@@ -71,5 +71,7 @@ public:
 
     virtual std::vector<Expression*>* getParams() const {}
 
+    virtual Statement* getArraySize() const {}
+
 };
 #endif

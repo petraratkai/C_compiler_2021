@@ -11,9 +11,7 @@ int main(int argc, char *argv[])
 {
 	//parse the AST
 //Context ctxt(0);
-//std::cerr<<"here";
 	Program *prog = parseAST(argv[2]); //arguments?? which file?
-//std::cerr<<"here";
 //	Number const1(1);
 	//std::cout<<const
 	/*Number* const2 = new Number(2);
@@ -49,13 +47,27 @@ int main(int argc, char *argv[])
 
 	std::vector<Statement*> decl = prog->getDeclarations();
 	std::vector<Variable_hash> global_variables;
+	//std::cerr<<decl.size(); //decl[0]->getArraySize()->getValue();
 	for(int i = 0; i<decl.size(); i++)
-	{
-		Out << decl[i]->getVariable() + ":	.word ";
-		if(decl[i]->getExpr())
-			Out<<decl[i]->getExpr()->getValue() << std::endl;
-		Variable_hash newGlobal(decl[i]->getVariable(), ((Declaration*)decl[i])->getType(), true);
-		global_variables.push_back(newGlobal);
+	{	//std::cerr<<"here";
+		if(decl[i]->getArraySize())
+			Out << decl[i]->getVariable() + ":" << std::endl;
+			for(int j = 0; j<decl[i]->getArraySize()->getValue(); j++)
+			{ //std::cerr<<"here";
+			Out <<"		.word		";
+			if(decl[i]->getExpr())
+			{
+				Out<<decl[i]->getExpr(j)->getValue() << std::endl;
+				Out << std::endl;
+			}
+			else
+			{
+				Out <<"0" << std::endl;
+			}
+			Variable_hash newGlobal(decl[i]->getVariable(), ((Declaration*)decl[i])->getType(), true);
+			global_variables.push_back(newGlobal);
+			}
+
 	}
 
 	Out << "$Ltext0:" << std::endl;
@@ -73,69 +85,12 @@ int main(int argc, char *argv[])
 
 //delete ret2;
 //delete mainfunct;
-//delete prog;
+delete prog;
 //registers
 //ideas: vector of bools -> taken or notes
 //
-	//Out.close();
+	Out.close();
 
 
-	/*std::cout << "f:" << std::endl;
-	std::cout << "PUSH0:" << std::endl;
-	std::cout << "addiu $sp, $sp, -44" << std::endl;
-	std::cout << "sw $ra, 40($sp)" << std::endl;
-	std::cout << "nop" << std::endl;
-	std::cout << "sw $fp, 36($sp)" << std::endl;
-	std::cout << "nop" << std::endl;
-	std::cout << "sw $s0, 4($sp)" << std::endl;
-	std::cout << "nop" << std::endl;
-	std::cout << "sw $s1, 8($sp)" << std::endl;
-	std::cout << "nop" << std::endl;
-	std::cout << "sw $s2, 12($sp)" << std::endl;
-	std::cout << "nop" << std::endl;
-	std::cout << "sw $s3, 16($sp)" << std::endl;
-	std::cout << "nop" << std::endl;
-	std::cout << "sw $s4, 20($sp)" << std::endl;
-	std::cout << "nop" << std::endl;
-	std::cout << "sw $s5, 24($sp)" << std::endl;
-	std::cout << "nop" << std::endl;
-	std::cout << "sw $s6, 28($sp)" << std::endl;
-	std::cout << "nop" << std::endl;
-	std::cout << "sw $s7, 32($sp)" << std::endl;
-	std::cout << "nop" << std::endl;
-	std::cout << "move $fp, $sp" << std::endl;
-	std::cout << "body2:" << std::endl;
-	std::cout << "li $v0, 42" << std::endl;
-	std::cout << "addiu $sp, $sp, 0" << std::endl;
-	std::cout << "move $fp, $sp" << std::endl;
-	std::cout << "b POP1" << std::endl;
-	std::cout << "nop" << std::endl;
-	std::cout << "addiu $sp, $sp, 0" << std::endl;
-	std::cout << "move $fp, $sp" << std::endl;
-	std::cout << "POP1:" << std::endl;
-	std::cout << "mtc1 $v0, $f0" << std::endl;
-	std::cout << "lw $s0, 4($sp)" << std::endl;
-	std::cout << "nop" << std::endl;
-	std::cout << "lw $s1, 8($sp)" << std::endl;
-	std::cout << "nop" << std::endl;
-	std::cout << "lw $s2, 12($sp)" << std::endl;
-	std::cout << "nop" << std::endl;
-	std::cout << "lw $s3, 16($sp)" << std::endl;
-	std::cout << "nop" << std::endl;
-	std::cout << "lw $s4, 20($sp)" << std::endl;
-	std::cout << "nop" << std::endl;
-	std::cout << "lw $s5, 24($sp)" << std::endl;
-	std::cout << "nop" << std::endl;
-	std::cout << "lw $s6, 28($sp)" << std::endl;
-	std::cout << "nop" << std::endl;
-	std::cout << "lw $s7, 32($sp)" << std::endl;
-	std::cout << "nop" << std::endl;
-	std::cout << "lw $ra, 40($sp)" << std::endl;
-	std::cout << "nop" << std::endl;
-	std::cout << "lw $fp, 36($sp)" << std::endl;
-	std::cout << "nop" << std::endl;
-	std::cout << "move $sp, $fp" << std::endl;
-	std::cout << "jr $ra" << std::endl;
-	std::cout << "nop" << std::endl;
-	std::cout << ".global f" << std::endl;*/
+
 }

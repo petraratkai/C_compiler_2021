@@ -31,7 +31,7 @@ public:
   virtual std::vector<Statement*>* getStmts() const{}
   virtual int getSize() const {}
   virtual std::string getVariable() const {return "";}
-  virtual Statement* getExpr() const {return nullptr;}
+  virtual Statement* getExpr(int i = 0) const {return nullptr;}
   //virtual std::vector<Variable_hash> getVars() const  {}
   virtual bool IsIfElseStmt() const {return false;}
   virtual bool IsSwitchStmt() const {return false;}
@@ -53,9 +53,10 @@ public:
   { }
   virtual Statement* getThird() const
   { }
-
+  //virtual Statement *getExpr(int i = 0) const override {}
   //virtual VarType getType() const {}
 
+  virtual Statement* getArraySize() const {}
 };
 
 #endif

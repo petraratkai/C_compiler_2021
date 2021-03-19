@@ -105,14 +105,15 @@ public:
 
     for(int i = fromidx; i<=toidx; i++)
     {
-      Out<<"sw " + REGNAMES[i] + ", " << offset + j << "($sp)" << std::endl;
+      if(!savedReg && regs[i].isUsed() || savedReg)
+        Out<<"sw " + REGNAMES[i] + ", " << offset + j << "($sp)" << std::endl;
       j+=4;
       //set the name in the stack!!
       if(savedReg)
       {
         stack[offset/4+i-fromidx] = "$s";
       }
-      else
+      else if(regs[i].isUsed())
       {
         stack[offset/4+i-fromidx] ="$t";
       }
@@ -138,9 +139,11 @@ public:
     int j = 0;
     for(int i = fromidx; i<=toidx; i++)
     {
+      if(!savedReg && regs[i].isUsed())
       Out<<"lw " + REGNAMES[i] + ", " << offset + j << "($sp)" << std::endl;
       j+=4;
       //set the name in the stack!!
+      if(!savedReg && regs[i].isUsed())
         stack[offset/4+i-fromidx] = "";
     }
   }

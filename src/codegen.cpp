@@ -44,7 +44,7 @@ std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //c
       Out << "addiu $a" << i << ", " + dest + ", 0" << std::endl;
     }
   }
-
+  ctxt.emptyReg(dest);
     ctxt.storeregs(false, (8+4+1+(4+1)%2)*4, Out); //params!!
     Out << "jal " + expr->getName() << std::endl;
     ctxt.reloadregs(false, (8+4+1+(4+1)%2)*4, Out); //+params!!!
@@ -187,7 +187,7 @@ void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables, int 
       Out << "beq " + regCond + ", $zero, " +  elselabel << std::endl;
     else
       Out << "beq " +  regCond + ", $zero, " + afteriflabel<< std::endl;
-    variables.emptyRegifExpr(regCond, Out);
+    variables.emptyReg(regCond);
     //if there is an else jump to elselabel
     Out << "addiu $v0, $v0, 0" << std::endl; //nop
     CodeGen(stmt->getIfStmts(), Out, variables, memsize);
@@ -233,7 +233,7 @@ void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables, int 
     std::string regCond = CodeGenExpr((Expression*)stmt->getSecond(), Out, variables);
     Out << "beq " + regCond + ", $zero, " +  afterforlabel << std::endl;
     Out << "addiu $v0, $v0, 0" << std::endl;
-    variables.emptyRegifExpr(regCond, Out);
+    variables.emptyReg(regCond);
     CodeGen(stmt->getCompoundStmt(), Out, variables, memsize);
     if(stmt->getThird())
       CodeGenExpr((Expression*)stmt->getThird(), Out, variables);
