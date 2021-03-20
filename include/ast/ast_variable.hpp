@@ -37,6 +37,7 @@ public:
 //Variable(const std::string &_id, VarType type, int _size)
 //        : id(_id), type(type), size(_size)
 //    {}
+    void changeType(VarType _type) {type = _type;}
 
     virtual const std::string getId() const override
     { return id; }

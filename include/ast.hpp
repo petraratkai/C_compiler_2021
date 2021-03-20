@@ -13,6 +13,7 @@
 #include "ast/ast_expression.hpp"
 #include "ast/ast_ifelse.hpp"
 #include "ast/ast_number.hpp"
+#include "ast/ast_float.hpp"
 #include "ast/ast_operator.hpp"
 #include "ast/ast_program.hpp"
 #include "ast/ast_return_stmt.hpp"

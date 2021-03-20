@@ -31,6 +31,10 @@ public:
 
     virtual int getValue() const override {}
 
+    virtual float getFValue() const override {}
+
+    virtual bool IsFloatStmt() const override {return false;}
+
     virtual bool IsExpressionStmt() const override {return true;}
 
     virtual Expression *getRetVal() const override{}

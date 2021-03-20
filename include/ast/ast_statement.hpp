@@ -10,6 +10,7 @@ public:
   virtual ~Statement() {}
   virtual stmt_type get_type() const {}
   virtual int getValue() const {}
+  virtual float getFValue() const {}
   virtual Statement* getRetVal() const {}
   virtual std::string getName() const {}
   virtual bool IsReturnStmt() const {return false;}
@@ -22,6 +23,7 @@ public:
   virtual bool IsFunctionCallExpr() const {return false;}
   virtual bool IsVariableStmt() const {return false;}
   virtual bool IsNumberStmt() const {return false;}
+  virtual bool IsFloatStmt() const {return false;}
   virtual bool IsOperatorStmt() const {return false;}
   virtual bool IsCompoundStmt() const {return false;}
   virtual bool IsWhile() const {return false;}

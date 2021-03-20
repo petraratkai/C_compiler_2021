@@ -75,6 +75,7 @@ public:
   virtual bool IsDeclarationStmt() const override {return true;}
   virtual int getSize() const override{return size;}
   VarType getType() const {return var->getType();}
+  void changeType(VarType _type) {var->changeType(_type);}
   virtual int getArraySize() const override {return arraySize->getValue();}
 };
 

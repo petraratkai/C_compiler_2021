@@ -16,6 +16,7 @@
 	Expression* expr;
 	Statement* st;
 	CompoundStmt* cst;
+	Declaration* decl;
 	DirectDecl* ddecl;
 	Function* fn;
 	VarType vtype;
@@ -40,7 +41,8 @@
 %type <prog> translation_unit
 %type <expr> storage_class_specifier  struct_or_union_specifier struct_or_union struct_declaration_list struct_declaration struct_declarator_list struct_declarator enum_specifier enumerator_list enumerator type_qualifier pointer type_qualifier_list abstract_declarator direct_abstract_declarator initializer initializer_list labeled_statement expression_statement  constant_expression expression assignment_expression conditional_expression logical_or_expression logical_and_expression inclusive_or_expression exclusive_or_expression and_expression equality_expression relational_expression shift_expression additive_expression multiplicative_expression cast_expression unary_expression postfix_expression primary_expression
 %type <string> unary_operator assignment_operator identifier_list
-%type <st> jump_statement iteration_statement statement selection_statement declaration_or_statement declaration init_declarator init_declarator_list parameter_declaration
+%type <st> jump_statement iteration_statement statement selection_statement declaration_or_statement  parameter_declaration
+%type <decl> declaration init_declarator_list init_declarator
 %type <vst> declaration_or_statement_list parameter_list parameter_type_list
 %type <vtype> type_specifier specifier_qualifier_list type_name declaration_specifiers
 %type <fn> function_definition external_declaration
@@ -84,7 +86,7 @@ function_definition:
 
 declaration:
 		declaration_specifiers T_SEMICOLON						//{$$ = $1;} //FIX THIS
-	|	declaration_specifiers init_declarator_list T_SEMICOLON {$$ = $2;}
+	|	declaration_specifiers init_declarator_list T_SEMICOLON {$2->changeType($1), $$ = $2;}
 ;
 
 declaration_specifiers:
@@ -463,7 +465,7 @@ argument_expression_list:
 primary_expression:
 		IDENTIFIER												{$$ = new FakeVariable(*$1);}
 	|	INT_CONST												{$$ = new Number(stoi(*$1));}
-	|	FLOAT_CONST    											//{$$ = new Constant{$1, FloatType};}
+	|	FLOAT_CONST    											{$$ = new Fnumber(stof(*$1));}
 	|	CHAR_CONST   											//{$$ = new Constant{$1, CharType };}
 	|	STRING_CONST											//{$$ = new Constant{$1, StringType};}
 	|	T_LBRACKET expression T_RBRACKET 						{$$ = $2;}
