@@ -44,7 +44,7 @@ public:
     { return right; }
 
     virtual int getSize() const override {return size;}
-    
+
     virtual bool IsOperatorExpr() const override {return true;}
 
     virtual void print(std::ostream &dst) const override
@@ -57,6 +57,7 @@ public:
         right->print(dst);
         dst<<" )";
     }
+    virtual bool IsIndexingOperator() const override {return type_of_op == "[]";}
 };
 
 

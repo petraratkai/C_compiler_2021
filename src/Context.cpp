@@ -1,4 +1,5 @@
 #include "../include/ast/Context.hpp"
+#include <string>
 //#include
 void Context::moveToOriginal( const std::string& id, Context& ctxtTo, std::ostream& Out)
 {
@@ -55,10 +56,24 @@ void Context::moveToOriginal( const std::string& id, Context& ctxtTo, std::ostre
 
       }
     }
+  }
+
+    void Context::loadIndex(std::string varname, std::string regname, std::ostream& Out)
+    {
+      int idx = findVarHashIndex(varname);
+      //std::cerr<<"idx=" <<idx <<std::endl;
+      int stackidx;
+      // variables[idx].getMemAddr();
+      for(int i = 0; i< stack.size(); i++)
+      {
+        if(stack[i]==varname) stackidx = i;
+      }
+      stackidx*=4;
+      Out << "addiu " + regname + ", $sp, " << stackidx << std::endl;
+    }
 
 
 
   //locate the newer as well
   //load newer into a register
   //move the data from that register to target location
-}

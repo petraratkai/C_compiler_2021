@@ -57,6 +57,8 @@ std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //c
   }
   else if(expr->IsOperatorExpr())
   {
+    if(!expr->IsIndexingOperator())
+    {
     //call some other function
     std::string left = CodeGenExpr(expr->getLeft(), Out, ctxt);
     std::string right = CodeGenExpr(expr->getRight(), Out, ctxt);
@@ -65,6 +67,25 @@ std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //c
     ctxt.emptyReg(left);
     ctxt.emptyReg(right);
     return dest;
+    }
+    else
+    { //this is just for local vars
+      std::string dest = ctxt.findFreeReg(Out);
+      std::string address = ctxt.findFreeReg(Out);
+      ctxt.loadIndex(expr->getLeft()->getId(), address, Out); //dest has the address of the first element of the array
+      std::string right = CodeGenExpr(expr->getRight(), Out, ctxt); //right has the index
+      std::string size = ctxt.findFreeReg(Out);
+      Out << "addiu " + size + ", $zero, 4" << std::endl; //different if not int!!
+      Out << "mult " + right + ", " + size << std::endl;
+      Out << "mflo " + right << std::endl;
+      Out << "add " + address + ", " + address + ", " + right << std::endl; //address of the element we need
+      Out << "lw " + dest + ", 0(" + address + ")" << std::endl;
+      Out << "nop" << std::endl;
+      ctxt.emptyReg(address);
+      ctxt.emptyReg(right);
+      ctxt.emptyReg(size);
+      return dest;
+    }
   }
   else if(expr->IsUnary())
   {
@@ -80,14 +101,40 @@ std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //c
   }
   else if(expr->IsAssignExpr())
   {
-
+    if(!expr->getLhs()->IsIndexingOperator())
+    {
     std::string src = CodeGenExpr(expr->getRhs(), Out, ctxt);
     std::string dest = CodeGenExpr(expr->getLhs(), Out, ctxt);
     assignment_to_code(dest, src, expr->getOpcode(), Out);
     ctxt.saveNewVar(dest, expr->getLhs()->getId(), Out);
     ctxt.emptyReg(src);
+
     //ctxt.emptyRegifExpr(src, Out);
     return dest;
+    }
+    else
+    {
+
+      std::string src = CodeGenExpr(expr->getRhs(), Out, ctxt);
+
+      std::string dest = ctxt.findFreeReg(Out);
+      std::string address = ctxt.findFreeReg(Out);
+      std::cerr<<expr->getLhs()->getLeft()->getId();
+      std::string idxReg = CodeGenExpr(expr->getLhs()->getRight(), Out, ctxt);
+      ctxt.loadIndex(expr->getLhs()->getLeft()->getId(), address, Out); //absolute address of the first element
+      std::string size = ctxt.findFreeReg(Out);
+      Out << "addiu " + size + ", $zero, 4" << std::endl; //different if not int!!
+      Out << "mult " + idxReg + ", " + size << std::endl;
+      Out << "mflo " + idxReg << std::endl;
+      Out << "add " + address + ", " + address + ", " + idxReg << std::endl; //address of element we need
+      //Out << "sw " + src + ", 0(" + dest + ")" << std::endl;
+      Out << "lw " + dest + ", 0(" + address + ")"<< std::endl;
+      assignment_to_code(dest, src, expr->getOpcode(), Out);
+      ctxt.emptyReg(src);
+      ctxt.emptyReg(address);
+      ctxt.emptyReg(size);
+      return dest;
+    }
   }
   else throw("Invalid expression!");
 }
@@ -155,8 +202,7 @@ void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables, int 
   else if(stmt->IsDeclarationStmt())
   {
 
-    variables.newVar(stmt->getVariable());
-    //std::cerr<<stmt->getVariable()<<std::endl;
+    variables.newVar(stmt->getVariable(), stmt->getArraySize());
 
         //std::cerr<<"decl\n";
 
@@ -169,11 +215,13 @@ void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables, int 
     variables.saveNewVar(regname, stmt->getVariable(), Out);
 
     variables.emptyReg(regname);
+
     }
     else
     {
     //  variables.saveNewVar("$zero", stmt->getVariable(), Out);
     }
+
 
 
   }
@@ -258,23 +306,27 @@ void CompileFunct(const Function *funct, std::ofstream& Out, std::vector<Variabl
   //need to save registers
   //fprintf(stderr, c_str(std::to_string(funct->getSize())));
   //std::cerr<<std::to_string(funct->getSize());
-
+//ctxt.printStack();
     int memsize = (funct->getSize()+21+(4+1+ParamSize)%2) + (funct->getSize()%2);
 ctxt.allocateMem((funct->getSize()+21+(4+1+ParamSize)%2) + (funct->getSize()%2), Out);
 
+
+//std::cerr<<(funct->getSize()+21+(4+1+ParamSize)%2) + (funct->getSize()%2)<<std::endl;
   if(funct->getParams())
   {
   for(int i = 0; i<(funct->getParams())->size(); i++)
   {
     CodeGen((*funct->getParams())[i], Out, ctxt, memsize);
   }
-  ctxt.setMemEmpty(13+13%2);
 
   for(int i = 0; i<4 && i< ParamSize; i++)
   {
     Out << "sw $a" << i << ", " << i*4 << "($sp)" << std::endl;
   }
   }
+  ctxt.setMemEmpty(13+13%2);
+
+
   //ctxt.allocateMem((funct->getSize()+21+(4+1+ParamSize)%2) + (funct->getSize()%2), Out); //FIX THIS
 
   if(funct->getName()=="main")
@@ -289,6 +341,7 @@ ctxt.allocateMem((funct->getSize()+21+(4+1+ParamSize)%2) + (funct->getSize()%2),
     //need to save s0-s7
     ctxt.storeregs(true, 4*4, Out); //+params size
     //std::cerr<<"here";
+    //ctxt.printStack();
 
   }
   //for loop for the parameters maybe?

@@ -54,7 +54,7 @@ public:
     { return nullptr; }
 
     virtual const std::string getId() const
-    {  }
+    { std::cerr << "called getId from expression" << std::endl; }
 
     virtual std::string getOpcode() const
     { }
@@ -71,7 +71,11 @@ public:
 
     virtual std::vector<Expression*>* getParams() const {}
 
-    virtual Statement* getArraySize() const {}
+    virtual int getArraySize() const {}
+
+    virtual bool IsIndexingOperator() const  {}
+
+
 
 };
 #endif

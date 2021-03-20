@@ -17,7 +17,7 @@ private:
   Expression* arraySize;
 public:
   Declaration(Variable* var, Expression *rhs) : var(var)
-  { 
+  {
     if(rhs!=nullptr)
       size = rhs->getSize()+1;
     else size = 1;
@@ -38,7 +38,7 @@ public:
     rhs->push_back(nullptr);
     size = arraySize;
   }*/
-  Declaration(Variable* var, std::vector<Expression*>* rhs = nullptr, Expression* arraySize = nullptr) :var(var), arraySize(arraySize)
+  Declaration(Variable* var, std::vector<Expression*>* rhs = nullptr, Expression* arraySize = new Number(1)) :var(var), arraySize(arraySize)
   {
     if(rhs!=nullptr)
     {
@@ -54,7 +54,7 @@ public:
     if(rhs!=nullptr) this->size = rhs->size();
     else if(arraySize==nullptr) arraySize = new Number(1);
   }
-  Declaration(VarType type, const std::string& name, Expression* rhs, Expression* arraySize = nullptr) : var(new Variable(name, type)), arraySize(arraySize)
+  Declaration(VarType type, const std::string& name, Expression* rhs, Expression* arraySize = new Number(1)) : var(new Variable(name, type)), arraySize(arraySize)
   {
       this->rhs = new std::vector<Expression*>;
       this->rhs->push_back(rhs);
@@ -75,7 +75,7 @@ public:
   virtual bool IsDeclarationStmt() const override {return true;}
   virtual int getSize() const override{return size;}
   VarType getType() const {return var->getType();}
-  virtual Statement* getArraySize() const override {return arraySize;}
+  virtual int getArraySize() const override {return arraySize->getValue();}
 };
 
 

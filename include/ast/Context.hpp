@@ -39,9 +39,10 @@ public:
     this->NrOfVarsDeclared = 0;
     for(int i = 0; i<sizeOfStack; i++)
     {
-      stack.push_back("");
+      stack.push_back("$");
     }
     variables = global_vars;
+    this->sizeOfStack = sizeOfStack;
   }
   Context(const Context& Ctxt)
   {
@@ -65,7 +66,7 @@ public:
   {
     for(int i =0; i<stack.size(); i++)
     {
-      if(stack[i] == "") return i;
+      if(stack[i] == "$") return i;
     }
   }
   int findRegIndex(const std::string& regname) const
@@ -151,7 +152,7 @@ public:
       j+=4;
       //set the name in the stack!!
       if(!savedReg && regs[i].isUsed() || savedReg)
-        stack[offset/4+i-fromidx] = "";
+        stack[offset/4+i-fromidx] = "$";
     }
   }
 
@@ -167,7 +168,7 @@ public:
     Out << "addiu $sp, $sp, " << (-1)*words*4 << std::endl;
     for(int i = 0; i<words; i++)
     {
-      stack[i]="";
+      //stack[i]="$";
     }
   }
   void freeMem(int words, std::ostream& Out)
@@ -175,7 +176,7 @@ public:
     Out << "addiu $sp, $sp, " << words*4 << std::endl;
     for(int i = 0; i<words/4; i++)
     {
-      stack[i]="";
+      stack[i]="$";
     }
   }
   void saveNewVar(const std::string& regname, const std::string& varName, std::ostream& Out)
@@ -210,7 +211,7 @@ public:
     int i = 0;
     while(!found)
     {
-      if(stack[i] == "")
+      if(stack[i] == "$")
       {
         found = true;
         spOffset = i;
@@ -281,7 +282,7 @@ public:
 
   }*/
 
-  void newVar(const std::string& varname) //only for declarations, adds new variable to variable hashes and reserves a register
+  void newVar(const std::string& varname, int NrOfElements = 1) //only for declarations, adds new variable to variable hashes and reserves a register
   //then returns the reserved register name
   {
 
@@ -290,17 +291,21 @@ public:
     int i = 0;
     while(i<stack.size())
     {
-      if(stack[i]=="")
+      if(stack[i]=="$")
       {
         stack[i]=varname;
         found = true;
         variables[variables.size()-1].setlocation("", i, true);
         NrOfVarsDeclared++;
-
+        for(int j = 1; j<NrOfElements; j++)
+        {
+          stack[i+j] = "1";
+        }
         return;
       }
       i++;
     }
+
     //variables[variables.size()-1].setlocation("", NrOfVarsDeclared, true);
       /*std::cerr<<"newvar\n";
       for(int j = 0; j< stack.size(); j++)
@@ -333,6 +338,14 @@ public:
         j = i;
     }
     return j;
+  }
+
+  void printStack()
+  {
+    for(int i = 0; i<stack.size(); i++)
+    {
+      std::cerr<<stack[i]<<std::endl;
+    }
   }
 
   std::string loadVar(std::string varId, std::ostream& Out) //finds the variable in variables, loads from the stack, returns the resserved register
@@ -435,7 +448,7 @@ void moveToOriginal( const std::string& id, Context& ctxtTo, std::ostream& Out);
       {//it is in memory
 
         int idxInStack = findInMem(variables[ctxtTo.variables.size()+i-1].getName());
-        stack[idxInStack] = "";
+        stack[idxInStack] = "$";
       }
       variables.erase(variables.begin()+ctxtTo.variables.size()+i-1);
     }
@@ -453,13 +466,16 @@ void moveToOriginal( const std::string& id, Context& ctxtTo, std::ostream& Out);
   {
     for(int i=0; i<nrOfwords; i++)
     {
-      if(stack[i]=="")
-        stack[i] = "0";
+      if(stack[i]=="$")
+      {
+        stack[i] = "1";
+      }
     }
   }
 
-
+  void loadIndex(std::string varname, std::string regname, std::ostream& Out);
 };
+
 
 
 

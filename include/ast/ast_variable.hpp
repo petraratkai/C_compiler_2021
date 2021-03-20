@@ -49,7 +49,7 @@ public:
 
     virtual int getSize() const override {return size;}
 
-    virtual Statement* getArraySize() const override {return arraySize;}
+    virtual int getArraySize() const override {return arraySize->getValue();}
 
     virtual bool IsVariableStmt() const override {return true;}
     /*virtual double evaluate(

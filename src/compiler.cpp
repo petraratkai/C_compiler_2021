@@ -12,6 +12,7 @@ int main(int argc, char *argv[])
 	//parse the AST
 //Context ctxt(0);
 	Program *prog = parseAST(argv[2]); //arguments?? which file?
+
 //	Number const1(1);
 	//std::cout<<const
 	/*Number* const2 = new Number(2);
@@ -52,7 +53,7 @@ int main(int argc, char *argv[])
 	{	//std::cerr<<"here";
 		if(decl[i]->getArraySize())
 			Out << decl[i]->getVariable() + ":" << std::endl;
-			for(int j = 0; j<decl[i]->getArraySize()->getValue(); j++)
+			for(int j = 0; j<decl[i]->getArraySize(); j++)
 			{ //std::cerr<<"here";
 			Out <<"		.word		";
 			if(decl[i]->getExpr())

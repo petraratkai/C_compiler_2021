@@ -56,7 +56,7 @@ public:
   //virtual Statement *getExpr(int i = 0) const override {}
   //virtual VarType getType() const {}
 
-  virtual Statement* getArraySize() const {}
+  virtual int getArraySize() const {}
 };
 
 #endif
