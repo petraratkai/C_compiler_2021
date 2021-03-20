@@ -43,6 +43,11 @@ std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //c
       dest = CodeGenExpr((*expr->getParams())[i], Out, ctxt);
       Out << "addiu $a" << i << ", " + dest + ", 0" << std::endl;
     }
+    for(int i = 4; i<expr->getParams()->size();i++)
+    {
+      dest = CodeGenExpr((*expr->getParams())[i], Out, ctxt);
+      Out << "sw " + dest + ", " << (ctxt.getStackSize() + i -1)*4 <<"($sp)" << std::endl;
+    }
   }
   //ctxt.emptyReg(dest);
   //ctxt.storeregs(false, ctxt.FirstEmptyIndex()*4, Out);
@@ -119,7 +124,7 @@ std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //c
 
       std::string dest = ctxt.findFreeReg(Out);
       std::string address = ctxt.findFreeReg(Out);
-      std::cerr<<expr->getLhs()->getLeft()->getId();
+      //std::cerr<<expr->getLhs()->getLeft()->getId();
       std::string idxReg = CodeGenExpr(expr->getLhs()->getRight(), Out, ctxt);
       ctxt.loadIndex(expr->getLhs()->getLeft()->getId(), address, Out); //absolute address of the first element
       std::string size = ctxt.findFreeReg(Out);
@@ -130,6 +135,7 @@ std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //c
       //Out << "sw " + src + ", 0(" + dest + ")" << std::endl;
       Out << "lw " + dest + ", 0(" + address + ")"<< std::endl;
       assignment_to_code(dest, src, expr->getOpcode(), Out);
+      Out << "sw " + dest + ", 0(" + address + ")" << std::endl;
       ctxt.emptyReg(src);
       ctxt.emptyReg(address);
       ctxt.emptyReg(size);

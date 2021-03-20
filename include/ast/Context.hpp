@@ -62,6 +62,7 @@ public:
     stack = Ctxt.stack;
     NrOfVarsDeclared = Ctxt.NrOfVarsDeclared;
   }
+  int getStackSize() const {return stack.size();}
   int FirstEmptyIndex() const
   {
     for(int i =0; i<stack.size(); i++)
