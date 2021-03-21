@@ -68,7 +68,13 @@ void opcode_to_code_float(const std::string& dest, const std::string& left , con
   }
   else if(opcode == ">")
   {
-    Out << "slt " + dest + ", " + right + ", " + left << std::endl;
+    Out << "c.lt." + prec + " " + left + ", " + right << std::endl;
+    std::string after = makeName("aftergt");
+    Out << "li." + prec + " " + dest + " " + "1.0" << std::endl;
+    Out << "bclt " + after << std::endl;
+    Out << "nop" << std::endl;
+    Out << "li." + prec + " " + dest + " " + "0.0" << std::endl;
+    Out << after + ":" << std::endl;
   }
   else if(opcode == "<=")
   {
@@ -172,7 +178,7 @@ void opcode_to_code_float(const std::string& dest, const std::string& left , con
   else throw ("Invalid operator!");
   }
 
-  void assignment_to_code(const std::string& dest, const std::string& src,
+  void assignment_to_code_float(const std::string& dest, const std::string& src,
      const std::string& opcode, std::ostream&  Out)
   {
     if(opcode == "=")
