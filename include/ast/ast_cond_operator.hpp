@@ -38,7 +38,9 @@ public:
     Expression* getRight() const
     { return right; }
 
-    int getSize() const {return size;} 
+    int getSize() const {return size;}
+
+    virtual VarType getType(const std::vector<Variable_hash>& variables) const override {return middle->getType(variables);}
 
     /*virtual void print(std::ostream &dst) const override
     {

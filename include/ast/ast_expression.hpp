@@ -2,8 +2,11 @@
 #define ast_expression_hpp
 
 #include "ast_statement.hpp"
+#include "vartype.hpp"
 #include <string>
 #include <iostream>
+#include "Variable_hash.hpp"
+#include <vector>
 class Expression;
 
 typedef const Expression *ExpressionPtr;
@@ -11,10 +14,11 @@ typedef const Expression *ExpressionPtr;
 class Expression
   :public Statement
 {
-
-public:
   std::string regname;
   int size;
+  //VarType type;
+public:
+
 
     virtual ~Expression()
     {}
@@ -78,6 +82,12 @@ public:
     virtual int getArraySize() const {}
 
     virtual bool IsIndexingOperator() const  {}
+
+    virtual VarType getType(const std::vector<Variable_hash>& variables) const {}
+
+    virtual double getDValue() const {}
+
+    virtual bool IsDoubleStmt() const {return false;}
 
 
 

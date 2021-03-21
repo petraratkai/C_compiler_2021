@@ -58,6 +58,8 @@ public:
         dst<<" )";
     }
     virtual bool IsIndexingOperator() const override {return type_of_op == "[]";}
+
+    virtual VarType getType(const std::vector<Variable_hash>& variables) const override {return left->getType(variables);}
 };
 
 

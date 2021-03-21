@@ -46,7 +46,7 @@ std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //c
     for(int i = 4; i<expr->getParams()->size();i++)
     {
       dest = CodeGenExpr((*expr->getParams())[i], Out, ctxt);
-      Out << "sw " + dest + ", " << (ctxt.getStackSize() + i -1)*4 <<"($sp)" << std::endl;
+      Out << "sw " + dest + ", " <<  i*4 <<"($sp)" << std::endl;
     }
   }
   //ctxt.emptyReg(dest);
@@ -314,9 +314,18 @@ void CompileFunct(const Function *funct, std::ofstream& Out, std::vector<Variabl
   //std::cerr<<std::to_string(funct->getSize());
 //ctxt.printStack();
     int memsize = (funct->getSize()+21+(4+1+ParamSize)%2) + (funct->getSize()%2);
+  Out << "addiu $t1, $sp, 0" << std::endl; //store previous stack pointer
 ctxt.allocateMem((funct->getSize()+21+(4+1+ParamSize)%2) + (funct->getSize()%2), Out);
-
-
+int returnAddr;
+if(ParamSize<=4) returnAddr = 8 + 4;
+else returnAddr = 8 + ParamSize;
+if(funct->getParams())
+  for(int i = 4; i<(funct->getParams())->size(); i++)
+  {
+    Out << "lw $t0, " << i*4 << "($t1)" << std::endl;
+    Out << "nop" << std::endl;
+    Out << "sw $t0, " << (returnAddr + returnAddr%2 + i-4 + 1)*4 << "($sp)" << std::endl;
+  }
 //std::cerr<<(funct->getSize()+21+(4+1+ParamSize)%2) + (funct->getSize()%2)<<std::endl;
   if(funct->getParams())
   {
@@ -324,13 +333,12 @@ ctxt.allocateMem((funct->getSize()+21+(4+1+ParamSize)%2) + (funct->getSize()%2),
   {
     CodeGen((*funct->getParams())[i], Out, ctxt, memsize);
   }
-
   for(int i = 0; i<4 && i< ParamSize; i++)
   {
     Out << "sw $a" << i << ", " << i*4 << "($sp)" << std::endl;
   }
   }
-  ctxt.setMemEmpty(13+13%2);
+  ctxt.setMemEmpty(returnAddr+returnAddr%2);
 
 
   //ctxt.allocateMem((funct->getSize()+21+(4+1+ParamSize)%2) + (funct->getSize()%2), Out); //FIX THIS
@@ -342,7 +350,7 @@ ctxt.allocateMem((funct->getSize()+21+(4+1+ParamSize)%2) + (funct->getSize()%2),
   else
   {
 
-    ctxt.saveRetAddr(Out, 12*4); //+params size
+    ctxt.saveRetAddr(Out, returnAddr*4); //+params size
 
     //need to save s0-s7
     ctxt.storeregs(true, 4*4, Out); //+params size

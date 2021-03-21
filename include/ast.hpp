@@ -32,6 +32,8 @@
 #include "ast/ast_cond_operator.hpp"
 #include "ast/ast_assignmentexpr.hpp"
 #include "ast/direct_declarator.hpp"
+#include "ast/ast_double.hpp"
+#include "ast/vartype.hpp"
 
 
 

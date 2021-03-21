@@ -16,6 +16,9 @@
 const std::vector<std::string> REGNAMES = {"$zero", "$v0", "$v1", "$a0", "$a1", "$a2", "$a3", "$t0", "$t1", "$t2", "$t3", "$t4", "$t5", "$t6", "$t7", "$t8", "$t9", "$s0", "$s1", "$s2", "$s3",
  "$s4", "$s5", "$s6", "$s7", "$gp", "$sp", "$fp", "$ra"};
 
+ const std::vector<std::string> FLOATREGNAMES = {"$f0", "$f1", "$f2", "$f3", "$f4", "$f5", "$f6", "$f7", "$f8", "$f9", "$f10", "$f11", "$f12",
+ "$f13", "$f14", "$f15",  "$f16", "$f17", "$f18","$f19", "$f20", "$f21", "$f22", "$f23", "$f24", "$f25", "$f26", "$f27", "$f28", "$f29", "$f30", "$f31"};
+
 //static int exprNr = 0;
 
 class Context
@@ -23,6 +26,7 @@ class Context
 private:
   //names + expressions
   std::vector<Register> regs;
+  std::vector<Register> fregs;
   std::vector<Variable_hash> variables;
   int stackptrOffset; //???
   int sizeOfStack;
@@ -36,6 +40,10 @@ public:
     {
       regs.push_back(Register(REGNAMES[i]));
     }
+    for(int i = 0; i<REGNAMES.size(); i++)
+    {
+      regs.push_back(Register(FLOATREGNAMES[i]));
+    }
     this->NrOfVarsDeclared = 0;
     for(int i = 0; i<sizeOfStack; i++)
     {
@@ -47,6 +55,7 @@ public:
   Context(const Context& Ctxt)
   {
     regs = Ctxt.regs;
+    fregs = Ctxt.fregs;
     variables = Ctxt.variables;
     stackptrOffset = Ctxt.stackptrOffset;
     sizeOfStack = Ctxt.sizeOfStack;
@@ -56,6 +65,7 @@ public:
   Context& operator=(const Context& Ctxt)
   {
     regs = Ctxt.regs;
+    fregs = Ctxt.fregs;
     variables = Ctxt.variables;
     stackptrOffset = Ctxt.stackptrOffset;
     sizeOfStack = Ctxt.sizeOfStack;
@@ -63,6 +73,8 @@ public:
     NrOfVarsDeclared = Ctxt.NrOfVarsDeclared;
   }
   int getStackSize() const {return stack.size();}
+  std::vector<Variable_hash> getVariables() const { return variables;}
+
   int FirstEmptyIndex() const
   {
     for(int i =0; i<stack.size(); i++)
@@ -75,6 +87,16 @@ public:
     for(int i = 0; i<regs.size(); i++)
     {
       if(REGNAMES[i] == regname)
+        return i;
+    }
+    throw("all registers taken!");
+    return -1;
+  }
+  int findFRegIndex(const std::string& regname) const
+  {
+    for(int i = 0; i<regs.size(); i+=2)
+    {
+      if(FLOATREGNAMES[i] == regname)
         return i;
     }
     throw("all registers taken!");
@@ -164,6 +186,12 @@ public:
     return !regs[indx].isUsed();
   }
 
+  bool FisEmpty(const std::string& regname)
+  {
+    int idx = findFRegIndex(regname);
+    return !regs[idx].isUsed();
+  }
+
   void allocateMem(int words, std::ostream& Out)
   {
     Out << "addiu $sp, $sp, " << (-1)*words*4 << std::endl;
@@ -180,7 +208,7 @@ public:
       stack[i]="$";
     }
   }
-  void saveNewVar(const std::string& regname, const std::string& varName, std::ostream& Out)
+  void saveNewVar(const std::string& regname, const std::string& varName, std::ostream& Out, VarType type = IntType)
   {
     //int regidx = findRegIndex(regname);
     int varidx = findVarHashIndex(varName);
@@ -231,6 +259,32 @@ public:
     emptyReg(regname);
   }
 
+  void saveFReg(const std::string& regname,  std::ostream& Out) //probably take the stack as argument
+  {
+    int spOffset; //has to be fixed!!
+    bool found = false;
+    int i = 0;
+    while(!found)
+    {
+      if(stack[i] == "$")
+      {
+        found = true;
+        spOffset = i;
+      }
+    }
+
+    int regidx = findFRegIndex(regname);
+
+    if(fregs[regidx].getVarName()!="")
+    {
+      stack[spOffset] = fregs[regidx].getVarName();
+      int varidx = findVarHashIndex(fregs[regidx].getVarName());
+      variables[varidx].setlocation("", spOffset, true);
+      Out<<"sw " + regname + ", " << spOffset*4 << "($sp)" <<std::endl;
+    }
+    emptyFReg(regname);
+  }
+
   std::string findFreeReg(std::ostream& Out) //finds and reserves a register
   {
     int fromindx = findRegIndex("$t0");
@@ -262,6 +316,7 @@ public:
     }
     return "";
   }
+  std::string findFreeFReg(std::ostream& Out);
   //set/get
   //insert variable
   //free register
@@ -271,6 +326,8 @@ public:
     regs[idx].setVarName("");
     regs[idx].setIsused(false);
   }
+
+  void emptyFReg(const std::string& name) ;
 
   /*std::string findVar(const Variable* var) //return
   {
@@ -357,6 +414,8 @@ public:
       return variables[varidx].getReg();
 
     }*/ //std::cerr<<varidx<<std::endl;
+    if(variables[varidx].getType() == IntType || variables[varidx].getType() == CharType)
+    {
     std::string regname = findFreeReg(Out);
     if(regname!="")
     {
@@ -377,7 +436,36 @@ public:
     }
     //if no more free registers!!
     return regname;
-  }
+    }
+    else //float or double
+    {
+      std::string regname = findFreeFReg(Out);
+      if(regname!="")
+      {
+        int idx = findFRegIndex(regname);
+        fregs[idx].setVarName(varId); //shouldn't need
+        fregs[idx].setIsused(true);
+        if(!variables[varidx].isGlobal())
+        {
+        Out<<"lw "<< regname <<", " << (variables[varidx].getMemAddr()) * 4<<"($sp)"<<std::endl; //+offset!!!!
+        if(variables[varidx].getType()==DoubleType)
+          Out << "lw " << FLOATREGNAMES[idx+1] << ", " << (variables[varidx].getMemAddr()+1) * 4<<"($sp)" << std::endl;
+
+        }
+        //variables[varidx].setlocation(regname, 0, false);
+        else
+        {
+          Out<<"lw "<< regname <<", " << variables[varidx].getName() << std::endl;
+          //doubles???
+        }
+        Out<<"nop"<<std::endl;
+
+      }
+      //if no more free registers!!
+      return regname;
+      }
+    }
+  
 
   void removeVar(const std::string& varname) //when we leave a scope, variable is not live anymore
   {
