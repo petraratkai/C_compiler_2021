@@ -36,14 +36,13 @@ std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //c
   {
     //need to load it into some register
     //find a free register
-    if(expr->getType(ctxt.getVariables())==IntType)
-    {
+
     std::string regname = ctxt.loadVar(expr->getId(), Out);
 
     //std::string dest = ctxt.findFreeReg(Out);
     Out << "nop"<< std::endl;
     return regname; //change this!!!
-    }
+
     //find the variable in
   }
   else if(expr->IsFunctionCallExpr())
@@ -83,20 +82,21 @@ std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //c
       if(expr->getType(ctxt.getVariables())==IntType)
       {
     //call some other function
-    std::string left = CodeGenExpr(expr->getLeft(), Out, ctxt);
-    std::string right = CodeGenExpr(expr->getRight(), Out, ctxt);
-    std::string dest = ctxt.findFreeReg(Out);
-    opcode_to_code(dest, left, right, expr->getOpcode(), Out);
-    ctxt.emptyReg(left);
-    ctxt.emptyReg(right);
-    return dest;
-    }
-    else if(expr->getType(ctxt.getVariables())==FloatType)
-    {
+      std::string left = CodeGenExpr(expr->getLeft(), Out, ctxt);
+      std::string right = CodeGenExpr(expr->getRight(), Out, ctxt);
+      std::string dest = ctxt.findFreeReg(Out);
+      opcode_to_code(dest, left, right, expr->getOpcode(), Out);
+      ctxt.emptyReg(left);
+      ctxt.emptyReg(right);
+      return dest;
+      }
+      else if(expr->getType(ctxt.getVariables())==FloatType)
+      {
       std::string left = CodeGenExpr(expr->getLeft(), Out, ctxt);
       std::string right = CodeGenExpr(expr->getRight(), Out, ctxt);
       std::string dest = ctxt.findFreeFReg(Out);
       opcode_to_code_float(dest, left, right, expr->getOpcode(), Out, FloatType);
+
       ctxt.emptyFReg(left);
       ctxt.emptyFReg(right);
       return dest;
@@ -229,11 +229,21 @@ void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables, int 
     //evaluate return value
     //move that value to v0
       //fprintf(stderr, "here");
+
     std::string regname = CodeGenExpr((Expression*)stmt->getRetVal(), Out, variables);
 
-    Out<<"addiu $v0, " << regname << ", 0" <<std::endl;
+    if(((Expression*)(stmt->getRetVal()))->getType(variables.getVariables())==IntType)
+    {
+      Out<<"addiu $v0, " << regname << ", 0" <<std::endl;
+      variables.emptyReg(regname);
+    }
+    else
+    {
+      Out << "mfc1 $v0, " + regname<<std::endl; //double??
+      variables.emptyFReg(regname);
+    }
 
-    variables.emptyReg(regname);
+
     //if(funct->getName()!="main")
     //{
       variables.loadRetAddr(Out, 12*4);

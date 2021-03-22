@@ -40,9 +40,9 @@ public:
     {
       regs.push_back(Register(REGNAMES[i]));
     }
-    for(int i = 0; i<REGNAMES.size(); i++)
+    for(int i = 0; i<FLOATREGNAMES.size(); i++)
     {
-      regs.push_back(Register(FLOATREGNAMES[i]));
+      fregs.push_back(Register(FLOATREGNAMES[i]));
     }
     this->NrOfVarsDeclared = 0;
     for(int i = 0; i<sizeOfStack; i++)
@@ -94,7 +94,7 @@ public:
   }
   int findFRegIndex(const std::string& regname) const
   {
-    for(int i = 0; i<regs.size(); i+=2)
+    for(int i = 0; i<fregs.size(); i++)
     {
       if(FLOATREGNAMES[i] == regname)
         return i;
@@ -344,7 +344,7 @@ public:
   //then returns the reserved register name
   {
 
-    variables.push_back(Variable_hash(varname, IntType));
+    variables.push_back(Variable_hash(varname, type));
     bool found = false;
     int i = 0;
     while(i<stack.size())
@@ -446,6 +446,11 @@ public:
     }
     else //float or double
     {
+      std::string prec;
+      if(variables[varidx].getType()==FloatType)
+        prec = "s";
+      else
+        prec = "d";
       std::string regname = findFreeFReg(Out);
       if(regname!="")
       {
@@ -454,9 +459,9 @@ public:
         fregs[idx].setIsused(true);
         if(!variables[varidx].isGlobal())
         {
-        Out<<"lw "<< regname <<", " << (variables[varidx].getMemAddr()) * 4<<"($sp)"<<std::endl; //+offset!!!!
-        if(variables[varidx].getType()==DoubleType)
-          Out << "lw " << FLOATREGNAMES[idx+1] << ", " << (variables[varidx].getMemAddr()+1) * 4<<"($sp)" << std::endl;
+        Out<<"l."+ prec + " "<< regname <<", " << (variables[varidx].getMemAddr()) * 4<<"($sp)"<<std::endl; //+offset!!!!
+        //if(variables[varidx].getType()==DoubleType)
+          //Out << "lw " << FLOATREGNAMES[idx+1] << ", " << (variables[varidx].getMemAddr()+1) * 4<<"($sp)" << std::endl;
 
         }
         //variables[varidx].setlocation(regname, 0, false);
@@ -570,6 +575,7 @@ void moveToOriginal( const std::string& id, Context& ctxtTo, std::ostream& Out);
   }
 
   void loadIndex(std::string varname, std::string regname, std::ostream& Out);
+  bool isFEmpty(const std::string& name);
 };
 
 

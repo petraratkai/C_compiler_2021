@@ -19,7 +19,7 @@ public:
     isused = reg.isused;
     canBeStored = reg.canBeStored;
   }
-  const std::string getName() const {return RegName;}
+  std::string getName() const {return RegName;}
   std::string getVarName() const {return varname;}
   void setVarName(const std::string& varname) {this->varname = varname;}
   bool isUsed() const {return isused;}

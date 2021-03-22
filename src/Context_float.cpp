@@ -1,13 +1,21 @@
 #include "../include/ast/Context.hpp"
 
+bool Context::isFEmpty(const std::string& name)
+{
+  for(int i = 0; i< 32; i++)
+  {
+    if(fregs[i].getName()==name)
+      return !fregs[i].isUsed();
+  }
+}
 
 std::string Context::findFreeFReg(std::ostream& Out) //finds and reserves a register
 {
-  int fromindx = findFRegIndex("$t0");
-  int toindx = findFRegIndex("$s7");
-  for(int i = fromindx; i<=toindx; i++)
+  int fromindx = findFRegIndex("$f0");
+  int toindx = findFRegIndex("$f31");
+  for(int i = fromindx; i<=toindx; i=i+2)
   {
-    if (isEmpty(fregs[i].getName()))
+    if (isFEmpty(fregs[i].getName()))
     {
       fregs[i].setVarName("");
       fregs[i].setIsused(true);

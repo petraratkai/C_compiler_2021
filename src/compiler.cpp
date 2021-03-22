@@ -44,6 +44,7 @@ int main(int argc, char *argv[])
 	std::vector<Function*> fns = prog->getFunctions();
 	//(fns[0])->getName();
 	//std::cerr<<"here";
+	try {
 	Out<<".data" << std::endl;
 
 	std::vector<Statement*> decl = prog->getDeclarations();
@@ -93,6 +94,11 @@ delete prog;
 //ideas: vector of bools -> taken or notes
 //
 	Out.close();
+}
+catch (std::string msg)
+{
+	std::cerr << msg;
+}
 
 
 
