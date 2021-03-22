@@ -44,7 +44,7 @@ void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables, int 
 
 void CompileFunct(const Function *funct, std::ofstream& Out, std::vector<Variable_hash> global_vars);
 
-void insert_var(std::vector<Variable_hash>* variables, const Variable* var);
+void insert_var(std::vector<Variable_hash>& variables, const Variable* var);
 
 void opcode_to_code(const std::string& dest, const std::string& left , const std::string& right,
    const std::string& opcode, std::ostream& Out);
@@ -58,5 +58,10 @@ void assignment_to_code(const std::string& dest, const std::string& src,
     {
         return "." + base+"_"+std::to_string(makeNameUnq++);
     }
+void opcode_to_code_float(const std::string& dest, const std::string& left , const std::string& right,
+       const std::string& opcode, std::ostream& Out, VarType type);
+
+void assignment_to_code_float(const std::string& dest, const std::string& src,
+        const std::string& opcode, std::ostream&  Out, VarType type);
 
 #endif

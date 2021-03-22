@@ -42,7 +42,7 @@ public:
     virtual const std::string getId() const override
     { return id; }
 
-    VarType getType() const {return type;}
+    VarType getType(const std::vector<Variable_hash>& variables) const override {return type;}
 
     VarQualifier getQualifier() {return qualifier;}
 

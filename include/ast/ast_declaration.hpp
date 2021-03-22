@@ -74,7 +74,7 @@ public:
   virtual Statement *getExpr(int i = 0) const override {return (*rhs)[i];}
   virtual bool IsDeclarationStmt() const override {return true;}
   virtual int getSize() const override{return size;}
-  VarType getType() const {return var->getType();}
+  virtual VarType getType(const std::vector<Variable_hash>& variables) const {return var->getType(variables);}
   void changeType(VarType _type) {var->changeType(_type);}
   virtual int getArraySize() const override {return arraySize->getValue();}
 };

@@ -1,4 +1,4 @@
-#include <iostream>
+include <iostream>
 #include <fstream>
 #include <vector>
 #include <string>
@@ -19,15 +19,31 @@ std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //c
     Out<<"addiu " + regname + ", " + "$zero" + ", " << ((expr->getValue()<<16)>>16) <<std::endl;
     return regname;
   }
+  else if(expr->IsFloatStmt())
+  {
+    std::string regname = ctxt.findFreeFReg(Out);
+    Out << "li.s " + regname + ", " << expr->getFValue() << std::endl;
+    return regname;
+  }
+  else if(expr->IsDoubleStmt())
+  {
+    std::string regname = ctxt.findFreeFReg(Out);
+    Out << "li.d " + regname + ", " << expr->getDValue() << std::endl;
+    return regname;
+
+  }
   else if(expr->IsFakeVariableExpr())
   {
     //need to load it into some register
     //find a free register
+    if(expr->getType(ctxt.getVariables())==IntType)
+    {
     std::string regname = ctxt.loadVar(expr->getId(), Out);
 
     //std::string dest = ctxt.findFreeReg(Out);
     Out << "nop"<< std::endl;
     return regname; //change this!!!
+    }
     //find the variable in
   }
   else if(expr->IsFunctionCallExpr())
@@ -64,6 +80,8 @@ std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //c
   {
     if(!expr->IsIndexingOperator())
     {
+      if(expr->getType(ctxt.getVariables())==IntType)
+      {
     //call some other function
     std::string left = CodeGenExpr(expr->getLeft(), Out, ctxt);
     std::string right = CodeGenExpr(expr->getRight(), Out, ctxt);
@@ -72,6 +90,27 @@ std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //c
     ctxt.emptyReg(left);
     ctxt.emptyReg(right);
     return dest;
+    }
+    else if(expr->getType(ctxt.getVariables())==FloatType)
+    {
+      std::string left = CodeGenExpr(expr->getLeft(), Out, ctxt);
+      std::string right = CodeGenExpr(expr->getRight(), Out, ctxt);
+      std::string dest = ctxt.findFreeFReg(Out);
+      opcode_to_code_float(dest, left, right, expr->getOpcode(), Out, FloatType);
+      ctxt.emptyFReg(left);
+      ctxt.emptyFReg(right);
+      return dest;
+    }
+    else if(expr->getType(ctxt.getVariables())==DoubleType)
+    {
+      std::string left = CodeGenExpr(expr->getLeft(), Out, ctxt);
+      std::string right = CodeGenExpr(expr->getRight(), Out, ctxt);
+      std::string dest = ctxt.findFreeFReg(Out);
+      opcode_to_code_float(dest, left, right, expr->getOpcode(), Out, DoubleType);
+      ctxt.emptyFReg(left);
+      ctxt.emptyFReg(right);
+      return dest;
+    }
     }
     else
     { //this is just for local vars
@@ -94,6 +133,8 @@ std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //c
   }
   else if(expr->IsUnary())
   {
+    if(expr->getType(ctxt.getVariables())==IntType) //or char
+    {
     std::string src = CodeGenExpr(expr->getExpr(), Out, ctxt);
     std::string dest = ctxt.findFreeReg(Out);
     opcode_to_code(dest, "$zero", src, expr->getOpcode(), Out); //need to fix the function! or would it work?
@@ -103,19 +144,46 @@ std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //c
     }
     ctxt.emptyReg(src);
     return dest;
+    }
+    else
+    {
+      std::string src = CodeGenExpr(expr->getExpr(), Out, ctxt);
+      std::string dest = ctxt.findFreeFReg(Out);
+      opcode_to_code_float(dest, "$zero", src, expr->getOpcode(), Out, expr->getType(ctxt.getVariables())); //need to fix the function! or would it work?
+      if(expr->getOpcode()=="++" || expr->getOpcode() == "--" || expr->getOpcode()=="++post" || expr->getOpcode()=="--post")
+      {
+        ctxt.saveNewVar(src, expr->getExpr()->getId(), Out);
+      }
+      ctxt.emptyFReg(src);
+      return dest;
+    }
   }
   else if(expr->IsAssignExpr())
   {
     if(!expr->getLhs()->IsIndexingOperator())
     {
-    std::string src = CodeGenExpr(expr->getRhs(), Out, ctxt);
-    std::string dest = CodeGenExpr(expr->getLhs(), Out, ctxt);
-    assignment_to_code(dest, src, expr->getOpcode(), Out);
-    ctxt.saveNewVar(dest, expr->getLhs()->getId(), Out);
-    ctxt.emptyReg(src);
+      if(expr->getType(ctxt.getVariables())==IntType)
+      {
+      std::string src = CodeGenExpr(expr->getRhs(), Out, ctxt);
+      std::string dest = CodeGenExpr(expr->getLhs(), Out, ctxt);
+      assignment_to_code(dest, src, expr->getOpcode(), Out);
+      ctxt.saveNewVar(dest, expr->getLhs()->getId(), Out);
+      ctxt.emptyReg(src);
 
     //ctxt.emptyRegifExpr(src, Out);
-    return dest;
+      return dest;
+      }
+      else
+      {
+        std::string src = CodeGenExpr(expr->getRhs(), Out, ctxt);
+        std::string dest = CodeGenExpr(expr->getLhs(), Out, ctxt);
+        assignment_to_code_float(dest, src, expr->getOpcode(), Out, expr->getType(ctxt.getVariables()));
+        ctxt.saveNewVar(dest, expr->getLhs()->getId(), Out);
+        ctxt.emptyFReg(src);
+
+      //ctxt.emptyRegifExpr(src, Out);
+        return dest;
+      }
     }
     else
     {
@@ -208,7 +276,7 @@ void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables, int 
   else if(stmt->IsDeclarationStmt())
   {
 
-    variables.newVar(stmt->getVariable(), stmt->getArraySize());
+    variables.newVar(stmt->getVariable(), ((Declaration*)stmt)->getType(variables.getVariables()), stmt->getArraySize());
 
         //std::cerr<<"decl\n";
 

@@ -23,6 +23,7 @@ public:
   virtual Expression* getRhs() const override {return rhs;}
   virtual std::string getOpcode() const override {return type_of_assign;}
   virtual int getSize() const override {return size;}
+  virtual VarType getType(const std::vector<Variable_hash>& variables) const override {return lhs->getType(variables);}
 };
 
 #endif

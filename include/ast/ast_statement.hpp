@@ -59,6 +59,7 @@ public:
   //virtual VarType getType() const {}
 
   virtual int getArraySize() const {}
+
 };
 
 #endif

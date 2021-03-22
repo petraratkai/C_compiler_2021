@@ -2,6 +2,7 @@
 #define fakevariable_hpp
 
 #include "ast_expression.hpp"
+#include "fakevariable.hpp"
 
 class FakeVariable
     : public Expression
@@ -24,6 +25,17 @@ public:
 
 
     virtual bool IsFakeVariableExpr() const override {return true;}
+
+    virtual VarType getType(const std::vector<Variable_hash>& variables) const override
+    {
+      for (int i = 0; i<variables.size(); i++)
+      {
+        if(variables[i].getName()==id)
+        {
+          return variables[i].getType();
+        }
+      }
+    }
     /*virtual double evaluate(
         const std::map<std::string,double> &bindings
     ) const override

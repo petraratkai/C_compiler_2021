@@ -52,6 +52,7 @@ int main(int argc, char *argv[])
 	for(int i = 0; i<decl.size(); i++)
 	{	//std::cerr<<"here";
 		if(decl[i]->getArraySize())
+		{
 			Out << decl[i]->getVariable() + ":" << std::endl;
 			for(int j = 0; j<decl[i]->getArraySize(); j++)
 			{ //std::cerr<<"here";
@@ -65,9 +66,10 @@ int main(int argc, char *argv[])
 			{
 				Out <<"0" << std::endl;
 			}
-			Variable_hash newGlobal(decl[i]->getVariable(), ((Declaration*)decl[i])->getType(), true);
+			Variable_hash newGlobal(decl[i]->getVariable(), ((Declaration*)decl[i])->getType(global_variables), true);
 			global_variables.push_back(newGlobal);
-			}
+		}
+		}
 
 	}
 

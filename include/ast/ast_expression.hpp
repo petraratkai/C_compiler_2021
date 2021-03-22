@@ -83,7 +83,7 @@ public:
 
     virtual bool IsIndexingOperator() const  {}
 
-    virtual VarType getType(const std::vector<Variable_hash>& variables) const {}
+    virtual VarType getType(const std::vector<Variable_hash>& variables) const {return IntType;}
 
     virtual double getDValue() const {}
 

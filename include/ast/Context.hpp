@@ -340,7 +340,7 @@ public:
 
   }*/
 
-  void newVar(const std::string& varname, int NrOfElements = 1) //only for declarations, adds new variable to variable hashes and reserves a register
+  void newVar(const std::string& varname, VarType type = IntType, int NrOfElements = 1) //only for declarations, adds new variable to variable hashes and reserves a register
   //then returns the reserved register name
   {
 
@@ -352,6 +352,8 @@ public:
       if(stack[i]=="$")
       {
         stack[i]=varname;
+        if(type == DoubleType)
+          stack[i+1]="1";
         found = true;
         variables[variables.size()-1].setlocation("", i, true);
         NrOfVarsDeclared++;
@@ -359,6 +361,11 @@ public:
         {
           stack[i+j] = "1";
         }
+        if(type == DoubleType)
+          for(int j = 1; j<NrOfElements; j++)
+          {
+            stack[i+j] = "1";
+          }
         return;
       }
       i++;
@@ -465,7 +472,7 @@ public:
       return regname;
       }
     }
-  
+
 
   void removeVar(const std::string& varname) //when we leave a scope, variable is not live anymore
   {
