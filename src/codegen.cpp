@@ -239,7 +239,10 @@ void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables, int 
     }
     else
     {
-      Out << "mfc1 $v0, " + regname<<std::endl; //double??
+      if(((Expression*)(stmt->getRetVal()))->getType(variables.getVariables())==FloatType)
+        Out << "mov.s $f0, " + regname<<std::endl; //double??
+      else
+        Out << "mov.s $f0, " + regname<<std::endl;
       variables.emptyFReg(regname);
     }
 
