@@ -291,7 +291,7 @@ void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables, int 
 
     variables.newVar(stmt->getVariable(), ((Declaration*)stmt)->getType(variables.getVariables()), stmt->getArraySize());
 
-        //std::cerr<<"decl\n";
+
 
     if(stmt->getExpr()!=nullptr)
     {
@@ -299,9 +299,10 @@ void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables, int 
     std::string regname = CodeGenExpr((Expression*)(stmt->getExpr()), Out, variables);
     //Out << "add " + dest + ", " + regname + ", $zero" << std::endl;
 
-    variables.saveNewVar(regname, stmt->getVariable(), Out);
+    variables.saveNewVar(regname, stmt->getVariable(), Out, ((Declaration*)stmt)->getType(variables.getVariables()));
 
-    variables.emptyReg(regname);
+    if(((Declaration*)stmt)->getType(variables.getVariables())==IntType) variables.emptyReg(regname);
+    else variables.emptyFReg(regname);
 
     }
     else
@@ -417,6 +418,44 @@ if(funct->getParams())
   for(int i = 0; i<4 && i< ParamSize; i++)
   {
     Out << "sw $a" << i << ", " << i*4 << "($sp)" << std::endl;
+  }
+  int nrOffloats = 0;
+  int stackidx = 0;
+  for(int i = 0; i<4 && nrOffloats<2 && i<(funct->getParams())->size(); i++)
+  {
+    std::string prec;
+    if(((Declaration*)((*funct->getParams())[i]))->getType(ctxt.getVariables())==FloatType)
+    {
+
+      prec = "s";
+      //stackidx++;
+    }
+     else if(((Declaration*)((*funct->getParams())[i]))->getType(ctxt.getVariables())==DoubleType)
+    {
+      prec = "d";
+    }
+    if(((Declaration*)((*funct->getParams())[i]))->getType(ctxt.getVariables())==FloatType || ((Declaration*)(*funct->getParams())[i])->getType(ctxt.getVariables())==DoubleType)
+    {
+    Out << "s." + prec + " $f" <<12 + nrOffloats*2 << ", " << stackidx*4 << "($sp)" << std::endl;
+
+    }
+
+    if(((Declaration*)((*funct->getParams())[i]))->getType(ctxt.getVariables())==FloatType)
+    {
+      stackidx++;
+      nrOffloats++;
+    }
+     else if(((Declaration*)((*funct->getParams())[i]))->getType(ctxt.getVariables())==DoubleType)
+    {
+      stackidx += 2;
+      nrOffloats++;
+    }
+    else if(((Declaration*)((*funct->getParams())[i]))->getType(ctxt.getVariables())==IntType)
+   {
+     stackidx++;
+   }
+
+
   }
   }
   ctxt.setMemEmpty(returnAddr+returnAddr%2);

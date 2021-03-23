@@ -212,7 +212,17 @@ public:
   {
     //int regidx = findRegIndex(regname);
     int varidx = findVarHashIndex(varName);
-    Out<<"sw " + regname + ", " << (variables[varidx].getMemAddr())*4 << "($sp)" <<std::endl;
+    if(type==IntType)
+    {
+      Out<<"sw " + regname + ", " << (variables[varidx].getMemAddr())*4 << "($sp)" <<std::endl;
+    }
+    else
+    {
+      std::string prec;
+      if(type == FloatType) prec = "s";
+      else prec = "d";
+      Out << "s." + prec + " " + regname + ", " << (variables[varidx].getMemAddr())*4 << "($sp)" <<std::endl;
+    }
   }
   void saveVar(const std::string& regname, std::ostream& Out)
   {
