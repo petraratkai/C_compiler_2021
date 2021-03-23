@@ -192,7 +192,7 @@ type_qualifier:
 ;
 
 declarator:
-		pointer direct_declarator 																{$$ = new DirectDecl( (new Variable($2->getId(), IntType))->getId(), new Number(1));}
+		pointer direct_declarator 																{$$ = new DirectDecl($2->getId(), new Number(1));}
 	|	direct_declarator 																		{$$ = $1;}
 ;
 
