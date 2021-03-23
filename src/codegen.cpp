@@ -152,7 +152,7 @@ std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //c
       opcode_to_code_float(dest, "$zero", src, expr->getOpcode(), Out, expr->getType(ctxt.getVariables())); //need to fix the function! or would it work?
       if(expr->getOpcode()=="++" || expr->getOpcode() == "--" || expr->getOpcode()=="++post" || expr->getOpcode()=="--post")
       {
-        ctxt.saveNewVar(src, expr->getExpr()->getId(), Out);
+        ctxt.saveNewVar(src, expr->getExpr()->getId(), Out, expr->getType(ctxt.getVariables()));
       }
       ctxt.emptyFReg(src);
       return dest;
@@ -178,9 +178,8 @@ std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //c
         std::string src = CodeGenExpr(expr->getRhs(), Out, ctxt);
         std::string dest = CodeGenExpr(expr->getLhs(), Out, ctxt);
         assignment_to_code_float(dest, src, expr->getOpcode(), Out, expr->getType(ctxt.getVariables()));
-        ctxt.saveNewVar(dest, expr->getLhs()->getId(), Out);
+        ctxt.saveNewVar(dest, expr->getLhs()->getId(), Out, expr->getType(ctxt.getVariables()));
         ctxt.emptyFReg(src);
-
       //ctxt.emptyRegifExpr(src, Out);
         return dest;
       }
@@ -222,7 +221,10 @@ void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables, int 
       //find variable in hash table
         //fprintf(stderr, "here");
       std::string regname = CodeGenExpr((Expression*)stmt, Out, variables);
-      variables.emptyReg(regname);
+      if(((Expression*)stmt)->getType(variables.getVariables())==IntType)
+        variables.emptyReg(regname);
+      else
+        variables.emptyFReg(regname);
   }
   else if(stmt->IsReturnStmt())
   {
@@ -279,7 +281,7 @@ void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables, int 
     for(int i = 0; i<stmts->size(); i++)
     {
       CodeGen((*stmts)[i], Out, newCtxt, memsize);
-
+//std::cerr<<"here";
     }
     }
 

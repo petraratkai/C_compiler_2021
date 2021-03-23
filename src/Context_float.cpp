@@ -11,8 +11,8 @@ bool Context::isFEmpty(const std::string& name)
 
 std::string Context::findFreeFReg(std::ostream& Out) //finds and reserves a register
 {
-  int fromindx = findFRegIndex("$f0");
-  int toindx = findFRegIndex("$f31");
+  int fromindx = findFRegIndex("$f4");
+  int toindx = findFRegIndex("$f11");
   for(int i = fromindx; i<=toindx; i=i+2)
   {
     if (isFEmpty(fregs[i].getName()))

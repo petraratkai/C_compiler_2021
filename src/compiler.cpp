@@ -52,6 +52,7 @@ int main(int argc, char *argv[])
 	//std::cerr<<decl.size(); //decl[0]->getArraySize()->getValue();
 	for(int i = 0; i<decl.size(); i++)
 	{	//std::cerr<<"here";
+
 		if(decl[i]->getArraySize())
 		{
 			Out << decl[i]->getVariable() + ":" << std::endl;
@@ -72,8 +73,9 @@ int main(int argc, char *argv[])
 		}
 		}
 
-	}
 
+	}
+//std::cerr<<"here";
 	Out << "$Ltext0:" << std::endl;
 	//std::vector<Variable_hash> global_vars;
 		//std::cerr<<"here";
