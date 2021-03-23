@@ -34,8 +34,8 @@
 #include "ast/direct_declarator.hpp"
 #include "ast/ast_double.hpp"
 #include "ast/vartype.hpp"
-
-
+#include "ast/ast_address_operator.hpp"
+#include "ast/ast_dereference_operator.hpp"
 
 
 extern Program *parseAST(const std::string name);
