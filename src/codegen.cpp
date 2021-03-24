@@ -243,7 +243,7 @@ std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //c
       return lhs;
     }
   }
-  else if(expr->IsAddressOperator())
+  /*else if(expr->IsAddressOperator())
   {
     std::string address = ctxt.findFreeReg(Out);
     ctxt.loadIndex(expr->getFakeVariable()->getId(), address, Out);
@@ -256,6 +256,31 @@ std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //c
     Out << "sll " << address + ", 2" << std::endl;
     Out << "lw " + address + ", 0(" + address + ")" << std::endl;
     return address;
+  }*/
+  else if(expr->IsCondOperator())
+  {
+    std::string left = CodeGenExpr(expr->getLeft(), Out, ctxt);
+    std::string middle = CodeGenExpr(expr->getMiddle(), Out, ctxt);
+    std::string right = CodeGenExpr(expr->getRight(), Out, ctxt);
+    std::string dest = ctxt.findFreeReg(Out);
+    std::string elselabel = makeName("elselabel");
+    std::string aftercond = makeName("aftercond");
+    Out << "beq " + left + ", $zero, " + elselabel << std::endl;
+    Out << "nop" << std::endl;
+    Out << "move " << dest + ", " + middle << std::endl;
+    Out << "j " + aftercond << std::endl;
+    Out << "nop" << std::endl;
+    Out << elselabel + ":" << std::endl;
+    Out << "move " << dest + ", " + right << std::endl;
+    Out << "j " + aftercond << std::endl;
+    Out << "nop" << std::endl;
+    Out << aftercond + ":" << std::endl;
+    ctxt.emptyReg(left);
+    ctxt.emptyReg(right);
+    ctxt.emptyReg(middle);
+    return dest;
+
+
   }
   else assert(0);
 }
@@ -540,7 +565,7 @@ if(funct->getParams())
 
   }
   //for loop for the parameters maybe?
-  ctxt.printStack();
+  //ctxt.printStack();
   CodeGen(body, Out, ctxt, memsize, returnAddr);
 
    //is this correct?

@@ -29,19 +29,20 @@ public:
         delete right;
     }
 
-    Expression* getLeft() const
+    virtual Expression* getLeft() const override
     { return left; }
 
-    Expression* getMiddle() const
+    virtual Expression* getMiddle() const override
     { return middle; }
 
-    Expression* getRight() const
+    virtual Expression* getRight() const override
     { return right; }
 
     int getSize() const {return size;}
 
     virtual VarType getType(const std::vector<Variable_hash>& variables) const override {return middle->getType(variables);}
 
+    virtual bool IsCondOperator() const override {return true;}
     /*virtual void print(std::ostream &dst) const override
     {
         dst<<"( ";

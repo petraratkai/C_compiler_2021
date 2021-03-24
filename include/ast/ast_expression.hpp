@@ -61,6 +61,9 @@ public:
     virtual Expression* getRight() const
     { return nullptr; }
 
+    virtual Expression* getMiddle() const
+    { return nullptr; }
+
     virtual const std::string getId() const
     { std::cerr << "called getId from expression" << std::endl; }
 
@@ -95,6 +98,8 @@ public:
     { }
 
     virtual bool IsDereferenceOp() const {return false;}
+
+    virtual bool IsCondOperator() const{return false;}
 
 
 
