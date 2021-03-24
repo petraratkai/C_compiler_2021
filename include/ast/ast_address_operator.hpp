@@ -23,7 +23,7 @@ public:
         delete thing;
     }
 
-    Expression* getFakeVariable() const
+    virtual Expression* getFakeVariable() const override
     { return thing; }
 
     int getSize() const {return size;}
@@ -40,5 +40,6 @@ public:
         right->print(dst);
         dst<<" )";
     }*/
+    virtual bool IsAddressOperator() const override {return true;}
 };
 #endif

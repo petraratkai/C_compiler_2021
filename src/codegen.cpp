@@ -2,6 +2,7 @@
 #include <fstream>
 #include <vector>
 #include <string>
+#include <cassert>
 
 #include "../include/ast.hpp"
 #include "../include/ast/Context.hpp"
@@ -135,15 +136,35 @@ std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //c
   {
     if(expr->getType(ctxt.getVariables())==IntType) //or char
     {
-    std::string src = CodeGenExpr(expr->getExpr(), Out, ctxt);
-    std::string dest = ctxt.findFreeReg(Out);
-    opcode_to_code(dest, "$zero", src, expr->getOpcode(), Out); //need to fix the function! or would it work?
-    if(expr->getOpcode()=="++" || expr->getOpcode() == "--" || expr->getOpcode()=="++post" || expr->getOpcode()=="--post")
-    {
-      ctxt.saveNewVar(src, expr->getExpr()->getId(), Out);
-    }
-    ctxt.emptyReg(src);
-    return dest;
+      if(expr->getOpcode()!="&" && expr->getOpcode()!="*")
+      {
+        std::string src = CodeGenExpr(expr->getExpr(), Out, ctxt);
+        std::string dest = ctxt.findFreeReg(Out);
+        opcode_to_code(dest, "$zero", src, expr->getOpcode(), Out); //need to fix the function! or would it work?
+        if(expr->getOpcode()=="++" || expr->getOpcode() == "--" || expr->getOpcode()=="++post" || expr->getOpcode()=="--post")
+        {
+          ctxt.saveNewVar(src, expr->getExpr()->getId(), Out);
+        }
+        ctxt.emptyReg(src);
+        return dest;
+      }
+      else if(expr->getOpcode()=="&")
+      {
+        std::string address = ctxt.findFreeReg(Out);
+        ctxt.loadIndex(expr->getExpr()->getId(), address, Out);
+        //Out << "srl " << address + ", 2" << std::endl;
+        return address;
+      }
+      else //dereference
+      {
+        //std::cerr<<"here";
+        std::string address = ctxt.loadVar(expr->getExpr()->getId(), Out);
+        Out << "sll " << address + ", 2" << std::endl;
+        Out << "lw " + address + ", 0(" + address + ")" << std::endl;
+        Out << "nop" << std::endl;
+        return address;
+
+      }
     }
     else
     {
@@ -159,9 +180,10 @@ std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //c
     }
   }
   else if(expr->IsAssignExpr())
-  {
-    if(!expr->getLhs()->IsIndexingOperator())
-    {
+  { /*if(expr->getLhs()->IsUnary()) std::cerr<<"exists";
+    else std::cerr<<"null";*/
+    if(!expr->getLhs()->IsIndexingOperator() && !(expr->getLhs()->IsUnary()))
+    { //std::cerr<<"here";
       if(expr->getType(ctxt.getVariables())==IntType)
       {
       std::string src = CodeGenExpr(expr->getRhs(), Out, ctxt);
@@ -184,9 +206,9 @@ std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //c
         return dest;
       }
     }
-    else
+    else if (expr->getLhs()->IsIndexingOperator())
     {
-
+      //std::cerr<<"here";
       std::string src = CodeGenExpr(expr->getRhs(), Out, ctxt);
 
       std::string dest = ctxt.findFreeReg(Out);
@@ -208,8 +230,34 @@ std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //c
       ctxt.emptyReg(size);
       return dest;
     }
+    else if(expr->getLhs()->IsUnary() /*&& expr->getLhs()->getOpcode() == "*"*/)
+    { //std::cerr<<"here";
+      std::string lhs = CodeGenExpr(expr->getLhs(), Out, ctxt);
+      std::string rhs = CodeGenExpr(expr->getRhs(), Out, ctxt);
+      assignment_to_code(lhs, rhs, expr->getOpcode(), Out);
+      std::string address = CodeGenExpr(expr->getLhs()->getExpr(), Out, ctxt);
+      Out << "sll " + address + ", 2" << std::endl;
+      Out << "sw " + lhs + ", 0(" + address + ")" << std::endl;
+      ctxt.emptyReg(rhs);
+      ctxt.emptyReg(address);
+      return lhs;
+    }
   }
-  else throw("Invalid expression!");
+  else if(expr->IsAddressOperator())
+  {
+    std::string address = ctxt.findFreeReg(Out);
+    ctxt.loadIndex(expr->getFakeVariable()->getId(), address, Out);
+    Out << "srl " << address + ", 2" << std::endl;
+    return address;
+  }
+  else if(expr->IsDereferenceOp())
+  { //std::cerr<<"here2";
+    std::string address = ctxt.loadVar(expr->getFakeVariable()->getId(), Out);
+    Out << "sll " << address + ", 2" << std::endl;
+    Out << "lw " + address + ", 0(" + address + ")" << std::endl;
+    return address;
+  }
+  else assert(0);
 }
 
 void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables, int memsize)
@@ -297,10 +345,10 @@ void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables, int 
 
     if(stmt->getExpr()!=nullptr)
     {
+
     //std::string dest = variables.findFreeReg(Out);
     std::string regname = CodeGenExpr((Expression*)(stmt->getExpr()), Out, variables);
     //Out << "add " + dest + ", " + regname + ", $zero" << std::endl;
-
     variables.saveNewVar(regname, stmt->getVariable(), Out, ((Declaration*)stmt)->getType(variables.getVariables()));
 
     if(((Declaration*)stmt)->getType(variables.getVariables())==IntType) variables.emptyReg(regname);
@@ -403,9 +451,12 @@ ctxt.allocateMem((funct->getSize()+21+(4+1+ParamSize)%2) + (funct->getSize()%2),
 int returnAddr;
 if(ParamSize<=4) returnAddr = 8 + 4;
 else returnAddr = 8 + ParamSize;
+
+//std::cerr << funct->getParams()->size();
 if(funct->getParams())
   for(int i = 4; i<(funct->getParams())->size(); i++)
   {
+
     Out << "lw $t0, " << i*4 << "($t1)" << std::endl;
     Out << "nop" << std::endl;
     Out << "sw $t0, " << (returnAddr + returnAddr%2 + i-4 + 1)*4 << "($sp)" << std::endl;

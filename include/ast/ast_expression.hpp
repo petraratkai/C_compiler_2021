@@ -81,13 +81,20 @@ public:
 
     virtual int getArraySize() const {}
 
-    virtual bool IsIndexingOperator() const  {}
+    virtual bool IsIndexingOperator() const  {return false;}
 
     virtual VarType getType(const std::vector<Variable_hash>& variables) const {return IntType;}
 
     virtual double getDValue() const {}
 
     virtual bool IsDoubleStmt() const {return false;}
+
+    virtual bool IsAddressOperator() const {return false;}
+
+    virtual Expression* getFakeVariable() const
+    { }
+
+    virtual bool IsDereferenceOp() const {return false;}
 
 
 
