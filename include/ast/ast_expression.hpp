@@ -37,7 +37,15 @@ public:
 
     virtual float getFValue() const override {}
 
+    virtual std::string getString() const override {}
+    
+    virtual std::string getChar() const override {}
+
     virtual bool IsFloatStmt() const override {return false;}
+
+    virtual bool IsStringStmt() const override {return false;}
+
+    virtual bool IsCharStmt() const override {return false;}
 
     virtual bool IsExpressionStmt() const override {return true;}
 

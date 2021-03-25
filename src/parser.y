@@ -468,7 +468,7 @@ primary_expression:
 		IDENTIFIER												{$$ = new FakeVariable(*$1);}
 	|	INT_CONST												{$$ = new Number(stoi(*$1));}
 	|	FLOAT_CONST    											{$$ = new Fnumber(stof(*$1));}
-	|	CHAR_CONST   											{$$ = new CharLiteral{$1[0]};}
+	|	CHAR_CONST   											{$$ = new CharLiteral{*$1};}
 	|	STRING_CONST											{$$ = new StringLiteral{*$1};}
 	|	T_LBRACKET expression T_RBRACKET 						{$$ = $2;}
 ;

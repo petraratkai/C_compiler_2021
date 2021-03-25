@@ -14,6 +14,8 @@
 #include "ast/ast_ifelse.hpp"
 #include "ast/ast_number.hpp"
 #include "ast/ast_float.hpp"
+#include "ast/ast_char.hpp"
+#include "ast/ast_string.hpp"
 #include "ast/ast_operator.hpp"
 #include "ast/ast_program.hpp"
 #include "ast/ast_return_stmt.hpp"
@@ -65,4 +67,5 @@ void assignment_to_code_float(const std::string& dest, const std::string& src,
         const std::string& opcode, std::ostream&  Out, VarType type);
 
 int sizeOf(VarType type);
+
 #endif
