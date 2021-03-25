@@ -105,8 +105,8 @@ init_declarator_list:
 ;
 
 init_declarator:
-		declarator 												{$$ = new Declaration(new Variable($1->getId(), IntType), nullptr, $1->getArraySize());} //FIX THIS // Vartype isn't available yet so can't actually give it intype technically yet
-	|	declarator T_ASSIGN initializer 						{$$ = new Declaration(new Variable($1->getId(), IntType), $3);} //FIX THIS
+		declarator 												{$$ = new Declaration(new Variable($1->getId(), IntType), $1->IsPointer(), nullptr, $1->getArraySize() );} //FIX THIS // Vartype isn't available yet so can't actually give it intype technically yet
+	|	declarator T_ASSIGN initializer 						{$$ = new Declaration(new Variable($1->getId(), IntType), $1->IsPointer(), $3);} //FIX THIS
 ;
 
 storage_class_specifier:
@@ -228,7 +228,7 @@ parameter_list:
 	|	parameter_list T_COMMA parameter_declaration 											{$1->push_back($3), $$ = $1;}
 
 parameter_declaration:
-		declaration_specifiers declarator     													{$$ = new Declaration( new Variable($2->getId(), $1));} //FIX THIS
+		declaration_specifiers declarator     													{$$ = new Declaration( new Variable($2->getId(), $1,$2->IsPointer()));} //FIX THIS
 	|	declaration_specifiers abstract_declarator 												//{$$ = $1;} //FIX THIS
 	|	declaration_specifiers																	//{$$ = $1;}
 ;

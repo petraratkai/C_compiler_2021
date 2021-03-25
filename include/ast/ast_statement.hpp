@@ -43,6 +43,8 @@ public:
   //virtual std::vector<Variable_hash> getVars() const  {}
   virtual bool IsIfElseStmt() const {return false;}
   virtual bool IsSwitchStmt() const {return false;}
+  virtual bool IsPointer() const {return false;}
+
   virtual Statement* getCond() const
   { return nullptr; }
 

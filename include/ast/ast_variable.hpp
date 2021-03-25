@@ -14,25 +14,46 @@ private:
     VarQualifier qualifier;
     int size;
     Expression* arraySize;
+    bool pointer;
 public:
     Variable(const std::string &_id, VarType type)
         : id(_id), type(type)
-    {size = 1; storage = NoStorage; qualifier = NoQualifier; arraySize = nullptr;}
+    {size = 1; storage = NoStorage; qualifier = NoQualifier; arraySize = nullptr; pointer = false;}
 
     Variable(const std::string &_id, VarType type, VarQualifier qualifier)
         : id(_id), type(type), qualifier(qualifier)
-    {size = 1; storage = NoStorage; arraySize = nullptr;}
+    {size = 1; storage = NoStorage; arraySize = nullptr; pointer = false;}
 
     Variable(const std::string &_id, VarType type, VarStorage storage)
         : id(_id), type(type), storage(storage)
-    {size = 1; qualifier = NoQualifier; arraySize = nullptr;}
+    {size = 1; qualifier = NoQualifier; arraySize = nullptr; pointer = false;}
 
     Variable(const std::string &_id, VarType type, VarQualifier qualifier, VarStorage storage)
         : id(_id), type(type), qualifier(qualifier), storage(storage)
-    {size = 1; arraySize = nullptr;}
+    {size = 1; arraySize = nullptr; pointer = false;}
 
     Variable(const std::string &_id, VarType type, VarQualifier qualifier, VarStorage storage, Expression* arraySize)
         : id(_id), type(type), qualifier(qualifier), storage(storage), arraySize(arraySize)
+    {size = 1; pointer = false;}
+
+    Variable(const std::string &_id, VarType type, bool pointer)
+        : id(_id), type(type), pointer(pointer)
+    {size = 1; storage = NoStorage; qualifier = NoQualifier; arraySize = nullptr;}
+
+    Variable(const std::string &_id, VarType type, VarQualifier qualifier, bool pointer)
+        : id(_id), type(type), qualifier(qualifier), pointer(pointer)
+    {size = 1; storage = NoStorage; arraySize = nullptr;}
+
+    Variable(const std::string &_id, VarType type, VarStorage storage, bool pointer)
+        : id(_id), type(type), storage(storage), pointer(pointer)
+    {size = 1; qualifier = NoQualifier; arraySize = nullptr;}
+
+    Variable(const std::string &_id, VarType type, VarQualifier qualifier, VarStorage storage, bool pointer)
+        : id(_id), type(type), qualifier(qualifier), storage(storage), pointer(pointer)
+    {size = 1; arraySize = nullptr;}
+
+    Variable(const std::string &_id, VarType type, VarQualifier qualifier, VarStorage storage, Expression* arraySize, bool pointer)
+        : id(_id), type(type), qualifier(qualifier), storage(storage), arraySize(arraySize), pointer(pointer)
     {size = 1;}
 //Variable(const std::string &_id, VarType type, int _size)
 //        : id(_id), type(type), size(_size)
@@ -53,6 +74,8 @@ public:
     virtual int getArraySize() const override {return arraySize->getValue();}
 
     virtual bool IsVariableStmt() const override {return true;}
+
+    virtual bool IsPointer() const override {return pointer; }
     /*virtual double evaluate(
         const std::map<std::string,double> &bindings
     ) const override
