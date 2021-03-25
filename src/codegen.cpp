@@ -57,29 +57,33 @@ std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //c
     //need to save the argument registers a0-a3
     //save registers
     //need to save the return address later
-    std::string dest = ctxt.findFreeReg(Out);
+
     if(expr->getParams())
     {
     for(int i=0; i<4 && i<expr->getParams()->size(); i++) //need to calculate them + need to store them in $a0-$a1
     {
-      dest = CodeGenExpr((*expr->getParams())[i], Out, ctxt);
-      Out << "addiu $a" << i << ", " + dest + ", 0" << std::endl;
-      //ctxt.emptyReg(dest);
+      std::string dest2 = CodeGenExpr((*expr->getParams())[i], Out, ctxt);
+      Out << "addiu $a" << i << ", " + dest2 + ", 0" << std::endl;
+      ctxt.emptyReg(dest2);
     }
     for(int i = 4; i<expr->getParams()->size();i++)
     {
-      dest = CodeGenExpr((*expr->getParams())[i], Out, ctxt);
-      Out << "sw " + dest + ", " <<  i*4 <<"($sp)" << std::endl;
-      //ctxt.emptyReg(dest);
+      std::string dest2 = CodeGenExpr((*expr->getParams())[i], Out, ctxt);
+      Out << "sw " + dest2 + ", " <<  i*4 <<"($sp)" << std::endl;
+      ctxt.emptyReg(dest2);
     }
+
   }
+
   //ctxt.emptyReg(dest);
   //ctxt.storeregs(false, ctxt.FirstEmptyIndex()*4, Out);
     ctxt.storeregs(false, (8+4+1+(4+1)%2)*4, Out); //params!!
     Out << "jal " + expr->getName() << std::endl;
+    Out << "nop" << std::endl;
     //ctxt.reloadregs(false, ctxt.FirstEmptyIndex()*4, Out);
     ctxt.reloadregs(false, (8+4+1+(4+1)%2)*4, Out); //+params!!!
     Out << "addiu $v0, $v0, 0" << std::endl; //nop after jump
+    std::string dest = ctxt.findFreeReg(Out);
     Out << "addiu " + dest + ", $v0, 0" << std::endl;
     ctxt.emptyReg("$v0");
     return dest;
