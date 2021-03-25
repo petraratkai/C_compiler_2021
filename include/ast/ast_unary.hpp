@@ -37,6 +37,8 @@ private:
         return type_of_op2;
     }
 
+    virtual bool IsSizeOf() const override {return type_of_op2 == "sizeof";}
+
     virtual Expression* getExpr() const override
     { return expr; }
 
@@ -47,7 +49,11 @@ private:
 
     virtual int getSize() const override {return size;}
 
-    virtual VarType getType(const std::vector<Variable_hash>& variables) const override {return expr->getType(variables);}
+    virtual VarType getType(const std::vector<Variable_hash>& variables) const override
+    {
+      if(IsSizeOf()) return IntType;
+      return expr->getType(variables);
+    }
 
     /*virtual void print(std::ostream &dst) const override
     {

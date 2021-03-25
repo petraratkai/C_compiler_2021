@@ -58,11 +58,13 @@ std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //c
     {
       dest = CodeGenExpr((*expr->getParams())[i], Out, ctxt);
       Out << "addiu $a" << i << ", " + dest + ", 0" << std::endl;
+      //ctxt.emptyReg(dest);
     }
     for(int i = 4; i<expr->getParams()->size();i++)
     {
       dest = CodeGenExpr((*expr->getParams())[i], Out, ctxt);
       Out << "sw " + dest + ", " <<  i*4 <<"($sp)" << std::endl;
+      //ctxt.emptyReg(dest);
     }
   }
   //ctxt.emptyReg(dest);
@@ -131,6 +133,21 @@ std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //c
       ctxt.emptyReg(size);
       return dest;
     }
+  }
+  else if(expr->IsSizeOf())
+  {
+    Number* size;
+    if(expr->getExpr())
+    {
+      size = new Number(sizeOf(expr->getExpr()->getType(ctxt.getVariables())));
+
+    }
+    else
+    {
+      size = new Number(sizeOf(expr->getKeyword()));
+    }
+    std::string dest = CodeGenExpr(size, Out, ctxt);
+    return dest;
   }
   else if(expr->IsUnary())
   {
@@ -306,7 +323,7 @@ void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables, int 
       //fprintf(stderr, "here");
 
     std::string regname = CodeGenExpr((Expression*)stmt->getRetVal(), Out, variables);
-
+//std::cerr<<"here";
     if(((Expression*)(stmt->getRetVal()))->getType(variables.getVariables())==IntType)
     {
       Out<<"addiu $v0, " << regname << ", 0" <<std::endl;
