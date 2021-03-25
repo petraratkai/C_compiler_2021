@@ -129,7 +129,7 @@ while			{yylval.string = new std::string(yytext); return T_WHILE;}
 {DIGIT}+[eE][+-]?{DIGIT}*[FLfl]?	{yylval.string = new std::string(yytext); return FLOAT_CONST;}
 {DIGIT}+[.]{DIGIT}*[eE][+-]?{DIGIT}*]?[FLfl]?					{yylval.string = new std::string(yytext); return FLOAT_CONST;}
 {DIGIT}+[.]{DIGIT}[FLfl]?					{yylval.string = new std::string(yytext); return FLOAT_CONST;}
-[L]?[\']{CHAR_SEQ}?[\']				{yylval.string = new std::string(yytext); return CHAR_CONST;}
+[L]?[']{CHAR_SEQ}?[']				{yylval.string = new std::string(yytext); return CHAR_CONST;}
 [L]?[\"]{SCHAR_SEQ}?[\"]			{yylval.string = new std::string(yytext); return STRING_CONST;}
 [ \t\r\n]+		{;}
 .				{fprintf(stderr, yytext); fprintf(stderr, "Not in lexer \n"); exit(1);}
