@@ -321,7 +321,7 @@ iteration_statement:
 	|	T_DO statement T_WHILE T_LBRACKET expression T_RBRACKET 											{$$ = new Do($5, $2);} //Currently don't support
 	|	T_FOR T_LBRACKET expression_statement expression_statement T_RBRACKET statement 					{$$ = new For($3, $4, NULL, $6);}
 	|	T_FOR T_LBRACKET expression_statement expression_statement expression T_RBRACKET statement 			{$$ = new For($3, $4, $5, $7);}
-	| T_FOR T_LBRACKET declaration expression_statement expression T_RBRACKET statement							{$$ = new For($3,$4,$5,$7);}
+	|	T_FOR T_LBRACKET declaration expression_statement expression T_RBRACKET statement							{$$ = new For($3,$4,$5,$7);}
 	|	T_FOR T_LBRACKET declaration expression_statement T_RBRACKET statement 					{$$ = new For($3, $4, NULL, $6);}
 
 ;

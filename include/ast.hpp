@@ -7,6 +7,8 @@
 #include "ast/ast_expression.hpp"
 #include "ast/ast_declaration.hpp"
 #include "ast/ast_compoundstmt.hpp"
+#include "ast/ast_casestmt.hpp"
+#include "ast/ast_defaultstmt.hpp"
 #include "ast/ast_declaration.hpp"
 #include "ast/ast_function.hpp"
 #include "ast/ast_function_call.hpp"

@@ -30,6 +30,8 @@ public:
   virtual bool IsCharStmt() const {return false;}
   virtual bool IsOperatorStmt() const {return false;}
   virtual bool IsCompoundStmt() const {return false;}
+  virtual bool IsCaseStmt() const {return false;}
+  virtual bool IsDefaultStmt() const {return false;}  
   virtual bool IsWhile() const {return false;}
   virtual bool IsFor() const {return false;}
   virtual bool IsDo() const {return false;}
