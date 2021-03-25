@@ -103,6 +103,9 @@ public:
 
     virtual bool IsCondOperator() const{return false;}
 
+    virtual bool IsSizeOf() const {return false;}
+
+    
 
 
 };

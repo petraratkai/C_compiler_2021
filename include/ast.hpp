@@ -64,4 +64,5 @@ void opcode_to_code_float(const std::string& dest, const std::string& left , con
 void assignment_to_code_float(const std::string& dest, const std::string& src,
         const std::string& opcode, std::ostream&  Out, VarType type);
 
+int sizeOf(VarType type);
 #endif
