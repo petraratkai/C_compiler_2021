@@ -20,6 +20,12 @@ std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //c
     Out<<"addiu " + regname + ", " + "$zero" + ", " << ((expr->getValue()<<16)>>16) <<std::endl;
     return regname;
   }
+  if(expr->IsCharStmt())
+  {
+    std::string regname = ctxt.findFreeReg(Out);
+    Out << "addiu " + regname + ", $zero, " <<  (int(expr->getChar()[1])) << std::endl;
+    return regname;
+  }
   else if(expr->IsFloatStmt())
   {
     std::string regname = ctxt.findFreeFReg(Out);
@@ -324,7 +330,7 @@ void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables, int 
 
     std::string regname = CodeGenExpr((Expression*)stmt->getRetVal(), Out, variables);
 //std::cerr<<"here";
-    if(((Expression*)(stmt->getRetVal()))->getType(variables.getVariables())==IntType)
+    if(((Expression*)(stmt->getRetVal()))->getType(variables.getVariables())==IntType || ((Expression*)(stmt->getRetVal()))->getType(variables.getVariables())==CharType)
     {
       Out<<"addiu $v0, " << regname << ", 0" <<std::endl;
       variables.emptyReg(regname);
