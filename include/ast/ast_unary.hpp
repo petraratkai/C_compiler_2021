@@ -10,12 +10,17 @@ class Unary
 private:
     Expression* expr;
     std::string type_of_op2;
+    VarType keyword;
     int size;
   public:
     Unary(Expression* _expr, const std::string& _type_of_op2)
         : expr(_expr)
         , type_of_op2(_type_of_op2)
-    {size = (_expr->getSize() +1) ;}
+    {keyword = IntType; size = (_expr->getSize() +1) ;}
+    Unary(VarType _keyword, const std::string& _type_of_op2)
+        : keyword(_keyword)
+        , type_of_op2(_type_of_op2)
+    {expr = NULL; size = (2) ;}
     //Unary(Expression* _expr, std::string _type_of_op2, int _size)
     //    : expr(_expr)
     //    , type_of_op2(_type_of_op2)
@@ -34,6 +39,9 @@ private:
 
     virtual Expression* getExpr() const override
     { return expr; }
+
+    virtual VarType getKeyword() const override
+    { return keyword; }
 
     virtual bool IsUnary() const override {return true;}
 

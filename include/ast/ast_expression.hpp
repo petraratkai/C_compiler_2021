@@ -76,6 +76,8 @@ public:
 
     virtual Expression* getExpr() const {return nullptr;}
 
+    virtual VarType getKeyword() const {return IntType;}
+
     virtual bool IsUnary() const {return false;}
 
     virtual std::string getName() const { return "hey";}

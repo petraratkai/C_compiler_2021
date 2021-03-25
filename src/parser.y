@@ -437,7 +437,7 @@ unary_expression:
 	|	T_DECREMENT unary_expression 							{$$ = new Unary($2, *$1);}
 	|	unary_operator cast_expression 							{$$ = new Unary($2, *$1);}
 	|	T_SIZEOF unary_expression 								{$$ = new Unary($2, *$1);}
-	|	T_SIZEOF T_LBRACKET type_name T_RBRACKET 				//{$$ = new Unary($2, *$1);}
+	|	T_SIZEOF T_LBRACKET type_name T_RBRACKET 				{$$ = new Unary($3, *$1);}
 ;
 
 unary_operator:
