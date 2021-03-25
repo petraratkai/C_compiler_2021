@@ -302,7 +302,7 @@ std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //c
   else assert(0);
 }
 
-void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables, int memsize, int returnAddr)
+void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables, int memsize, int returnAddr, const std::string& beginlabel, const std::string& endlabel)
 {
 
 
@@ -357,6 +357,27 @@ void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables, int 
   return;
   }
 
+  else if(stmt->IsBreakStmt())
+  {
+    Out << "j " + endlabel << std::endl;
+    return;
+  }
+  else if(stmt->IsContinueStmt())
+  {
+    Out << "j " + beginlabel << std::endl;
+    return;
+  }
+  else if(stmt->IsCaseStmt())
+  {
+    Out << stmt->getLabel() + ":" << std::endl;
+    return;
+  }
+  else if(stmt->IsDefaultStmt())
+  {
+    Out << stmt->getLabel()+ ":" << std::endl;
+    return;
+  }
+
   else if(stmt->IsCompoundStmt())
   {
     //variables.findInMem("a"); std::cerr<<"compound"<<std::endl;
@@ -370,7 +391,7 @@ void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables, int 
     {
     for(int i = 0; i<stmts->size(); i++)
     {
-      CodeGen((*stmts)[i], Out, newCtxt, memsize, returnAddr);
+      CodeGen((*stmts)[i], Out, newCtxt, memsize, returnAddr, beginlabel, endlabel);
 //std::cerr<<"here";
     }
     }
@@ -420,7 +441,7 @@ void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables, int 
     variables.emptyReg(regCond);
     //if there is an else jump to elselabel
     Out << "addiu $v0, $v0, 0" << std::endl; //nop
-    CodeGen(stmt->getIfStmts(), Out, variables, memsize, returnAddr);
+    CodeGen(stmt->getIfStmts(), Out, variables, memsize, returnAddr, beginlabel, endlabel);
     Out << "j " + afteriflabel << std::endl;
     Out << "addiu $v0, $v0, 0" << std::endl;
     //jump to afterifelse
@@ -428,7 +449,7 @@ void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables, int 
     {
     Out << elselabel +":" << std::endl;
     //if(stmt->getElseStmts()!=nullptr)
-      CodeGen(stmt->getElseStmts(), Out, variables, memsize, returnAddr);
+      CodeGen(stmt->getElseStmts(), Out, variables, memsize, returnAddr, beginlabel, endlabel);
     Out << "j " + afteriflabel << std::endl;
     Out << "addiu $v0, $v0, 0" << std::endl;
     }
@@ -448,7 +469,7 @@ void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables, int 
     Out << "beq " + regCond + ", $zero, " +  afterwhilelabel << std::endl;
     Out << "addiu $v0, $v0, 0" << std::endl;
     variables.emptyReg(regCond);
-    CodeGen(stmt->getCompoundStmt(), Out, variables, memsize, returnAddr);
+    CodeGen(stmt->getCompoundStmt(), Out, variables, memsize, returnAddr, whilelabel, afterwhilelabel);
     Out << "j " + whilelabel <<std::endl;
     Out<< "addiu $zero, $zero, 0" << std::endl;
     Out << afterwhilelabel + ":" <<std::endl;
@@ -458,18 +479,44 @@ void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables, int 
     std::string forlabel = makeName("for");
     std::string afterforlabel = makeName("afterfor");
     if(stmt->getFirst())
-      CodeGen(stmt->getFirst(), Out, variables, memsize, returnAddr);
+      CodeGen(stmt->getFirst(), Out, variables, memsize, returnAddr, "", "");
     Out << forlabel + ":" << std::endl;
     std::string regCond = CodeGenExpr((Expression*)stmt->getSecond(), Out, variables);
     Out << "beq " + regCond + ", $zero, " +  afterforlabel << std::endl;
     Out << "addiu $v0, $v0, 0" << std::endl;
     variables.emptyReg(regCond);
-    CodeGen(stmt->getCompoundStmt(), Out, variables, memsize, returnAddr);
+    CodeGen(stmt->getCompoundStmt(), Out, variables, memsize, returnAddr, "", "");
     if(stmt->getThird())
       CodeGenExpr((Expression*)stmt->getThird(), Out, variables);
     Out << "j " + forlabel <<std::endl;
     Out<< "addiu $zero, $zero, 0" << std::endl;
     Out << afterforlabel + ":" <<std::endl;
+  }
+  else if(stmt->IsSwitchStmt())
+  {
+    std::string end = makeName("switchend");
+    std::string cond = CodeGenExpr((Expression*)(stmt->getCond()), Out, variables);
+    CompoundStmt* body = (CompoundStmt*)(stmt->getSwitchStmts());
+    std::vector<Statement*>* stmts = body->getStmts();
+    //int caseidx = 0;
+    for(int i = 0; i<stmts->size(); i++)
+    {
+      if((*stmts)[i]->IsCaseStmt())
+      {
+        std::string caseExpr = CodeGenExpr((Expression*)((*stmts)[i]->getCond()), Out, variables);
+        Out << "beq " + caseExpr + ", " + cond + ", " + (*stmts)[i]->getLabel() << std::endl;
+        Out << "nop" << std::endl;
+        //caseidx++;
+      }
+      else if((*stmts)[i]->IsDefaultStmt())
+      {
+        Out << "j " + (*stmts)[i]->getLabel() << std::endl;
+      }
+    }
+    CodeGen(body, Out, variables, memsize, returnAddr, "", end);
+    Out << end + ":" << std::endl;
+    return;
+
   }
   else throw("Invalid statement!");
 }
@@ -512,7 +559,7 @@ if(funct->getParams())
     }
   for(int i = 0; i<(funct->getParams())->size() && i<4; i++)
   {
-    CodeGen((*funct->getParams())[i], Out, ctxt, memsize, returnAddr);
+    CodeGen((*funct->getParams())[i], Out, ctxt, memsize, returnAddr, "", "");
   }
 
   int nrOffloats = 0;
@@ -559,7 +606,7 @@ if(funct->getParams())
   {
     for(int i = 4; i<funct->getParams()->size(); i++)
     {
-      CodeGen((*funct->getParams())[i], Out, ctxt, memsize, returnAddr);
+      CodeGen((*funct->getParams())[i], Out, ctxt, memsize, returnAddr, "", "");
     }
   }
 
@@ -583,7 +630,7 @@ if(funct->getParams())
   }
   //for loop for the parameters maybe?
   //ctxt.printStack();
-  CodeGen(body, Out, ctxt, memsize, returnAddr);
+  CodeGen(body, Out, ctxt, memsize, returnAddr, "", "");
 
    //is this correct?
   /*if(funct->getName()!="main")

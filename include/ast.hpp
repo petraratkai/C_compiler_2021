@@ -2,7 +2,7 @@
 #define ast_hpp
 
 #include <string>
-
+#include "ast/makename.hpp"
 #include "ast/ast_statement.hpp"
 #include "ast/ast_expression.hpp"
 #include "ast/ast_declaration.hpp"
@@ -42,9 +42,10 @@
 #include "ast/ast_dereference_operator.hpp"
 
 
+
 extern Program *parseAST(const std::string name);
 
-void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables, int memsize, int returnAddr);
+void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables, int memsize, int returnAddr, const std::string& beginlabel, const std::string& endlabel);
 
 void CompileFunct(const Function *funct, std::ofstream& Out, std::vector<Variable_hash> global_vars);
 
@@ -56,12 +57,12 @@ void opcode_to_code(const std::string& dest, const std::string& left , const std
 void assignment_to_code(const std::string& dest, const std::string& src,
     const std::string& opcode, std::ostream&  Out);
 
-    static int makeNameUnq=0;
+    /*static int makeNameUnq=0;
 
     static std::string makeName(std::string base)
     {
         return "." + base+"_"+std::to_string(makeNameUnq++);
-    }
+    }*/
 void opcode_to_code_float(const std::string& dest, const std::string& left , const std::string& right,
        const std::string& opcode, std::ostream& Out, VarType type);
 
@@ -69,5 +70,6 @@ void assignment_to_code_float(const std::string& dest, const std::string& src,
         const std::string& opcode, std::ostream&  Out, VarType type);
 
 int sizeOf(VarType type);
+
 
 #endif

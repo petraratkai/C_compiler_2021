@@ -5,6 +5,8 @@
 #include "ast_statement.hpp"
 #include "Variable_hash.hpp"
 #include "Context.hpp"
+#include <string>
+#include "makename.hpp"
 
 class DefaultStmt
   :public Statement
@@ -15,8 +17,9 @@ private:
   //std::vector<Variable_hash> vars;
   //int LocalVarNr;
   int size;
+  std::string label;
 public:
-  DefaultStmt() {size = 1;}
+  DefaultStmt() {size = 1; label = makeName("default");}
 
   //CompoundStmt() : size(0) {LocalVarNr = 0; size = 0; stmts = NULL;}
 
@@ -35,6 +38,7 @@ public:
   //virtual Expression* getCond() const override {return cond;}
   virtual bool IsDefaultStmt() const override {return true;}
   virtual int getSize() const override {return size;}
+  virtual std::string getLabel() const override {return label;}
   //virtual std::vector<Variable_hash> getVars() const override {return vars;}
   /*void addVar(const Variable_hash& var)
   {

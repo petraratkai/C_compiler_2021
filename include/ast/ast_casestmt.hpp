@@ -5,6 +5,7 @@
 #include "ast_statement.hpp"
 #include "Variable_hash.hpp"
 #include "Context.hpp"
+#include "makename.hpp"
 
 class CaseStmt
   :public Statement
@@ -15,8 +16,9 @@ private:
   //std::vector<Variable_hash> vars;
   //int LocalVarNr;
   int size;
+  std::string label;
 public:
-  CaseStmt(Expression* cond) : cond(cond) {size = 1;}
+  CaseStmt(Expression* cond) : cond(cond) {size = 1; label = makeName("case");}
 
   //CompoundStmt() : size(0) {LocalVarNr = 0; size = 0; stmts = NULL;}
 
@@ -30,7 +32,7 @@ public:
   //  }
 
 
-
+  virtual std::string getLabel() const override {return label;}
   //CompoundStmt(std::vector<Statement*>* stmts, int _size) : stmts(stmts), size(_size) {LocalVarNr = 0;}
   virtual Expression* getCond() const override {return cond;}
   virtual bool IsCaseStmt() const override {return true;}
