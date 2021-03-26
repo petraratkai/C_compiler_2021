@@ -228,7 +228,7 @@ parameter_list:
 	|	parameter_list T_COMMA parameter_declaration 											{$1->push_back($3), $$ = $1;}
 
 parameter_declaration:
-		declaration_specifiers declarator     													{$$ = new Declaration( new Variable($2->getId(), $1,$2->IsPointer()));} //FIX THIS
+		declaration_specifiers declarator     													{$$ = new Declaration( new Variable($2->getId(), $1), $2->IsPointer());} //FIX THIS
 	|	declaration_specifiers abstract_declarator 												//{$$ = $1;} //FIX THIS
 	|	declaration_specifiers																	//{$$ = $1;}
 ;
