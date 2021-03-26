@@ -350,11 +350,11 @@ public:
 
   }*/
 
-  void newVar(const std::string& varname, VarType type = IntType, int NrOfElements = 1) //only for declarations, adds new variable to variable hashes and reserves a register
+  void newVar(const std::string& varname, VarType type = IntType, int NrOfElements = 1, bool isPointer = false) //only for declarations, adds new variable to variable hashes and reserves a register
   //then returns the reserved register name
   {
 
-    variables.push_back(Variable_hash(varname, type));
+    variables.push_back(Variable_hash(varname, type, false, isPointer));
     bool found = false;
     int i = 0;
     while(i<stack.size())

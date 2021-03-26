@@ -113,7 +113,7 @@ std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //c
       ctxt.emptyFReg(left);
       ctxt.emptyFReg(right);
       return dest;
-    }
+      }
     else if(expr->getType(ctxt.getVariables())==DoubleType)
     {
       std::string left = CodeGenExpr(expr->getLeft(), Out, ctxt);
@@ -126,7 +126,12 @@ std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //c
     }
     }
     else
+    {
+      std::string varname = expr->getLeft()->getId();
+      int idx = ctxt.findVarHashIndex(varname);
+      if(!ctxt.getVariables()[idx].isPointer())
     { //this is just for local vars
+
       std::string dest = ctxt.findFreeReg(Out);
       std::string address = ctxt.findFreeReg(Out);
       ctxt.loadIndex(expr->getLeft()->getId(), address, Out); //dest has the address of the first element of the array
@@ -143,6 +148,22 @@ std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //c
       ctxt.emptyReg(size);
       return dest;
     }
+    else //it is a pointer
+    {
+      std::string left = CodeGenExpr(expr->getLeft(), Out, ctxt);
+      std::string idx = CodeGenExpr(expr->getRight(), Out, ctxt);
+      int size = sizeOf(expr->getLeft()->getType(ctxt.getVariables()));
+      std::string sizereg = ctxt.findFreeReg(Out);
+      Out << "addiu " + sizereg + ", $zero, " << size << std::endl;
+      Out << "mult " + sizereg + ", " + idx << std::endl;
+      Out << "mflo " + idx << std::endl;
+      Out << "add " + idx + ", " + idx + ", " + left << std::endl;
+      Out << "lw " + sizereg + ", 0" + "(" + idx + ")"<< std::endl;
+      ctxt.emptyReg(idx);
+      ctxt.emptyReg(left);
+      return sizereg;
+    }
+  }
   }
   else if(expr->IsSizeOf())
   {
@@ -412,7 +433,7 @@ void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables, int 
   else if(stmt->IsDeclarationStmt())
   {
 
-    variables.newVar(stmt->getVariable(), ((Declaration*)stmt)->getType(variables.getVariables()), stmt->getArraySize());
+    variables.newVar(stmt->getVariable(), ((Declaration*)stmt)->getType(variables.getVariables()), stmt->getArraySize(), stmt->IsPointer());
 
 
 

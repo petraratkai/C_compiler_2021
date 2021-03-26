@@ -16,8 +16,9 @@ class Variable_hash
   VarStorage storage;
   VarQualifier qualifier;
   bool is_global;
+  bool is_pointer;
 public:
-  Variable_hash(const std::string& name, const VarType type, bool is_global = false, const VarQualifier qualifier =NoQualifier, const VarStorage storage= NoStorage) : name(name), type(type), is_global(is_global), qualifier(qualifier), storage(storage) {}
+  Variable_hash(const std::string& name, const VarType type, bool is_global = false, bool is_pointer=false, const VarQualifier qualifier =NoQualifier, const VarStorage storage= NoStorage) : name(name), type(type), is_global(is_global), qualifier(qualifier), storage(storage), is_pointer(is_pointer) {}
   //Variable_hash(const std::string& name, const VarType type, bool is_global = false, const VarQualifier qualifier) : name(name), type(type), qualifier(qualifier) {storage = NoStorage;}
   //Variable_hash(const std::string& name, const VarType type, bool is_global = false, const VarStorage storage) : name(name), type(type), storage(storage) {qualifier = NoQualifier;}
   //Variable_hash(const std::string& name, const VarType type, bool is_global = false, const VarQualifier qualifier, const VarStorage storage) : name(name), type(type), qualifier(qualifier), storage(storage) {}
@@ -33,6 +34,7 @@ public:
     memory_address = vh.memory_address;
     in_memory = vh.in_memory;
     is_global = vh.is_global;
+    is_pointer = vh.is_pointer;
   }
   void setlocation(const std::string& reg, int memory_address, bool in_memory) {this->reg = reg; this->memory_address= memory_address; this->in_memory = in_memory;}
   std::string getReg() const {return reg;}
@@ -43,6 +45,7 @@ public:
   bool isInMemory() const {return in_memory;}
   int getMemAddr() const {return memory_address;}
   bool isGlobal() const {return is_global;}
+  bool isPointer() const {return is_pointer;}
 
 };
 
