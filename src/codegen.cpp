@@ -157,6 +157,7 @@ std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //c
       Out << "addiu " + sizereg + ", $zero, " << size << std::endl;
       Out << "mult " + sizereg + ", " + idx << std::endl;
       Out << "mflo " + idx << std::endl;
+      Out << "sll " + left + ", " + left + ", 2" << std::endl;
       Out << "add " + idx + ", " + idx + ", " + left << std::endl;
       Out << "lw " + sizereg + ", 0" + "(" + idx + ")"<< std::endl;
       ctxt.emptyReg(idx);
@@ -579,6 +580,7 @@ if(funct->getParams())
 
     Out << "lw $t0, " << i*4 << "($t1)" << std::endl;
     Out << "nop" << std::endl;
+    //if((*(funct->getParams()))[i]->IsPointer()) Out << "srl $t0, $t0, 4" << std::endl;
     Out << "sw $t0, " << (returnAddr /*+ returnAddr%2*/ + i -4 +1)*4 << "($sp)" << std::endl;
   }
 //std::cerr<<(funct->getSize()+21+(4+1+ParamSize)%2) + (funct->getSize()%2)<<std::endl;
@@ -586,6 +588,10 @@ if(funct->getParams())
   {
     for(int i = 0; i<4 && i< ParamSize; i++)
     {
+      if((*(funct->getParams()))[i]->IsPointer())
+      {
+        Out << "srl $a" << i <<", $a" << i << ", 2" << std::endl;
+      }
       Out << "sw $a" << i << ", " << i*4 << "($sp)" << std::endl;
     }
   for(int i = 0; i<(funct->getParams())->size() && i<4; i++)
