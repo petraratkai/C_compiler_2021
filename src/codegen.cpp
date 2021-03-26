@@ -74,7 +74,7 @@ std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //c
     for(int i = 4; i<expr->getParams()->size();i++)
     {
       std::string dest2 = CodeGenExpr((*expr->getParams())[i], Out, ctxt);
-      Out << "sw " + dest2 + ", " <<  i*4 <<"($sp)" << std::endl;
+      Out << "sw " + dest2 + ", " <<  i*4 -4<<"($sp)" << std::endl;
       ctxt.emptyReg(dest2);
     }
 
@@ -83,9 +83,11 @@ std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //c
   //ctxt.emptyReg(dest);
   //ctxt.storeregs(false, ctxt.FirstEmptyIndex()*4, Out);
     ctxt.storeregs(false, (8+4+1+(4+1)%2)*4, Out); //params!!
+    Out << "addiu $sp, $sp, -4" << std::endl;
     Out << "jal " + expr->getName() << std::endl;
     Out << "nop" << std::endl;
     //ctxt.reloadregs(false, ctxt.FirstEmptyIndex()*4, Out);
+    Out << "addiu $sp, $sp, 4" << std::endl;
     ctxt.reloadregs(false, (8+4+1+(4+1)%2)*4, Out); //+params!!!
     Out << "addiu $v0, $v0, 0" << std::endl; //nop after jump
     std::string dest = ctxt.findFreeReg(Out);
