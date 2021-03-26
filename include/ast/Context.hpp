@@ -151,7 +151,7 @@ public:
     }
 
   }
-
+std::string saveString(std::string str, std::ostream& Out);
   void reloadregs(bool savedReg, int offset, std::ostream& Out)
   {
     std::string fromreg, toreg;
@@ -212,7 +212,7 @@ public:
   {
     //int regidx = findRegIndex(regname);
     int varidx = findVarHashIndex(varName);
-    if(type==IntType)
+    if(type==IntType || type == CharType)
     {
       Out<<"sw " + regname + ", " << (variables[varidx].getMemAddr())*4 << "($sp)" <<std::endl;
     }

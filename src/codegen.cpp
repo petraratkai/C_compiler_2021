@@ -39,6 +39,11 @@ std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //c
     return regname;
 
   }
+  else if(expr->IsStringStmt())
+  {
+    std::string regname = ctxt.saveString(expr->getString(), Out);
+    return regname;
+  }
   else if(expr->IsFakeVariableExpr())
   {
     //need to load it into some register
@@ -131,7 +136,7 @@ std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //c
       int idx = ctxt.findVarHashIndex(varname);
       if(!ctxt.getVariables()[idx].isPointer())
     { //this is just for local vars
-
+      //std::cerr<<"here";
       std::string dest = ctxt.findFreeReg(Out);
       std::string address = ctxt.findFreeReg(Out);
       ctxt.loadIndex(expr->getLeft()->getId(), address, Out); //dest has the address of the first element of the array
@@ -150,9 +155,12 @@ std::string CodeGenExpr(Expression *expr, std::ofstream& Out, Context& ctxt) //c
     }
     else //it is a pointer
     {
+      VarType type;
+      //std::cerr<<"here";
+      type = (expr->getLeft()->getType(ctxt.getVariables())==CharType ? IntType : expr->getLeft()->getType(ctxt.getVariables()));
       std::string left = CodeGenExpr(expr->getLeft(), Out, ctxt);
       std::string idx = CodeGenExpr(expr->getRight(), Out, ctxt);
-      int size = sizeOf(expr->getLeft()->getType(ctxt.getVariables()));
+      int size = sizeOf(type);
       std::string sizereg = ctxt.findFreeReg(Out);
       Out << "addiu " + sizereg + ", $zero, " << size << std::endl;
       Out << "mult " + sizereg + ", " + idx << std::endl;
@@ -353,9 +361,9 @@ void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables, int 
     //evaluate return value
     //move that value to v0
       //fprintf(stderr, "here");
-
-    std::string regname = CodeGenExpr((Expression*)stmt->getRetVal(), Out, variables);
 //std::cerr<<"here";
+    std::string regname = CodeGenExpr((Expression*)stmt->getRetVal(), Out, variables);
+
     if(((Expression*)(stmt->getRetVal()))->getType(variables.getVariables())==IntType || ((Expression*)(stmt->getRetVal()))->getType(variables.getVariables())==CharType)
     {
       Out<<"addiu $v0, " << regname << ", 0" <<std::endl;
@@ -440,13 +448,17 @@ void CodeGen(const Statement *stmt, std::ofstream& Out, Context& variables, int 
 
     if(stmt->getExpr()!=nullptr)
     {
+      /*if(stmt->getExpr()->IsString())
+      {
 
+      }*/
+        //std::cerr<<"here";
     //std::string dest = variables.findFreeReg(Out);
     std::string regname = CodeGenExpr((Expression*)(stmt->getExpr()), Out, variables);
     //Out << "add " + dest + ", " + regname + ", $zero" << std::endl;
     variables.saveNewVar(regname, stmt->getVariable(), Out, ((Declaration*)stmt)->getType(variables.getVariables()));
-
-    if(((Declaration*)stmt)->getType(variables.getVariables())==IntType) variables.emptyReg(regname);
+    //std::cerr<<"here";
+    if(((Declaration*)stmt)->getType(variables.getVariables())==IntType || ((Declaration*)stmt)->getType(variables.getVariables())==CharType ) variables.emptyReg(regname);
     else variables.emptyFReg(regname);
 
     }
@@ -580,7 +592,7 @@ if(funct->getParams())
 
     Out << "lw $t0, " << i*4 << "($t1)" << std::endl;
     Out << "nop" << std::endl;
-    //if((*(funct->getParams()))[i]->IsPointer()) Out << "srl $t0, $t0, 4" << std::endl;
+    if((*(funct->getParams()))[i]->IsPointer()) Out << "srl $t0, $t0, 2" << std::endl;
     Out << "sw $t0, " << (returnAddr /*+ returnAddr%2*/ + i -4 +1)*4 << "($sp)" << std::endl;
   }
 //std::cerr<<(funct->getSize()+21+(4+1+ParamSize)%2) + (funct->getSize()%2)<<std::endl;
